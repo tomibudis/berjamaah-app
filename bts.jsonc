@@ -1,0 +1,21 @@
+// Better-T-Stack configuration file
+// safe to delete
+
+{
+	"$schema": "https://r2.better-t-stack.dev/schema.json",
+	"version": "2.40.3",
+	"createdAt": "2025-09-03T14:33:38.828Z",
+	"database": "postgres",
+	"orm": "prisma",
+	"backend": "next",
+	"runtime": "node",
+	"frontend": ["next"],
+	"addons": ["husky", "turborepo"],
+	"examples": ["todo"],
+	"auth": "better-auth",
+	"packageManager": "npm",
+	"dbSetup": "supabase",
+	"api": "trpc",
+	"webDeploy": "none",
+	"serverDeploy": "none"
+}
