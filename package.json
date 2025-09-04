@@ -1,5 +1,5 @@
 {
-	"name": "todo-better-t-stack",
+	"name": "berjamaah-app",
 	"private": true,
 	"workspaces": [
 		"apps/*",
@@ -18,11 +18,11 @@
 		"db:generate": "turbo -F server db:generate",
 		"db:migrate": "turbo -F server db:migrate"
 	},
-	"dependencies": {},
 	"devDependencies": {
-		"turbo": "^2.5.4",
 		"husky": "^9.1.7",
-		"lint-staged": "^16.1.2"
+		"lint-staged": "^16.1.2",
+		"prettier": "^3.6.2",
+		"turbo": "^2.5.4"
 	},
 	"lint-staged": {
 		"**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue,astro,svelte}": ""

@@ -1,0 +1,178 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Users table (for admins)
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  password       String
+  role           String   @default("admin") // 'admin'
+  fullName       String   @map("full_name")
+  phone          String?
+  profilePicture String?  @map("profile_picture")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  verifiedDonations     Donation[]           @relation("VerifiedByAdmin")
+  verificationHistory   VerificationHistory[]
+  adminActivityLogs     AdminActivityLog[]
+  programScheduleLogs   ProgramScheduleLog[]
+
+  @@map("users")
+}
+
+// Programs table (master program information)
+model Program {
+  id           String   @id @default(cuid())
+  title        String
+  description  String
+  targetAmount Decimal  @map("target_amount") @db.Decimal(15, 2)
+  bannerImage  String?  @map("banner_image")
+  category     String?
+  status       String   @default("draft") // 'draft', 'active', 'paused', 'ended'
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  programPeriods ProgramPeriod[]
+  donations      Donation[]
+
+  @@map("programs")
+}
+
+// Program periods table (actual active periods for donations)
+model ProgramPeriod {
+  id                    String    @id @default(cuid())
+  programId             String    @map("program_id")
+  startDate             DateTime  @map("start_date")
+  endDate               DateTime  @map("end_date")
+  cycleNumber           Int?      @map("cycle_number") // for recurring programs (1, 2, 3, etc.), null for one_time
+  status                String    @default("scheduled") // 'scheduled', 'active', 'ended', 'cancelled'
+  currentAmount         Decimal   @default(0) @map("current_amount") @db.Decimal(15, 2) // total donations received in this period
+  
+  // Recurring settings (only for recurring programs)
+  recurringFrequency    String?   @map("recurring_frequency") // 'weekly', 'monthly', 'quarterly', 'yearly' (null for one_time)
+  recurringDay          Int?      @map("recurring_day") // day of week (1-7) or day of month (1-31) (null for one_time)
+  recurringDurationDays Int?      @map("recurring_duration_days") // how many days each activation lasts (null for one_time)
+  totalCycles           Int?      @map("total_cycles") // null for indefinite, number for limited cycles (null for one_time)
+  nextActivationDate    DateTime? @map("next_activation_date") // when the next period should be created
+  
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  program   Program   @relation(fields: [programId], references: [id], onDelete: Cascade)
+  donations Donation[]
+
+  @@map("program_periods")
+}
+
+// Program schedule logs table
+model ProgramScheduleLog {
+  id            String   @id @default(cuid())
+  programId     String   @map("program_id")
+  action        String   // 'activated', 'deactivated', 'skipped', 'paused', 'resumed'
+  scheduledDate DateTime @map("scheduled_date")
+  actualDate    DateTime @map("actual_date")
+  cycleNumber   Int?     @map("cycle_number")
+  adminId       String   @map("admin_id")
+  notes         String?
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  // Relations
+  admin   User     @relation(fields: [adminId], references: [id])
+  program Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
+
+  @@map("program_schedule_logs")
+}
+
+// Donations table (for admin verification)
+model Donation {
+  id                      String    @id @default(cuid())
+  userId                  String?   @map("user_id") // Reference to donor (optional for guest donations)
+  donorName               String    @map("donor_name")
+  donorEmail              String    @map("donor_email")
+  donorPhone              String?   @map("donor_phone")
+  amount                  Decimal   @db.Decimal(15, 2)
+  programId               String    @map("program_id") // Reference to programs table (for program info)
+  programPeriodId         String    @map("program_period_id") // Reference to program_periods table (for active period)
+  status                  String    @default("pending_verification") // 'pending_verification', 'verified', 'confirmed', 'rejected'
+  bankAccountSender       String?   @map("bank_account_sender")
+  bankAccountReceiver     String?   @map("bank_account_receiver")
+  transferDate            DateTime? @map("transfer_date")
+  transferReference       String?   @map("transfer_reference")
+  adminNotes              String?   @map("admin_notes")
+  verificationAttempts    Int       @default(0) @map("verification_attempts")
+  verifiedByAdminId       String?   @map("verified_by_admin_id")
+  verifiedAt              DateTime? @map("verified_at")
+  donationReferenceNumber String    @unique @map("donation_reference_number")
+  createdAt               DateTime  @default(now()) @map("created_at")
+  updatedAt               DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  program                Program                @relation(fields: [programId], references: [id])
+  programPeriod          ProgramPeriod          @relation(fields: [programPeriodId], references: [id])
+  verifiedByAdmin        User?                  @relation("VerifiedByAdmin", fields: [verifiedByAdminId], references: [id])
+  donationProofs         DonationProof[]
+  verificationHistory    VerificationHistory[]
+
+  @@map("donations")
+}
+
+// Donation proof images table
+model DonationProof {
+  id          String   @id @default(cuid())
+  donationId  String   @map("donation_id")
+  imagePath   String   @map("image_path")
+  imageName   String   @map("image_name")
+  fileSize    Int      @map("file_size")
+  uploadedAt  DateTime @default(now()) @map("uploaded_at")
+  isPrimary   Boolean  @default(false) @map("is_primary")
+
+  // Relations
+  donation Donation @relation(fields: [donationId], references: [id], onDelete: Cascade)
+
+  @@map("donation_proofs")
+}
+
+// Verification history table
+model VerificationHistory {
+  id         String   @id @default(cuid())
+  donationId String   @map("donation_id")
+  adminId    String   @map("admin_id")
+  action     String   // 'verified', 'rejected', 'requested_info'
+  notes      String?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relations
+  donation Donation @relation(fields: [donationId], references: [id], onDelete: Cascade)
+  admin    User     @relation(fields: [adminId], references: [id])
+
+  @@map("verification_history")
+}
+
+// Admin activity logs
+model AdminActivityLog {
+  id         String   @id @default(cuid())
+  adminId    String   @map("admin_id")
+  action     String
+  targetType String   @map("target_type") // 'donation', 'program'
+  targetId   String   @map("target_id")
+  details    String?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relations
+  admin User @relation(fields: [adminId], references: [id])
+
+  @@map("admin_activity_logs")
+}
