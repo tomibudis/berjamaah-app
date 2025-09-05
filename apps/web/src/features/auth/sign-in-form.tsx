@@ -58,9 +58,15 @@ export default function SignInForm() {
         password: formValues.password,
       },
       {
-        onSuccess: () => {
-          router.push('/dashboard');
+        onSuccess: async () => {
+          const session = await authClient.getSession();
+          const isAdminRole = session?.data?.user?.role === 'admin';
           toast.success('Sign in successful');
+
+          if (isAdminRole) {
+            return router.replace('/admin');
+          }
+          return router.replace('/dashboard');
         },
         onError: error => {
           toast.error(error.error.message || error.error.statusText);

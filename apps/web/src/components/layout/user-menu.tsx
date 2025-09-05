@@ -23,6 +23,7 @@ import {
   Monitor,
   ChevronDown,
   Settings,
+  Shield,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -127,6 +128,22 @@ export default function UserMenu() {
         )}
 
         <DropdownMenuSeparator />
+
+        {/* Admin Dashboard Link */}
+        {session.user.role === 'admin' && (
+          <>
+            <DropdownMenuItem
+              asChild
+              className="flex items-center gap-2 cursor-pointer"
+            >
+              <Link href={'/admin' as any}>
+                <Shield className="w-4 h-4" />
+                Admin Dashboard
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
 
         {/* Menu Items */}
         <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">

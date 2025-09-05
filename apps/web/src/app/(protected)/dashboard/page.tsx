@@ -2,31 +2,16 @@
 import { authClient } from '@/lib/auth-client';
 import { useQuery } from '@tanstack/react-query';
 import { trpc } from '@/utils/trpc';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Target, Calendar, Heart } from 'lucide-react';
 
 export default function Dashboard() {
-  const router = useRouter();
-  const { data: session, isPending } = authClient.useSession();
+  const { isPending } = authClient.useSession();
 
   const privateData = useQuery(trpc.privateData.queryOptions());
-
-  useEffect(() => {
-    if (!session && !isPending) {
-      router.push('/signin');
-    }
-  }, [session, isPending]);
 
   if (isPending) {
     return (
