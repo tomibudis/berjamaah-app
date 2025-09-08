@@ -14,7 +14,7 @@ export default function GoogleSignUpButton() {
     try {
       await authClient.signIn.social({
         provider: 'google',
-        callbackURL: 'http://localhost:3001/dashboard',
+        callbackURL: 'http://localhost:3001/',
       });
     } catch (error) {
       setIsGoogleLoading(false);

@@ -83,7 +83,7 @@ export default function SignUpForm() {
       },
       {
         onSuccess: () => {
-          router.push('/dashboard');
+          router.push('/');
           toast.success('Account created successfully! Welcome to Berjamaah!');
         },
         onError: error => {

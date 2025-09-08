@@ -136,7 +136,7 @@ export default function UserMenu() {
               asChild
               className="flex items-center gap-2 cursor-pointer"
             >
-              <Link href={'/admin' as any}>
+              <Link href={'/admin/home' as any}>
                 <Shield className="w-4 h-4" />
                 Admin Dashboard
               </Link>
@@ -145,20 +145,12 @@ export default function UserMenu() {
           </>
         )}
 
-        {/* Menu Items */}
-        <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
-          <Settings className="w-4 h-4" />
-          Pengaturan
-        </DropdownMenuItem>
-
-        <DropdownMenuSeparator />
-
         {/* Logout */}
         <DropdownMenuItem
           onClick={handleSignOut}
           className="flex items-center gap-2 cursor-pointer text-red-600 dark:text-red-400 focus:text-red-600 dark:focus:text-red-400"
         >
-          <LogOut className="w-4 h-4" />
+          <LogOut className="w-4 h-4 text-red-600" />
           Keluar
         </DropdownMenuItem>
       </DropdownMenuContent>

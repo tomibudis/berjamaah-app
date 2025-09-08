@@ -64,9 +64,9 @@ export default function SignInForm() {
           toast.success('Sign in successful');
 
           if (isAdminRole) {
-            return router.replace('/admin');
+            return router.replace('/admin/home');
           }
-          return router.replace('/dashboard');
+          return router.replace('/');
         },
         onError: error => {
           toast.error(error.error.message || error.error.statusText);
