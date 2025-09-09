@@ -1,10 +1,13 @@
+// Authentication and user management schema
+// This file contains models for user authentication, sessions, and accounts
+
 model User {
   id            String    @id @map("_id")
   name          String
   email         String
   emailVerified Boolean
   image         String?
-  role          String    @default("user")
+  role          String    @default("user") // user | admin
   banned        Boolean   @default(false)
   banReason     String?
   banExpires    DateTime?
@@ -12,6 +15,13 @@ model User {
   updatedAt     DateTime
   sessions      Session[]
   accounts      Account[]
+
+  // Additional admin fields
+  fullName       String?  @map("full_name")
+  phone          String?
+
+  // Relations for admin functionality
+  verifiedDonations     Donation[]           @relation("VerifiedByAdmin")
 
   @@unique([email])
   @@map("user")

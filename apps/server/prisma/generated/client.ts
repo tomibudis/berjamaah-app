@@ -62,9 +62,24 @@ export type Account = Prisma.AccountModel
  */
 export type Verification = Prisma.VerificationModel
 /**
- * Model Todo
+ * Model Donation
  * 
  */
-export type Todo = Prisma.TodoModel
+export type Donation = Prisma.DonationModel
+/**
+ * Model DonationProof
+ * 
+ */
+export type DonationProof = Prisma.DonationProofModel
+/**
+ * Model Program
+ * 
+ */
+export type Program = Prisma.ProgramModel
+/**
+ * Model ProgramPeriod
+ * 
+ */
+export type ProgramPeriod = Prisma.ProgramPeriodModel
 
 
