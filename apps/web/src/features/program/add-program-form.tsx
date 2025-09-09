@@ -17,6 +17,7 @@ import {
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import Loader from '@/components/shared/loader';
+import { trpc, trpcClient, queryClient } from '@/utils/trpc';
 import { ChevronLeft, CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
@@ -131,7 +132,6 @@ export type AddProgramFormValues = z.infer<typeof addProgramSchema>;
 
 export default function AddProgramForm() {
   const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [newCategory, setNewCategory] = React.useState('');
   const [showNewCategoryInput, setShowNewCategoryInput] = React.useState(false);
   const [newStartDate, setNewStartDate] = React.useState('');
@@ -166,22 +166,85 @@ export default function AddProgramForm() {
   const description = form.watch('description');
 
   const onSubmitForm = async (formValues: AddProgramFormValues) => {
-    setIsSubmitting(true);
-
     try {
-      // TODO: Replace with actual API call
-      console.log('Form values:', formValues);
+      // Transform form data to match tRPC schema
+      const programData = {
+        title: formValues.title,
+        description: formValues.description,
+        targetAmount: Number(formValues.targetAmount),
+        category: formValues.category,
+        programType: formValues.programType,
+        status: 'draft' as const,
+        // Handle initial period based on program type
+        initialPeriod: (() => {
+          if (
+            formValues.programType === 'one_time' &&
+            formValues.startDate &&
+            formValues.endDate
+          ) {
+            return {
+              startDate: new Date(
+                `${formValues.startDate}T${formValues.startTime || '00:00'}`
+              ),
+              endDate: new Date(
+                `${formValues.endDate}T${formValues.endTime || '23:59'}`
+              ),
+            };
+          }
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+          if (formValues.programType === 'multiple') {
+            return {
+              startDate: new Date(), // Will be set when first activated
+              endDate: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day from now
+              recurringFrequency: formValues.recurringFrequency as
+                | 'weekly'
+                | 'monthly'
+                | 'quarterly'
+                | 'yearly'
+                | undefined,
+              recurringDay: formValues.recurringDay
+                ? Number(formValues.recurringDay)
+                : undefined,
+              recurringDurationDays: formValues.recurringDurationDays
+                ? Number(formValues.recurringDurationDays)
+                : undefined,
+              totalCycles: formValues.totalCycles
+                ? Number(formValues.totalCycles)
+                : undefined,
+            };
+          }
+
+          if (
+            formValues.programType === 'selected_date' &&
+            formValues.selectedDateTimes &&
+            formValues.selectedDateTimes.length > 0
+          ) {
+            // For selected date programs, we'll create the first period with the first selected date
+            const firstDate = formValues.selectedDateTimes[0];
+            return {
+              startDate: new Date(`${firstDate.date}T${firstDate.startTime}`),
+              endDate: new Date(`${firstDate.date}T${firstDate.endTime}`),
+            };
+          }
+
+          return undefined;
+        })(),
+      };
+
+      await trpcClient.program.create.mutate(programData);
+
+      // Invalidate program queries to refresh the list
+      await queryClient.invalidateQueries({
+        queryKey: ['program', 'getAll'],
+      });
 
       toast.success('Program berhasil ditambahkan!');
       router.push('/admin/program');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error adding program:', error);
-      toast.error('Gagal menambahkan program. Silakan coba lagi.');
-    } finally {
-      setIsSubmitting(false);
+      toast.error(
+        error.message || 'Gagal menambahkan program. Silakan coba lagi.'
+      );
     }
   };
 
@@ -252,7 +315,7 @@ export default function AddProgramForm() {
         </div>
       </div>
 
-      {isSubmitting && <Loader />}
+      {form.formState.isSubmitting && <Loader />}
 
       <Form {...form}>
         <form className="space-y-8" onSubmit={form.handleSubmit(onSubmitForm)}>
@@ -1021,9 +1084,9 @@ export default function AddProgramForm() {
           <Button
             type="submit"
             className="w-full bg-green-600 hover:bg-green-700"
-            disabled={isSubmitting}
+            disabled={form.formState.isSubmitting}
           >
-            {isSubmitting ? 'Menyimpan...' : 'Simpan Program'}
+            {form.formState.isSubmitting ? 'Menyimpan...' : 'Simpan Program'}
           </Button>
         </form>
       </Form>

@@ -18,7 +18,10 @@ model User {
 
   // Additional admin fields
   fullName       String?  @map("full_name")
+  firstName      String?  @map("first_name")
+  lastName       String?  @map("last_name")
   phone          String?
+  bio            String?
 
   // Relations for admin functionality
   verifiedDonations     Donation[]           @relation("VerifiedByAdmin")
