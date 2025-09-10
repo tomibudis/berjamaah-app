@@ -1004,21 +1004,21 @@ export const programRouter = router({
         }
 
         const totalDonations = program.donations
-          .filter(d => d.status === 'completed')
-          .reduce((sum, d) => sum + Number(d.amount), 0);
+          .filter((d: any) => d.status === 'completed')
+          .reduce((sum: number, d: any) => sum + Number(d.amount), 0);
 
         const totalPeriodAmount = program.programPeriods.reduce(
-          (sum, p) => sum + Number(p.currentAmount),
+          (sum: number, p: any) => sum + Number(p.currentAmount),
           0
         );
 
         // Since we removed status from programPeriods, we'll use date-based logic
         const now = new Date();
         const activePeriods = program.programPeriods.filter(
-          p => p.startDate <= now && p.endDate >= now
+          (p: any) => p.startDate <= now && p.endDate >= now
         ).length;
         const completedPeriods = program.programPeriods.filter(
-          p => p.endDate < now
+          (p: any) => p.endDate < now
         ).length;
 
         return {
