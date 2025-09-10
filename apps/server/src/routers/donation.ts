@@ -162,7 +162,7 @@ export const donationRouter = router({
         });
 
         // Transform data to match frontend expectations
-        const transformedPrograms = programs.map(program => {
+        const transformedPrograms = programs.map((program: any) => {
           const activePeriod = program.programPeriods[0];
           const totalDonations = program.donations.reduce(
             (sum, donation) => sum + Number(donation.amount),
