@@ -55,8 +55,8 @@ export function AdminProfileForm() {
   // Prepopulate form when user data is loaded
   useEffect(() => {
     if (userProfile) {
-      setValue('firstName', userProfile.firstName || '');
-      setValue('lastName', userProfile.lastName || '');
+      setValue('firstName', userProfile?.firstName || '');
+      setValue('lastName', userProfile?.lastName || '');
       setValue('phone', (userProfile as any).phone || '');
       setValue('bio', (userProfile as any).bio || '');
     }
