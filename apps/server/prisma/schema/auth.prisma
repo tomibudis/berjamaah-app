@@ -25,6 +25,8 @@ model User {
 
   // Relations for admin functionality
   verifiedDonations     Donation[]           @relation("VerifiedByAdmin")
+  approvedPrograms      Program[]            @relation("ApprovedPrograms")
+  rejectedPrograms      Program[]            @relation("RejectedPrograms")
 
   @@unique([email])
   @@map("user")

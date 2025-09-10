@@ -14,6 +14,15 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer';
+import {
   Users,
   UserPlus,
   Shield,
@@ -25,6 +34,8 @@ import {
 } from 'lucide-react';
 import { formatCurrency } from '@/lib/currency-utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { trpcClient } from '@/utils/trpc';
+import { ProgramConfirmationDrawer } from '@/features/program/program-confirmation-drawer';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -33,6 +44,10 @@ export default function AdminDashboard() {
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   const [programs, setPrograms] = useState<any[]>([]);
   const [isLoadingPrograms, setIsLoadingPrograms] = useState(false);
+  const [selectedProgramId, setSelectedProgramId] = useState<string | null>(
+    null
+  );
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   // Check if user is admin
   const isAdmin = session?.user?.role === 'admin';
@@ -61,40 +76,11 @@ export default function AdminDashboard() {
   const loadPrograms = async () => {
     setIsLoadingPrograms(true);
     try {
-      // Mock program data - replace with actual API call
-      const mockPrograms = [
-        {
-          id: '1',
-          title: 'Bantu Pendidikan Anak',
-          description: 'Program beasiswa untuk anak kurang mampu',
-          targetAmount: 50000000,
-          collectedAmount: 26500000,
-          status: 'active',
-          needsConfirmation: 1500000,
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: '2',
-          title: 'Bantuan Makanan untuk Lansia',
-          description: 'Program bantuan makanan untuk lansia yang membutuhkan',
-          targetAmount: 30000000,
-          collectedAmount: 12000000,
-          status: 'active',
-          needsConfirmation: 500000,
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: '3',
-          title: 'Renovasi Masjid',
-          description: 'Program renovasi masjid untuk keperluan ibadah',
-          targetAmount: 100000000,
-          collectedAmount: 75000000,
-          status: 'completed',
-          needsConfirmation: 0,
-          createdAt: new Date().toISOString(),
-        },
-      ];
-      setPrograms(mockPrograms);
+      const data = await trpcClient.program.getAll.query({
+        limit: 50,
+        offset: 0,
+      });
+      setPrograms(data.programs || []);
     } catch (error) {
       console.error('Error loading programs:', error);
     } finally {
@@ -102,12 +88,44 @@ export default function AdminDashboard() {
     }
   };
 
+  // Query for draft programs
+  const {
+    data: draftProgramsData,
+    isLoading: isLoadingDraftPrograms,
+    refetch: refetchDraftPrograms,
+  } = useQuery({
+    queryKey: ['draftPrograms'],
+    queryFn: async () => {
+      return await trpcClient.program.getDraftPrograms.query({
+        limit: 50,
+        offset: 0,
+      });
+    },
+    enabled: isAdmin,
+  });
+
   useEffect(() => {
     if (isAdmin) {
       loadUsers();
       loadPrograms();
     }
   }, [isAdmin]);
+
+  // Handler functions
+  const handleProgramSelect = (programId: string) => {
+    setSelectedProgramId(programId);
+    setIsDrawerOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setIsDrawerOpen(false);
+    setSelectedProgramId(null);
+  };
+
+  const handleApprovalChange = () => {
+    refetchDraftPrograms();
+    loadPrograms();
+  };
 
   const handleBanUser = async (userId: string) => {
     try {
@@ -240,13 +258,15 @@ export default function AdminDashboard() {
               <CardContent className="p-4">
                 <div className="text-center">
                   <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">
-                    Data Butuh Dikonfirmasi
+                    Program Butuh Dikonfirmasi
                   </p>
                   <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
-                    Menunggu konfirmasi
+                    Menunggu persetujuan
                   </p>
                   <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                    9
+                    {isLoadingDraftPrograms
+                      ? '...'
+                      : draftProgramsData?.total || 0}
                   </div>
                 </div>
               </CardContent>
@@ -282,7 +302,9 @@ export default function AdminDashboard() {
                     variant="secondary"
                     className="ml-1 h-5 w-5 rounded-full p-0 text-xs"
                   >
-                    2
+                    {isLoadingDraftPrograms
+                      ? '...'
+                      : draftProgramsData?.total || 0}
                   </Badge>
                 </TabsTrigger>
               </TabsList>
@@ -388,98 +410,154 @@ export default function AdminDashboard() {
 
               <TabsContent value="program" className="mt-4">
                 <div className="space-y-3">
-                  {/* Mock program approval data */}
-                  {[
-                    {
-                      id: '1',
-                      title: 'Bantuan Korban Bencana',
-                      description:
-                        'Program bantuan untuk korban banjir di Jakarta',
-                      targetAmount: 75000000,
-                      organizer: 'Yayasan Peduli Jakarta',
-                      submittedDate: '2024-01-15',
-                      status: 'pending',
-                    },
-                    {
-                      id: '2',
-                      title: 'Beasiswa Anak Yatim',
-                      description: 'Program beasiswa untuk anak yatim piatu',
-                      targetAmount: 50000000,
-                      organizer: 'Panti Asuhan Al-Hidayah',
-                      submittedDate: '2024-01-14',
-                      status: 'pending',
-                    },
-                  ].map(program => (
-                    <Card
-                      key={program.id}
-                      className="border border-gray-200 dark:border-gray-700"
-                    >
-                      <CardContent className="p-4">
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <h3 className="font-semibold text-gray-900 dark:text-white text-base">
-                                {program.title}
-                              </h3>
-                              <p className="text-sm text-gray-600 dark:text-gray-400">
-                                {program.description}
-                              </p>
-                            </div>
-                            <Badge variant="outline" className="text-xs">
-                              {program.status}
-                            </Badge>
-                          </div>
+                  {isLoadingDraftPrograms ? (
+                    <div className="flex justify-center py-8">
+                      <Skeleton className="h-4 w-32" />
+                    </div>
+                  ) : draftProgramsData?.programs?.length === 0 ? (
+                    <div className="text-center py-8">
+                      <p className="text-gray-500">
+                        Tidak ada program yang menunggu persetujuan
+                      </p>
+                    </div>
+                  ) : (
+                    draftProgramsData?.programs?.map((program: any) => {
+                      const currentAmount = program.programPeriods.reduce(
+                        (sum: number, period: any) =>
+                          sum + Number(period.currentAmount),
+                        0
+                      );
+                      const progressPercentage = Math.round(
+                        (currentAmount / Number(program.targetAmount)) * 100
+                      );
 
-                          <div className="space-y-2">
-                            <div className="flex justify-between text-sm">
-                              <span className="text-gray-600 dark:text-gray-400">
-                                Target: {formatCurrency(program.targetAmount)}
-                              </span>
-                              <span className="text-gray-600 dark:text-gray-400">
-                                Organizer: {program.organizer}
-                              </span>
-                            </div>
-                            <div className="text-sm text-gray-600 dark:text-gray-400">
-                              Dikirim:{' '}
-                              {new Date(
-                                program.submittedDate
-                              ).toLocaleDateString('id-ID')}
-                            </div>
-                          </div>
+                      return (
+                        <Card
+                          key={program.id}
+                          className="py-0 border border-gray-200 dark:border-gray-700 cursor-pointer hover:shadow-md transition-shadow"
+                          onClick={() => handleProgramSelect(program.id)}
+                        >
+                          <CardContent className="p-4">
+                            <div className="space-y-3">
+                              <div className="flex items-center justify-between">
+                                <div className="flex-1">
+                                  <h3 className="font-semibold text-gray-900 dark:text-white text-base">
+                                    {program.title}
+                                  </h3>
+                                  <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                                    {program.description}
+                                  </p>
+                                </div>
+                                <Badge
+                                  variant="outline"
+                                  className="text-xs ml-2"
+                                >
+                                  {program.status}
+                                </Badge>
+                              </div>
 
-                          <div className="flex gap-2">
-                            <Button
-                              size="sm"
-                              className="text-xs px-3 py-1 h-auto bg-green-500 hover:bg-green-600"
-                            >
-                              Setujui
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="text-xs px-3 py-1 h-auto"
-                            >
-                              Tolak
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="text-xs px-3 py-1 h-auto"
-                            >
-                              <Eye className="w-3 h-3 mr-1" />
-                              Detail
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                              <div className="space-y-2">
+                                <div className="flex justify-between text-sm">
+                                  <span className="text-gray-600 dark:text-gray-400">
+                                    Target:{' '}
+                                    {formatCurrency(
+                                      Number(program.targetAmount)
+                                    )}
+                                  </span>
+                                  <span className="text-gray-600 dark:text-gray-400">
+                                    Kategori: {program.category || 'Tidak ada'}
+                                  </span>
+                                </div>
+                                <div className="text-sm text-gray-600 dark:text-gray-400">
+                                  Dibuat:{' '}
+                                  {new Date(
+                                    program.createdAt
+                                  ).toLocaleDateString('id-ID')}
+                                </div>
+
+                                {/* Progress Bar */}
+                                <div>
+                                  <div className="flex justify-between text-xs mb-1">
+                                    <span className="text-gray-600 dark:text-gray-400">
+                                      Progress
+                                    </span>
+                                    <span className="text-gray-900 dark:text-white font-medium">
+                                      {progressPercentage}%
+                                    </span>
+                                  </div>
+                                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                                    <div
+                                      className="bg-green-600 h-1.5 rounded-full transition-all duration-300"
+                                      style={{
+                                        width: `${progressPercentage}%`,
+                                      }}
+                                    ></div>
+                                  </div>
+                                  <div className="flex justify-between text-xs text-gray-600 dark:text-gray-400 mt-1">
+                                    <span>
+                                      Terkumpul: {formatCurrency(currentAmount)}
+                                    </span>
+                                    <span>
+                                      Donatur: {program._count.donations}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="flex gap-2">
+                                <Button
+                                  size="sm"
+                                  className="text-xs px-3 py-1 h-auto bg-green-500 hover:bg-green-600"
+                                  onClick={e => {
+                                    e.stopPropagation();
+                                    handleProgramSelect(program.id);
+                                  }}
+                                >
+                                  <Eye className="w-3 h-3 mr-1" />
+                                  Review
+                                </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })
+                  )}
                 </div>
               </TabsContent>
             </Tabs>
           </div>
         </div>
       </div>
+
+      {/* Program Confirmation Drawer */}
+      {selectedProgramId && (
+        <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+          <DrawerContent>
+            <div className="mx-auto w-full max-w-md h-[80vh] flex flex-col overflow-y-auto">
+              <DrawerHeader className="flex-shrink-0">
+                <DrawerTitle>Review Program</DrawerTitle>
+                <DrawerDescription>
+                  Tinjau detail program sebelum menyetujui atau menolak
+                </DrawerDescription>
+              </DrawerHeader>
+              <div className="flex-1 px-4 pb-4">
+                <ProgramConfirmationDrawer
+                  programId={selectedProgramId}
+                  isOpen={isDrawerOpen}
+                  onClose={handleDrawerClose}
+                  onApprovalChange={handleApprovalChange}
+                />
+              </div>
+              <DrawerFooter className="flex-shrink-0">
+                <DrawerClose asChild>
+                  <Button variant="outline">Tutup</Button>
+                </DrawerClose>
+              </DrawerFooter>
+            </div>
+          </DrawerContent>
+        </Drawer>
+      )}
     </div>
   );
 }

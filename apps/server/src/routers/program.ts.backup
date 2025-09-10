@@ -150,6 +150,21 @@ export const programRouter = router({
       try {
         const program = await prisma.program.findUnique({
           where: { id: input.id },
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            targetAmount: true,
+            category: true,
+            status: true,
+            programType: true,
+            contact: true,
+            details: true,
+            bannerImage: true,
+            createdAt: true,
+            updatedAt: true,
+            createdBy: true,
+          },
           include: {
             programPeriods: {
               select: {

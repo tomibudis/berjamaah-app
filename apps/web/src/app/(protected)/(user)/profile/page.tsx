@@ -1,4 +1,5 @@
 'use client';
+
 import { authClient } from '@/lib/auth-client';
 import { useQuery } from '@tanstack/react-query';
 import { trpc } from '@/utils/trpc';
@@ -6,19 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import {
-  User,
-  Mail,
-  Calendar,
-  Heart,
-  Settings,
-  LogOut,
-  Edit3,
-  Shield,
-  CreditCard,
-  History,
-  Bell,
-} from 'lucide-react';
+import { User, Mail, Calendar, LogOut, Shield } from 'lucide-react';
 import { formatCurrency } from '@/lib/currency-utils';
 
 export default function ProfilePage() {
@@ -46,35 +35,8 @@ export default function ProfilePage() {
 
   // Mock user data - replace with actual API call
   const userStats = {
-    totalDonations: 5,
-    totalAmount: 2500000,
-    favoriteCategory: 'Pendidikan',
     memberSince: '2024-01-15',
   };
-
-  const recentDonations = [
-    {
-      id: '1',
-      programTitle: 'Bantu Pendidikan Anak',
-      amount: 500000,
-      date: '2024-01-20',
-      status: 'confirmed',
-    },
-    {
-      id: '2',
-      programTitle: 'Bantuan Makanan untuk Lansia',
-      amount: 300000,
-      date: '2024-01-18',
-      status: 'confirmed',
-    },
-    {
-      id: '3',
-      programTitle: 'Renovasi Masjid',
-      amount: 1000000,
-      date: '2024-01-15',
-      status: 'confirmed',
-    },
-  ];
 
   const handleSignOut = async () => {
     try {

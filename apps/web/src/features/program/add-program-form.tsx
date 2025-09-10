@@ -92,26 +92,74 @@ const addProgramSchema = z
   .refine(
     data => {
       if (data.programType === 'one_time') {
-        return data.startDate && data.endDate;
+        return data.startDate && data.startDate.trim() !== '';
       }
       return true;
     },
     {
-      message:
-        'Tanggal mulai dan selesai harus diisi untuk program sekali jalan.',
+      message: 'Tanggal mulai harus diisi untuk program sekali jalan.',
       path: ['startDate'],
     }
   )
   .refine(
     data => {
-      if (data.programType === 'one_time' && data.startDate && data.endDate) {
-        return new Date(data.startDate) < new Date(data.endDate);
+      if (data.programType === 'one_time') {
+        return data.endDate && data.endDate.trim() !== '';
       }
       return true;
     },
     {
-      message: 'Tanggal selesai harus setelah tanggal mulai.',
+      message: 'Tanggal selesai harus diisi untuk program sekali jalan.',
       path: ['endDate'],
+    }
+  )
+  .refine(
+    data => {
+      if (data.programType === 'one_time' && data.startDate && data.endDate) {
+        const startDate = new Date(data.startDate);
+        const endDate = new Date(data.endDate);
+
+        // If dates are the same, check if end time is after start time
+        if (startDate.getTime() === endDate.getTime()) {
+          const startTime = data.startTime || '00:00';
+          const endTime = data.endTime || '23:59';
+          return endTime > startTime;
+        }
+
+        // If dates are different, end date must be after start date
+        return startDate < endDate;
+      }
+      return true;
+    },
+    {
+      message:
+        'Tanggal selesai harus setelah tanggal mulai, atau waktu selesai harus setelah waktu mulai jika tanggal sama.',
+      path: ['endDate'],
+    }
+  )
+  .refine(
+    data => {
+      if (
+        data.programType === 'one_time' &&
+        data.startDate &&
+        data.endDate &&
+        data.startTime &&
+        data.endTime
+      ) {
+        const startDate = new Date(data.startDate);
+        const endDate = new Date(data.endDate);
+
+        // If dates are the same, check if end time is after start time
+        if (startDate.getTime() === endDate.getTime()) {
+          return data.endTime > data.startTime;
+        }
+      }
+      return true;
+    },
+    {
+      message:
+        'Waktu selesai harus setelah waktu mulai untuk tanggal yang sama.',
+      path: ['endTime'],
     }
   )
   .refine(
@@ -126,9 +174,31 @@ const addProgramSchema = z
         'Minimal satu tanggal dan waktu harus dipilih untuk program tanggal terpilih.',
       path: ['selectedDateTimes'],
     }
+  )
+  .refine(
+    data => {
+      if (data.programType === 'selected_date' && data.selectedDateTimes) {
+        // Check that all selected date times have valid time ranges
+        return data.selectedDateTimes.every(dateTime => {
+          if (dateTime.startTime === dateTime.endTime) {
+            return false; // Start and end time cannot be the same
+          }
+          return true;
+        });
+      }
+      return true;
+    },
+    {
+      message:
+        'Waktu selesai harus berbeda dari waktu mulai untuk setiap tanggal.',
+      path: ['selectedDateTimes'],
+    }
   );
 
 export type AddProgramFormValues = z.infer<typeof addProgramSchema>;
+
+const DEFAULT_START_TIME = '00:00';
+const DEFAULT_END_TIME = '23:59';
 
 export default function AddProgramForm() {
   const router = useRouter();
@@ -136,8 +206,8 @@ export default function AddProgramForm() {
   const [showNewCategoryInput, setShowNewCategoryInput] = React.useState(false);
   const [newStartDate, setNewStartDate] = React.useState('');
   const [newEndDate, setNewEndDate] = React.useState('');
-  const [newStartTime, setNewStartTime] = React.useState('');
-  const [newEndTime, setNewEndTime] = React.useState('');
+  const [newStartTime, setNewStartTime] = React.useState(DEFAULT_START_TIME);
+  const [newEndTime, setNewEndTime] = React.useState(DEFAULT_END_TIME);
 
   const form = useForm<AddProgramFormValues>({
     resolver: zodResolver(addProgramSchema),
@@ -148,9 +218,9 @@ export default function AddProgramForm() {
       category: '',
       programType: 'one_time',
       startDate: '',
-      startTime: '00:00',
+      startTime: DEFAULT_START_TIME,
       endDate: '',
-      endTime: '00:00',
+      endTime: DEFAULT_END_TIME,
       recurringFrequency: '',
       recurringDay: '',
       recurringDurationDays: '',
@@ -167,71 +237,71 @@ export default function AddProgramForm() {
 
   const onSubmitForm = async (formValues: AddProgramFormValues) => {
     try {
-      // Transform form data to match tRPC schema
-      const programData = {
+      const baseProgramData = {
         title: formValues.title,
         description: formValues.description,
         targetAmount: Number(formValues.targetAmount),
         category: formValues.category,
-        programType: formValues.programType,
-        status: 'draft' as const,
-        // Handle initial period based on program type
-        initialPeriod: (() => {
-          if (
-            formValues.programType === 'one_time' &&
-            formValues.startDate &&
-            formValues.endDate
-          ) {
-            return {
-              startDate: new Date(
-                `${formValues.startDate}T${formValues.startTime || '00:00'}`
-              ),
-              endDate: new Date(
-                `${formValues.endDate}T${formValues.endTime || '23:59'}`
-              ),
-            };
-          }
-
-          if (formValues.programType === 'multiple') {
-            return {
-              startDate: new Date(), // Will be set when first activated
-              endDate: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day from now
-              recurringFrequency: formValues.recurringFrequency as
-                | 'weekly'
-                | 'monthly'
-                | 'quarterly'
-                | 'yearly'
-                | undefined,
-              recurringDay: formValues.recurringDay
-                ? Number(formValues.recurringDay)
-                : undefined,
-              recurringDurationDays: formValues.recurringDurationDays
-                ? Number(formValues.recurringDurationDays)
-                : undefined,
-              totalCycles: formValues.totalCycles
-                ? Number(formValues.totalCycles)
-                : undefined,
-            };
-          }
-
-          if (
-            formValues.programType === 'selected_date' &&
-            formValues.selectedDateTimes &&
-            formValues.selectedDateTimes.length > 0
-          ) {
-            // For selected date programs, we'll create the first period with the first selected date
-            const firstDate = formValues.selectedDateTimes[0];
-            return {
-              startDate: new Date(`${firstDate.date}T${firstDate.startTime}`),
-              endDate: new Date(`${firstDate.date}T${firstDate.endTime}`),
-            };
-          }
-
-          return undefined;
-        })(),
       };
 
-      await trpcClient.program.create.mutate(programData);
+      // Use the appropriate tRPC function based on program type
+      if (formValues.programType === 'one_time') {
+        if (!formValues.startDate || !formValues.endDate) {
+          throw new Error(
+            'Start date and end date are required for one-time programs'
+          );
+        }
+
+        await trpcClient.program.createOneTime.mutate({
+          ...baseProgramData,
+          startDate: new Date(
+            `${formValues.startDate}T${formValues.startTime || '00:00'}`
+          ),
+          endDate: new Date(
+            `${formValues.endDate}T${formValues.endTime || '23:59'}`
+          ),
+        });
+      } else if (formValues.programType === 'multiple') {
+        if (
+          !formValues.recurringFrequency ||
+          !formValues.recurringDay ||
+          !formValues.recurringDurationDays
+        ) {
+          throw new Error(
+            'Recurring settings are required for multiple programs'
+          );
+        }
+
+        await trpcClient.program.createRecurring.mutate({
+          ...baseProgramData,
+          recurringFrequency: formValues.recurringFrequency as
+            | 'weekly'
+            | 'monthly'
+            | 'quarterly'
+            | 'yearly',
+          recurringDay: Number(formValues.recurringDay),
+          recurringDurationDays: Number(formValues.recurringDurationDays),
+          totalCycles: formValues.totalCycles
+            ? Number(formValues.totalCycles)
+            : undefined,
+        });
+      } else if (formValues.programType === 'selected_date') {
+        if (
+          !formValues.selectedDateTimes ||
+          formValues.selectedDateTimes.length === 0
+        ) {
+          throw new Error(
+            'At least one date and time must be selected for selected date programs'
+          );
+        }
+
+        await trpcClient.program.createSelectedDates.mutate({
+          ...baseProgramData,
+          selectedDateTimes: formValues.selectedDateTimes,
+        });
+      } else {
+        throw new Error('Invalid program type');
+      }
 
       // Invalidate program queries to refresh the list
       await queryClient.invalidateQueries({
@@ -539,6 +609,7 @@ export default function AddProgramForm() {
                                   <FormControl>
                                     <Button
                                       variant="outline"
+                                      size="lg"
                                       className={cn(
                                         'w-full pl-3 text-left font-normal text-sm',
                                         !field.value && 'text-muted-foreground'
@@ -597,7 +668,7 @@ export default function AddProgramForm() {
                                 <Input
                                   type="time"
                                   {...field}
-                                  className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                                  className="h-10 bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
                                 />
                               </FormControl>
                               <FormMessage />
@@ -621,6 +692,7 @@ export default function AddProgramForm() {
                                   <FormControl>
                                     <Button
                                       variant="outline"
+                                      size="lg"
                                       className={cn(
                                         'w-full pl-3 text-left font-normal text-sm',
                                         !field.value && 'text-muted-foreground'
@@ -688,7 +760,7 @@ export default function AddProgramForm() {
                                 <Input
                                   type="time"
                                   {...field}
-                                  className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                                  className="h-10 bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
                                 />
                               </FormControl>
                               <FormMessage />
@@ -851,6 +923,7 @@ export default function AddProgramForm() {
                                       <PopoverTrigger asChild>
                                         <Button
                                           variant="outline"
+                                          size="lg"
                                           className={cn(
                                             'w-full pl-3 text-left font-normal text-sm',
                                             !newStartDate &&
@@ -900,7 +973,7 @@ export default function AddProgramForm() {
                                       onChange={e =>
                                         setNewStartTime(e.target.value)
                                       }
-                                      className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                                      className="h-10 bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
                                     />
                                   </div>
                                 </div>
@@ -917,6 +990,7 @@ export default function AddProgramForm() {
                                       <PopoverTrigger asChild>
                                         <Button
                                           variant="outline"
+                                          size="lg"
                                           className={cn(
                                             'w-full pl-3 text-left font-normal text-sm',
                                             !newEndDate &&
@@ -973,7 +1047,7 @@ export default function AddProgramForm() {
                                       onChange={e =>
                                         setNewEndTime(e.target.value)
                                       }
-                                      className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                                      className="h-10 bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
                                     />
                                   </div>
                                 </div>
@@ -992,6 +1066,17 @@ export default function AddProgramForm() {
                                       newStartTime &&
                                       newEndTime
                                     ) {
+                                      // Validate that end time is after start time for same date
+                                      if (
+                                        newStartDate === newEndDate &&
+                                        newEndTime <= newStartTime
+                                      ) {
+                                        toast.error(
+                                          'Waktu selesai harus setelah waktu mulai untuk tanggal yang sama'
+                                        );
+                                        return;
+                                      }
+
                                       const newDateTime = {
                                         date: newStartDate,
                                         startTime: newStartTime,
@@ -1013,8 +1098,8 @@ export default function AddProgramForm() {
                                         ]);
                                         setNewStartDate('');
                                         setNewEndDate('');
-                                        setNewStartTime('');
-                                        setNewEndTime('');
+                                        setNewStartTime(DEFAULT_START_TIME);
+                                        setNewEndTime(DEFAULT_END_TIME);
                                       }
                                     }
                                   }}

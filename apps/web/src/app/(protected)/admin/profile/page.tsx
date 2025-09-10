@@ -25,30 +25,6 @@ export default function ProfilePage() {
             <AdminProfileForm />
           </div>
 
-          {/* Security Settings */}
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              Pengaturan Keamanan
-            </h2>
-
-            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 shadow-sm">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-medium text-gray-900 dark:text-white text-sm">
-                      Ubah Kata Sandi
-                    </h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Perbarui kata sandi Anda untuk menjaga keamanan akun
-                    </p>
-                  </div>
-                  <button className="text-green-600 hover:text-green-700 font-medium text-sm">
-                    Ubah
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
           <div className="flex items-center justify-between">
             <Button size="sm" variant="destructive" className="w-full">
               Keluar

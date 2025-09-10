@@ -1167,6 +1167,11 @@ export const ProgramScalarFieldEnum = {
   contact: 'contact',
   details: 'details',
   createdBy: 'createdBy',
+  approvedBy: 'approvedBy',
+  approvedAt: 'approvedAt',
+  rejectedBy: 'rejectedBy',
+  rejectedAt: 'rejectedAt',
+  rejectionReason: 'rejectionReason',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

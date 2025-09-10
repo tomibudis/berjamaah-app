@@ -272,6 +272,8 @@ export type UserWhereInput = {
   sessions?: Prisma.SessionListRelationFilter
   accounts?: Prisma.AccountListRelationFilter
   verifiedDonations?: Prisma.DonationListRelationFilter
+  approvedPrograms?: Prisma.ProgramListRelationFilter
+  rejectedPrograms?: Prisma.ProgramListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -294,6 +296,8 @@ export type UserOrderByWithRelationInput = {
   sessions?: Prisma.SessionOrderByRelationAggregateInput
   accounts?: Prisma.AccountOrderByRelationAggregateInput
   verifiedDonations?: Prisma.DonationOrderByRelationAggregateInput
+  approvedPrograms?: Prisma.ProgramOrderByRelationAggregateInput
+  rejectedPrograms?: Prisma.ProgramOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -319,6 +323,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   sessions?: Prisma.SessionListRelationFilter
   accounts?: Prisma.AccountListRelationFilter
   verifiedDonations?: Prisma.DonationListRelationFilter
+  approvedPrograms?: Prisma.ProgramListRelationFilter
+  rejectedPrograms?: Prisma.ProgramListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -385,6 +391,8 @@ export type UserCreateInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   verifiedDonations?: Prisma.DonationCreateNestedManyWithoutVerifiedByAdminInput
+  approvedPrograms?: Prisma.ProgramCreateNestedManyWithoutApprovedByUserInput
+  rejectedPrograms?: Prisma.ProgramCreateNestedManyWithoutRejectedByUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -407,6 +415,8 @@ export type UserUncheckedCreateInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   verifiedDonations?: Prisma.DonationUncheckedCreateNestedManyWithoutVerifiedByAdminInput
+  approvedPrograms?: Prisma.ProgramUncheckedCreateNestedManyWithoutApprovedByUserInput
+  rejectedPrograms?: Prisma.ProgramUncheckedCreateNestedManyWithoutRejectedByUserInput
 }
 
 export type UserUpdateInput = {
@@ -429,6 +439,8 @@ export type UserUpdateInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   verifiedDonations?: Prisma.DonationUpdateManyWithoutVerifiedByAdminNestedInput
+  approvedPrograms?: Prisma.ProgramUpdateManyWithoutApprovedByUserNestedInput
+  rejectedPrograms?: Prisma.ProgramUpdateManyWithoutRejectedByUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -451,6 +463,8 @@ export type UserUncheckedUpdateInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   verifiedDonations?: Prisma.DonationUncheckedUpdateManyWithoutVerifiedByAdminNestedInput
+  approvedPrograms?: Prisma.ProgramUncheckedUpdateManyWithoutApprovedByUserNestedInput
+  rejectedPrograms?: Prisma.ProgramUncheckedUpdateManyWithoutRejectedByUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -641,6 +655,38 @@ export type UserUpdateOneWithoutVerifiedDonationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutVerifiedDonationsInput, Prisma.UserUpdateWithoutVerifiedDonationsInput>, Prisma.UserUncheckedUpdateWithoutVerifiedDonationsInput>
 }
 
+export type UserCreateNestedOneWithoutApprovedProgramsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutApprovedProgramsInput, Prisma.UserUncheckedCreateWithoutApprovedProgramsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutApprovedProgramsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserCreateNestedOneWithoutRejectedProgramsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutRejectedProgramsInput, Prisma.UserUncheckedCreateWithoutRejectedProgramsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRejectedProgramsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutApprovedProgramsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutApprovedProgramsInput, Prisma.UserUncheckedCreateWithoutApprovedProgramsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutApprovedProgramsInput
+  upsert?: Prisma.UserUpsertWithoutApprovedProgramsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutApprovedProgramsInput, Prisma.UserUpdateWithoutApprovedProgramsInput>, Prisma.UserUncheckedUpdateWithoutApprovedProgramsInput>
+}
+
+export type UserUpdateOneWithoutRejectedProgramsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutRejectedProgramsInput, Prisma.UserUncheckedCreateWithoutRejectedProgramsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRejectedProgramsInput
+  upsert?: Prisma.UserUpsertWithoutRejectedProgramsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutRejectedProgramsInput, Prisma.UserUpdateWithoutRejectedProgramsInput>, Prisma.UserUncheckedUpdateWithoutRejectedProgramsInput>
+}
+
 export type UserCreateWithoutSessionsInput = {
   id: string
   name: string
@@ -660,6 +706,8 @@ export type UserCreateWithoutSessionsInput = {
   bio?: string | null
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   verifiedDonations?: Prisma.DonationCreateNestedManyWithoutVerifiedByAdminInput
+  approvedPrograms?: Prisma.ProgramCreateNestedManyWithoutApprovedByUserInput
+  rejectedPrograms?: Prisma.ProgramCreateNestedManyWithoutRejectedByUserInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -681,6 +729,8 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   bio?: string | null
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   verifiedDonations?: Prisma.DonationUncheckedCreateNestedManyWithoutVerifiedByAdminInput
+  approvedPrograms?: Prisma.ProgramUncheckedCreateNestedManyWithoutApprovedByUserInput
+  rejectedPrograms?: Prisma.ProgramUncheckedCreateNestedManyWithoutRejectedByUserInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -718,6 +768,8 @@ export type UserUpdateWithoutSessionsInput = {
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   verifiedDonations?: Prisma.DonationUpdateManyWithoutVerifiedByAdminNestedInput
+  approvedPrograms?: Prisma.ProgramUpdateManyWithoutApprovedByUserNestedInput
+  rejectedPrograms?: Prisma.ProgramUpdateManyWithoutRejectedByUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -739,6 +791,8 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   verifiedDonations?: Prisma.DonationUncheckedUpdateManyWithoutVerifiedByAdminNestedInput
+  approvedPrograms?: Prisma.ProgramUncheckedUpdateManyWithoutApprovedByUserNestedInput
+  rejectedPrograms?: Prisma.ProgramUncheckedUpdateManyWithoutRejectedByUserNestedInput
 }
 
 export type UserCreateWithoutAccountsInput = {
@@ -760,6 +814,8 @@ export type UserCreateWithoutAccountsInput = {
   bio?: string | null
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   verifiedDonations?: Prisma.DonationCreateNestedManyWithoutVerifiedByAdminInput
+  approvedPrograms?: Prisma.ProgramCreateNestedManyWithoutApprovedByUserInput
+  rejectedPrograms?: Prisma.ProgramCreateNestedManyWithoutRejectedByUserInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -781,6 +837,8 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   bio?: string | null
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   verifiedDonations?: Prisma.DonationUncheckedCreateNestedManyWithoutVerifiedByAdminInput
+  approvedPrograms?: Prisma.ProgramUncheckedCreateNestedManyWithoutApprovedByUserInput
+  rejectedPrograms?: Prisma.ProgramUncheckedCreateNestedManyWithoutRejectedByUserInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -818,6 +876,8 @@ export type UserUpdateWithoutAccountsInput = {
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   verifiedDonations?: Prisma.DonationUpdateManyWithoutVerifiedByAdminNestedInput
+  approvedPrograms?: Prisma.ProgramUpdateManyWithoutApprovedByUserNestedInput
+  rejectedPrograms?: Prisma.ProgramUpdateManyWithoutRejectedByUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -839,6 +899,8 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   verifiedDonations?: Prisma.DonationUncheckedUpdateManyWithoutVerifiedByAdminNestedInput
+  approvedPrograms?: Prisma.ProgramUncheckedUpdateManyWithoutApprovedByUserNestedInput
+  rejectedPrograms?: Prisma.ProgramUncheckedUpdateManyWithoutRejectedByUserNestedInput
 }
 
 export type UserCreateWithoutVerifiedDonationsInput = {
@@ -860,6 +922,8 @@ export type UserCreateWithoutVerifiedDonationsInput = {
   bio?: string | null
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  approvedPrograms?: Prisma.ProgramCreateNestedManyWithoutApprovedByUserInput
+  rejectedPrograms?: Prisma.ProgramCreateNestedManyWithoutRejectedByUserInput
 }
 
 export type UserUncheckedCreateWithoutVerifiedDonationsInput = {
@@ -881,6 +945,8 @@ export type UserUncheckedCreateWithoutVerifiedDonationsInput = {
   bio?: string | null
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  approvedPrograms?: Prisma.ProgramUncheckedCreateNestedManyWithoutApprovedByUserInput
+  rejectedPrograms?: Prisma.ProgramUncheckedCreateNestedManyWithoutRejectedByUserInput
 }
 
 export type UserCreateOrConnectWithoutVerifiedDonationsInput = {
@@ -918,6 +984,8 @@ export type UserUpdateWithoutVerifiedDonationsInput = {
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  approvedPrograms?: Prisma.ProgramUpdateManyWithoutApprovedByUserNestedInput
+  rejectedPrograms?: Prisma.ProgramUpdateManyWithoutRejectedByUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutVerifiedDonationsInput = {
@@ -939,6 +1007,224 @@ export type UserUncheckedUpdateWithoutVerifiedDonationsInput = {
   bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  approvedPrograms?: Prisma.ProgramUncheckedUpdateManyWithoutApprovedByUserNestedInput
+  rejectedPrograms?: Prisma.ProgramUncheckedUpdateManyWithoutRejectedByUserNestedInput
+}
+
+export type UserCreateWithoutApprovedProgramsInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified: boolean
+  image?: string | null
+  role?: string
+  banned?: boolean
+  banReason?: string | null
+  banExpires?: Date | string | null
+  createdAt: Date | string
+  updatedAt: Date | string
+  fullName?: string | null
+  firstName?: string | null
+  lastName?: string | null
+  phone?: string | null
+  bio?: string | null
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  verifiedDonations?: Prisma.DonationCreateNestedManyWithoutVerifiedByAdminInput
+  rejectedPrograms?: Prisma.ProgramCreateNestedManyWithoutRejectedByUserInput
+}
+
+export type UserUncheckedCreateWithoutApprovedProgramsInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified: boolean
+  image?: string | null
+  role?: string
+  banned?: boolean
+  banReason?: string | null
+  banExpires?: Date | string | null
+  createdAt: Date | string
+  updatedAt: Date | string
+  fullName?: string | null
+  firstName?: string | null
+  lastName?: string | null
+  phone?: string | null
+  bio?: string | null
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  verifiedDonations?: Prisma.DonationUncheckedCreateNestedManyWithoutVerifiedByAdminInput
+  rejectedPrograms?: Prisma.ProgramUncheckedCreateNestedManyWithoutRejectedByUserInput
+}
+
+export type UserCreateOrConnectWithoutApprovedProgramsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutApprovedProgramsInput, Prisma.UserUncheckedCreateWithoutApprovedProgramsInput>
+}
+
+export type UserCreateWithoutRejectedProgramsInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified: boolean
+  image?: string | null
+  role?: string
+  banned?: boolean
+  banReason?: string | null
+  banExpires?: Date | string | null
+  createdAt: Date | string
+  updatedAt: Date | string
+  fullName?: string | null
+  firstName?: string | null
+  lastName?: string | null
+  phone?: string | null
+  bio?: string | null
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  verifiedDonations?: Prisma.DonationCreateNestedManyWithoutVerifiedByAdminInput
+  approvedPrograms?: Prisma.ProgramCreateNestedManyWithoutApprovedByUserInput
+}
+
+export type UserUncheckedCreateWithoutRejectedProgramsInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified: boolean
+  image?: string | null
+  role?: string
+  banned?: boolean
+  banReason?: string | null
+  banExpires?: Date | string | null
+  createdAt: Date | string
+  updatedAt: Date | string
+  fullName?: string | null
+  firstName?: string | null
+  lastName?: string | null
+  phone?: string | null
+  bio?: string | null
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  verifiedDonations?: Prisma.DonationUncheckedCreateNestedManyWithoutVerifiedByAdminInput
+  approvedPrograms?: Prisma.ProgramUncheckedCreateNestedManyWithoutApprovedByUserInput
+}
+
+export type UserCreateOrConnectWithoutRejectedProgramsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutRejectedProgramsInput, Prisma.UserUncheckedCreateWithoutRejectedProgramsInput>
+}
+
+export type UserUpsertWithoutApprovedProgramsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutApprovedProgramsInput, Prisma.UserUncheckedUpdateWithoutApprovedProgramsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutApprovedProgramsInput, Prisma.UserUncheckedCreateWithoutApprovedProgramsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutApprovedProgramsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutApprovedProgramsInput, Prisma.UserUncheckedUpdateWithoutApprovedProgramsInput>
+}
+
+export type UserUpdateWithoutApprovedProgramsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  banned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  verifiedDonations?: Prisma.DonationUpdateManyWithoutVerifiedByAdminNestedInput
+  rejectedPrograms?: Prisma.ProgramUpdateManyWithoutRejectedByUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutApprovedProgramsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  banned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  verifiedDonations?: Prisma.DonationUncheckedUpdateManyWithoutVerifiedByAdminNestedInput
+  rejectedPrograms?: Prisma.ProgramUncheckedUpdateManyWithoutRejectedByUserNestedInput
+}
+
+export type UserUpsertWithoutRejectedProgramsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutRejectedProgramsInput, Prisma.UserUncheckedUpdateWithoutRejectedProgramsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutRejectedProgramsInput, Prisma.UserUncheckedCreateWithoutRejectedProgramsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutRejectedProgramsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutRejectedProgramsInput, Prisma.UserUncheckedUpdateWithoutRejectedProgramsInput>
+}
+
+export type UserUpdateWithoutRejectedProgramsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  banned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  verifiedDonations?: Prisma.DonationUpdateManyWithoutVerifiedByAdminNestedInput
+  approvedPrograms?: Prisma.ProgramUpdateManyWithoutApprovedByUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutRejectedProgramsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  banned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  verifiedDonations?: Prisma.DonationUncheckedUpdateManyWithoutVerifiedByAdminNestedInput
+  approvedPrograms?: Prisma.ProgramUncheckedUpdateManyWithoutApprovedByUserNestedInput
 }
 
 
@@ -950,12 +1236,16 @@ export type UserCountOutputType = {
   sessions: number
   accounts: number
   verifiedDonations: number
+  approvedPrograms: number
+  rejectedPrograms: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   sessions?: boolean | UserCountOutputTypeCountSessionsArgs
   accounts?: boolean | UserCountOutputTypeCountAccountsArgs
   verifiedDonations?: boolean | UserCountOutputTypeCountVerifiedDonationsArgs
+  approvedPrograms?: boolean | UserCountOutputTypeCountApprovedProgramsArgs
+  rejectedPrograms?: boolean | UserCountOutputTypeCountRejectedProgramsArgs
 }
 
 /**
@@ -989,6 +1279,20 @@ export type UserCountOutputTypeCountVerifiedDonationsArgs<ExtArgs extends runtim
   where?: Prisma.DonationWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountApprovedProgramsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProgramWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountRejectedProgramsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProgramWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1010,6 +1314,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   verifiedDonations?: boolean | Prisma.User$verifiedDonationsArgs<ExtArgs>
+  approvedPrograms?: boolean | Prisma.User$approvedProgramsArgs<ExtArgs>
+  rejectedPrograms?: boolean | Prisma.User$rejectedProgramsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1075,6 +1381,8 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   verifiedDonations?: boolean | Prisma.User$verifiedDonationsArgs<ExtArgs>
+  approvedPrograms?: boolean | Prisma.User$approvedProgramsArgs<ExtArgs>
+  rejectedPrograms?: boolean | Prisma.User$rejectedProgramsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1086,6 +1394,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     sessions: Prisma.$SessionPayload<ExtArgs>[]
     accounts: Prisma.$AccountPayload<ExtArgs>[]
     verifiedDonations: Prisma.$DonationPayload<ExtArgs>[]
+    approvedPrograms: Prisma.$ProgramPayload<ExtArgs>[]
+    rejectedPrograms: Prisma.$ProgramPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1501,6 +1811,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   sessions<T extends Prisma.User$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   accounts<T extends Prisma.User$accountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   verifiedDonations<T extends Prisma.User$verifiedDonationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$verifiedDonationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DonationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  approvedPrograms<T extends Prisma.User$approvedProgramsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$approvedProgramsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProgramPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  rejectedPrograms<T extends Prisma.User$rejectedProgramsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$rejectedProgramsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProgramPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2003,6 +2315,54 @@ export type User$verifiedDonationsArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   distinct?: Prisma.DonationScalarFieldEnum | Prisma.DonationScalarFieldEnum[]
+}
+
+/**
+ * User.approvedPrograms
+ */
+export type User$approvedProgramsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Program
+   */
+  select?: Prisma.ProgramSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Program
+   */
+  omit?: Prisma.ProgramOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProgramInclude<ExtArgs> | null
+  where?: Prisma.ProgramWhereInput
+  orderBy?: Prisma.ProgramOrderByWithRelationInput | Prisma.ProgramOrderByWithRelationInput[]
+  cursor?: Prisma.ProgramWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProgramScalarFieldEnum | Prisma.ProgramScalarFieldEnum[]
+}
+
+/**
+ * User.rejectedPrograms
+ */
+export type User$rejectedProgramsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Program
+   */
+  select?: Prisma.ProgramSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Program
+   */
+  omit?: Prisma.ProgramOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProgramInclude<ExtArgs> | null
+  where?: Prisma.ProgramWhereInput
+  orderBy?: Prisma.ProgramOrderByWithRelationInput | Prisma.ProgramOrderByWithRelationInput[]
+  cursor?: Prisma.ProgramWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProgramScalarFieldEnum | Prisma.ProgramScalarFieldEnum[]
 }
 
 /**

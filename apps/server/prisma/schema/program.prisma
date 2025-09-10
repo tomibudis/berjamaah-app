@@ -8,17 +8,24 @@ model Program {
   targetAmount Decimal  @map("target_amount") @db.Decimal(15, 2)
   bannerImage  String?  @map("banner_image")
   category     String?
-  status       String   @default("draft") // 'draft', 'pending', 'active', 'paused', 'ended'
+  status       String   @default("draft") // 'draft', 'pending', 'active', 'paused', 'ended', 'rejected'
   programType  String   @default("one_time") @map("program_type") // 'one_time', 'multiple', 'selected_date'
   contact      String?
   details      String?  // Additional program details
   createdBy    String   @map("created_by")
+  approvedBy   String?  @map("approved_by") // Admin who approved the program
+  approvedAt   DateTime? @map("approved_at") // When the program was approved
+  rejectedBy   String?  @map("rejected_by") // Admin who rejected the program
+  rejectedAt   DateTime? @map("rejected_at") // When the program was rejected
+  rejectionReason String? @map("rejection_reason") // Reason for rejection
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
   // Relations
   programPeriods ProgramPeriod[]
   donations      Donation[]
+  approvedByUser User? @relation("ApprovedPrograms", fields: [approvedBy], references: [id])
+  rejectedByUser User? @relation("RejectedPrograms", fields: [rejectedBy], references: [id])
 
   @@map("programs")
 }

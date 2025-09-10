@@ -45,6 +45,11 @@ export type ProgramMinAggregateOutputType = {
   contact: string | null
   details: string | null
   createdBy: string | null
+  approvedBy: string | null
+  approvedAt: Date | null
+  rejectedBy: string | null
+  rejectedAt: Date | null
+  rejectionReason: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -61,6 +66,11 @@ export type ProgramMaxAggregateOutputType = {
   contact: string | null
   details: string | null
   createdBy: string | null
+  approvedBy: string | null
+  approvedAt: Date | null
+  rejectedBy: string | null
+  rejectedAt: Date | null
+  rejectionReason: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -77,6 +87,11 @@ export type ProgramCountAggregateOutputType = {
   contact: number
   details: number
   createdBy: number
+  approvedBy: number
+  approvedAt: number
+  rejectedBy: number
+  rejectedAt: number
+  rejectionReason: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -103,6 +118,11 @@ export type ProgramMinAggregateInputType = {
   contact?: true
   details?: true
   createdBy?: true
+  approvedBy?: true
+  approvedAt?: true
+  rejectedBy?: true
+  rejectedAt?: true
+  rejectionReason?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -119,6 +139,11 @@ export type ProgramMaxAggregateInputType = {
   contact?: true
   details?: true
   createdBy?: true
+  approvedBy?: true
+  approvedAt?: true
+  rejectedBy?: true
+  rejectedAt?: true
+  rejectionReason?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -135,6 +160,11 @@ export type ProgramCountAggregateInputType = {
   contact?: true
   details?: true
   createdBy?: true
+  approvedBy?: true
+  approvedAt?: true
+  rejectedBy?: true
+  rejectedAt?: true
+  rejectionReason?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -238,6 +268,11 @@ export type ProgramGroupByOutputType = {
   contact: string | null
   details: string | null
   createdBy: string
+  approvedBy: string | null
+  approvedAt: Date | null
+  rejectedBy: string | null
+  rejectedAt: Date | null
+  rejectionReason: string | null
   createdAt: Date
   updatedAt: Date
   _count: ProgramCountAggregateOutputType | null
@@ -277,10 +312,17 @@ export type ProgramWhereInput = {
   contact?: Prisma.StringNullableFilter<"Program"> | string | null
   details?: Prisma.StringNullableFilter<"Program"> | string | null
   createdBy?: Prisma.StringFilter<"Program"> | string
+  approvedBy?: Prisma.StringNullableFilter<"Program"> | string | null
+  approvedAt?: Prisma.DateTimeNullableFilter<"Program"> | Date | string | null
+  rejectedBy?: Prisma.StringNullableFilter<"Program"> | string | null
+  rejectedAt?: Prisma.DateTimeNullableFilter<"Program"> | Date | string | null
+  rejectionReason?: Prisma.StringNullableFilter<"Program"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Program"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Program"> | Date | string
   programPeriods?: Prisma.ProgramPeriodListRelationFilter
   donations?: Prisma.DonationListRelationFilter
+  approvedByUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  rejectedByUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }
 
 export type ProgramOrderByWithRelationInput = {
@@ -295,10 +337,17 @@ export type ProgramOrderByWithRelationInput = {
   contact?: Prisma.SortOrderInput | Prisma.SortOrder
   details?: Prisma.SortOrderInput | Prisma.SortOrder
   createdBy?: Prisma.SortOrder
+  approvedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  approvedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  rejectedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  rejectedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   programPeriods?: Prisma.ProgramPeriodOrderByRelationAggregateInput
   donations?: Prisma.DonationOrderByRelationAggregateInput
+  approvedByUser?: Prisma.UserOrderByWithRelationInput
+  rejectedByUser?: Prisma.UserOrderByWithRelationInput
 }
 
 export type ProgramWhereUniqueInput = Prisma.AtLeast<{
@@ -316,10 +365,17 @@ export type ProgramWhereUniqueInput = Prisma.AtLeast<{
   contact?: Prisma.StringNullableFilter<"Program"> | string | null
   details?: Prisma.StringNullableFilter<"Program"> | string | null
   createdBy?: Prisma.StringFilter<"Program"> | string
+  approvedBy?: Prisma.StringNullableFilter<"Program"> | string | null
+  approvedAt?: Prisma.DateTimeNullableFilter<"Program"> | Date | string | null
+  rejectedBy?: Prisma.StringNullableFilter<"Program"> | string | null
+  rejectedAt?: Prisma.DateTimeNullableFilter<"Program"> | Date | string | null
+  rejectionReason?: Prisma.StringNullableFilter<"Program"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Program"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Program"> | Date | string
   programPeriods?: Prisma.ProgramPeriodListRelationFilter
   donations?: Prisma.DonationListRelationFilter
+  approvedByUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  rejectedByUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }, "id">
 
 export type ProgramOrderByWithAggregationInput = {
@@ -334,6 +390,11 @@ export type ProgramOrderByWithAggregationInput = {
   contact?: Prisma.SortOrderInput | Prisma.SortOrder
   details?: Prisma.SortOrderInput | Prisma.SortOrder
   createdBy?: Prisma.SortOrder
+  approvedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  approvedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  rejectedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  rejectedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ProgramCountOrderByAggregateInput
@@ -358,6 +419,11 @@ export type ProgramScalarWhereWithAggregatesInput = {
   contact?: Prisma.StringNullableWithAggregatesFilter<"Program"> | string | null
   details?: Prisma.StringNullableWithAggregatesFilter<"Program"> | string | null
   createdBy?: Prisma.StringWithAggregatesFilter<"Program"> | string
+  approvedBy?: Prisma.StringNullableWithAggregatesFilter<"Program"> | string | null
+  approvedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Program"> | Date | string | null
+  rejectedBy?: Prisma.StringNullableWithAggregatesFilter<"Program"> | string | null
+  rejectedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Program"> | Date | string | null
+  rejectionReason?: Prisma.StringNullableWithAggregatesFilter<"Program"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Program"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Program"> | Date | string
 }
@@ -374,10 +440,15 @@ export type ProgramCreateInput = {
   contact?: string | null
   details?: string | null
   createdBy: string
+  approvedAt?: Date | string | null
+  rejectedAt?: Date | string | null
+  rejectionReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   programPeriods?: Prisma.ProgramPeriodCreateNestedManyWithoutProgramInput
   donations?: Prisma.DonationCreateNestedManyWithoutProgramInput
+  approvedByUser?: Prisma.UserCreateNestedOneWithoutApprovedProgramsInput
+  rejectedByUser?: Prisma.UserCreateNestedOneWithoutRejectedProgramsInput
 }
 
 export type ProgramUncheckedCreateInput = {
@@ -392,6 +463,11 @@ export type ProgramUncheckedCreateInput = {
   contact?: string | null
   details?: string | null
   createdBy: string
+  approvedBy?: string | null
+  approvedAt?: Date | string | null
+  rejectedBy?: string | null
+  rejectedAt?: Date | string | null
+  rejectionReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   programPeriods?: Prisma.ProgramPeriodUncheckedCreateNestedManyWithoutProgramInput
@@ -410,10 +486,15 @@ export type ProgramUpdateInput = {
   contact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   programPeriods?: Prisma.ProgramPeriodUpdateManyWithoutProgramNestedInput
   donations?: Prisma.DonationUpdateManyWithoutProgramNestedInput
+  approvedByUser?: Prisma.UserUpdateOneWithoutApprovedProgramsNestedInput
+  rejectedByUser?: Prisma.UserUpdateOneWithoutRejectedProgramsNestedInput
 }
 
 export type ProgramUncheckedUpdateInput = {
@@ -428,6 +509,11 @@ export type ProgramUncheckedUpdateInput = {
   contact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  approvedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   programPeriods?: Prisma.ProgramPeriodUncheckedUpdateManyWithoutProgramNestedInput
@@ -446,6 +532,11 @@ export type ProgramCreateManyInput = {
   contact?: string | null
   details?: string | null
   createdBy: string
+  approvedBy?: string | null
+  approvedAt?: Date | string | null
+  rejectedBy?: string | null
+  rejectedAt?: Date | string | null
+  rejectionReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -462,6 +553,9 @@ export type ProgramUpdateManyMutationInput = {
   contact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -478,8 +572,23 @@ export type ProgramUncheckedUpdateManyInput = {
   contact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  approvedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ProgramListRelationFilter = {
+  every?: Prisma.ProgramWhereInput
+  some?: Prisma.ProgramWhereInput
+  none?: Prisma.ProgramWhereInput
+}
+
+export type ProgramOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type ProgramScalarRelationFilter = {
@@ -499,6 +608,11 @@ export type ProgramCountOrderByAggregateInput = {
   contact?: Prisma.SortOrder
   details?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
+  approvedBy?: Prisma.SortOrder
+  approvedAt?: Prisma.SortOrder
+  rejectedBy?: Prisma.SortOrder
+  rejectedAt?: Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -519,6 +633,11 @@ export type ProgramMaxOrderByAggregateInput = {
   contact?: Prisma.SortOrder
   details?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
+  approvedBy?: Prisma.SortOrder
+  approvedAt?: Prisma.SortOrder
+  rejectedBy?: Prisma.SortOrder
+  rejectedAt?: Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -535,12 +654,101 @@ export type ProgramMinOrderByAggregateInput = {
   contact?: Prisma.SortOrder
   details?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
+  approvedBy?: Prisma.SortOrder
+  approvedAt?: Prisma.SortOrder
+  rejectedBy?: Prisma.SortOrder
+  rejectedAt?: Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type ProgramSumOrderByAggregateInput = {
   targetAmount?: Prisma.SortOrder
+}
+
+export type ProgramCreateNestedManyWithoutApprovedByUserInput = {
+  create?: Prisma.XOR<Prisma.ProgramCreateWithoutApprovedByUserInput, Prisma.ProgramUncheckedCreateWithoutApprovedByUserInput> | Prisma.ProgramCreateWithoutApprovedByUserInput[] | Prisma.ProgramUncheckedCreateWithoutApprovedByUserInput[]
+  connectOrCreate?: Prisma.ProgramCreateOrConnectWithoutApprovedByUserInput | Prisma.ProgramCreateOrConnectWithoutApprovedByUserInput[]
+  createMany?: Prisma.ProgramCreateManyApprovedByUserInputEnvelope
+  connect?: Prisma.ProgramWhereUniqueInput | Prisma.ProgramWhereUniqueInput[]
+}
+
+export type ProgramCreateNestedManyWithoutRejectedByUserInput = {
+  create?: Prisma.XOR<Prisma.ProgramCreateWithoutRejectedByUserInput, Prisma.ProgramUncheckedCreateWithoutRejectedByUserInput> | Prisma.ProgramCreateWithoutRejectedByUserInput[] | Prisma.ProgramUncheckedCreateWithoutRejectedByUserInput[]
+  connectOrCreate?: Prisma.ProgramCreateOrConnectWithoutRejectedByUserInput | Prisma.ProgramCreateOrConnectWithoutRejectedByUserInput[]
+  createMany?: Prisma.ProgramCreateManyRejectedByUserInputEnvelope
+  connect?: Prisma.ProgramWhereUniqueInput | Prisma.ProgramWhereUniqueInput[]
+}
+
+export type ProgramUncheckedCreateNestedManyWithoutApprovedByUserInput = {
+  create?: Prisma.XOR<Prisma.ProgramCreateWithoutApprovedByUserInput, Prisma.ProgramUncheckedCreateWithoutApprovedByUserInput> | Prisma.ProgramCreateWithoutApprovedByUserInput[] | Prisma.ProgramUncheckedCreateWithoutApprovedByUserInput[]
+  connectOrCreate?: Prisma.ProgramCreateOrConnectWithoutApprovedByUserInput | Prisma.ProgramCreateOrConnectWithoutApprovedByUserInput[]
+  createMany?: Prisma.ProgramCreateManyApprovedByUserInputEnvelope
+  connect?: Prisma.ProgramWhereUniqueInput | Prisma.ProgramWhereUniqueInput[]
+}
+
+export type ProgramUncheckedCreateNestedManyWithoutRejectedByUserInput = {
+  create?: Prisma.XOR<Prisma.ProgramCreateWithoutRejectedByUserInput, Prisma.ProgramUncheckedCreateWithoutRejectedByUserInput> | Prisma.ProgramCreateWithoutRejectedByUserInput[] | Prisma.ProgramUncheckedCreateWithoutRejectedByUserInput[]
+  connectOrCreate?: Prisma.ProgramCreateOrConnectWithoutRejectedByUserInput | Prisma.ProgramCreateOrConnectWithoutRejectedByUserInput[]
+  createMany?: Prisma.ProgramCreateManyRejectedByUserInputEnvelope
+  connect?: Prisma.ProgramWhereUniqueInput | Prisma.ProgramWhereUniqueInput[]
+}
+
+export type ProgramUpdateManyWithoutApprovedByUserNestedInput = {
+  create?: Prisma.XOR<Prisma.ProgramCreateWithoutApprovedByUserInput, Prisma.ProgramUncheckedCreateWithoutApprovedByUserInput> | Prisma.ProgramCreateWithoutApprovedByUserInput[] | Prisma.ProgramUncheckedCreateWithoutApprovedByUserInput[]
+  connectOrCreate?: Prisma.ProgramCreateOrConnectWithoutApprovedByUserInput | Prisma.ProgramCreateOrConnectWithoutApprovedByUserInput[]
+  upsert?: Prisma.ProgramUpsertWithWhereUniqueWithoutApprovedByUserInput | Prisma.ProgramUpsertWithWhereUniqueWithoutApprovedByUserInput[]
+  createMany?: Prisma.ProgramCreateManyApprovedByUserInputEnvelope
+  set?: Prisma.ProgramWhereUniqueInput | Prisma.ProgramWhereUniqueInput[]
+  disconnect?: Prisma.ProgramWhereUniqueInput | Prisma.ProgramWhereUniqueInput[]
+  delete?: Prisma.ProgramWhereUniqueInput | Prisma.ProgramWhereUniqueInput[]
+  connect?: Prisma.ProgramWhereUniqueInput | Prisma.ProgramWhereUniqueInput[]
+  update?: Prisma.ProgramUpdateWithWhereUniqueWithoutApprovedByUserInput | Prisma.ProgramUpdateWithWhereUniqueWithoutApprovedByUserInput[]
+  updateMany?: Prisma.ProgramUpdateManyWithWhereWithoutApprovedByUserInput | Prisma.ProgramUpdateManyWithWhereWithoutApprovedByUserInput[]
+  deleteMany?: Prisma.ProgramScalarWhereInput | Prisma.ProgramScalarWhereInput[]
+}
+
+export type ProgramUpdateManyWithoutRejectedByUserNestedInput = {
+  create?: Prisma.XOR<Prisma.ProgramCreateWithoutRejectedByUserInput, Prisma.ProgramUncheckedCreateWithoutRejectedByUserInput> | Prisma.ProgramCreateWithoutRejectedByUserInput[] | Prisma.ProgramUncheckedCreateWithoutRejectedByUserInput[]
+  connectOrCreate?: Prisma.ProgramCreateOrConnectWithoutRejectedByUserInput | Prisma.ProgramCreateOrConnectWithoutRejectedByUserInput[]
+  upsert?: Prisma.ProgramUpsertWithWhereUniqueWithoutRejectedByUserInput | Prisma.ProgramUpsertWithWhereUniqueWithoutRejectedByUserInput[]
+  createMany?: Prisma.ProgramCreateManyRejectedByUserInputEnvelope
+  set?: Prisma.ProgramWhereUniqueInput | Prisma.ProgramWhereUniqueInput[]
+  disconnect?: Prisma.ProgramWhereUniqueInput | Prisma.ProgramWhereUniqueInput[]
+  delete?: Prisma.ProgramWhereUniqueInput | Prisma.ProgramWhereUniqueInput[]
+  connect?: Prisma.ProgramWhereUniqueInput | Prisma.ProgramWhereUniqueInput[]
+  update?: Prisma.ProgramUpdateWithWhereUniqueWithoutRejectedByUserInput | Prisma.ProgramUpdateWithWhereUniqueWithoutRejectedByUserInput[]
+  updateMany?: Prisma.ProgramUpdateManyWithWhereWithoutRejectedByUserInput | Prisma.ProgramUpdateManyWithWhereWithoutRejectedByUserInput[]
+  deleteMany?: Prisma.ProgramScalarWhereInput | Prisma.ProgramScalarWhereInput[]
+}
+
+export type ProgramUncheckedUpdateManyWithoutApprovedByUserNestedInput = {
+  create?: Prisma.XOR<Prisma.ProgramCreateWithoutApprovedByUserInput, Prisma.ProgramUncheckedCreateWithoutApprovedByUserInput> | Prisma.ProgramCreateWithoutApprovedByUserInput[] | Prisma.ProgramUncheckedCreateWithoutApprovedByUserInput[]
+  connectOrCreate?: Prisma.ProgramCreateOrConnectWithoutApprovedByUserInput | Prisma.ProgramCreateOrConnectWithoutApprovedByUserInput[]
+  upsert?: Prisma.ProgramUpsertWithWhereUniqueWithoutApprovedByUserInput | Prisma.ProgramUpsertWithWhereUniqueWithoutApprovedByUserInput[]
+  createMany?: Prisma.ProgramCreateManyApprovedByUserInputEnvelope
+  set?: Prisma.ProgramWhereUniqueInput | Prisma.ProgramWhereUniqueInput[]
+  disconnect?: Prisma.ProgramWhereUniqueInput | Prisma.ProgramWhereUniqueInput[]
+  delete?: Prisma.ProgramWhereUniqueInput | Prisma.ProgramWhereUniqueInput[]
+  connect?: Prisma.ProgramWhereUniqueInput | Prisma.ProgramWhereUniqueInput[]
+  update?: Prisma.ProgramUpdateWithWhereUniqueWithoutApprovedByUserInput | Prisma.ProgramUpdateWithWhereUniqueWithoutApprovedByUserInput[]
+  updateMany?: Prisma.ProgramUpdateManyWithWhereWithoutApprovedByUserInput | Prisma.ProgramUpdateManyWithWhereWithoutApprovedByUserInput[]
+  deleteMany?: Prisma.ProgramScalarWhereInput | Prisma.ProgramScalarWhereInput[]
+}
+
+export type ProgramUncheckedUpdateManyWithoutRejectedByUserNestedInput = {
+  create?: Prisma.XOR<Prisma.ProgramCreateWithoutRejectedByUserInput, Prisma.ProgramUncheckedCreateWithoutRejectedByUserInput> | Prisma.ProgramCreateWithoutRejectedByUserInput[] | Prisma.ProgramUncheckedCreateWithoutRejectedByUserInput[]
+  connectOrCreate?: Prisma.ProgramCreateOrConnectWithoutRejectedByUserInput | Prisma.ProgramCreateOrConnectWithoutRejectedByUserInput[]
+  upsert?: Prisma.ProgramUpsertWithWhereUniqueWithoutRejectedByUserInput | Prisma.ProgramUpsertWithWhereUniqueWithoutRejectedByUserInput[]
+  createMany?: Prisma.ProgramCreateManyRejectedByUserInputEnvelope
+  set?: Prisma.ProgramWhereUniqueInput | Prisma.ProgramWhereUniqueInput[]
+  disconnect?: Prisma.ProgramWhereUniqueInput | Prisma.ProgramWhereUniqueInput[]
+  delete?: Prisma.ProgramWhereUniqueInput | Prisma.ProgramWhereUniqueInput[]
+  connect?: Prisma.ProgramWhereUniqueInput | Prisma.ProgramWhereUniqueInput[]
+  update?: Prisma.ProgramUpdateWithWhereUniqueWithoutRejectedByUserInput | Prisma.ProgramUpdateWithWhereUniqueWithoutRejectedByUserInput[]
+  updateMany?: Prisma.ProgramUpdateManyWithWhereWithoutRejectedByUserInput | Prisma.ProgramUpdateManyWithWhereWithoutRejectedByUserInput[]
+  deleteMany?: Prisma.ProgramScalarWhereInput | Prisma.ProgramScalarWhereInput[]
 }
 
 export type ProgramCreateNestedOneWithoutDonationsInput = {
@@ -571,6 +779,170 @@ export type ProgramUpdateOneRequiredWithoutProgramPeriodsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProgramUpdateToOneWithWhereWithoutProgramPeriodsInput, Prisma.ProgramUpdateWithoutProgramPeriodsInput>, Prisma.ProgramUncheckedUpdateWithoutProgramPeriodsInput>
 }
 
+export type ProgramCreateWithoutApprovedByUserInput = {
+  id?: string
+  title: string
+  description: string
+  targetAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  bannerImage?: string | null
+  category?: string | null
+  status?: string
+  programType?: string
+  contact?: string | null
+  details?: string | null
+  createdBy: string
+  approvedAt?: Date | string | null
+  rejectedAt?: Date | string | null
+  rejectionReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  programPeriods?: Prisma.ProgramPeriodCreateNestedManyWithoutProgramInput
+  donations?: Prisma.DonationCreateNestedManyWithoutProgramInput
+  rejectedByUser?: Prisma.UserCreateNestedOneWithoutRejectedProgramsInput
+}
+
+export type ProgramUncheckedCreateWithoutApprovedByUserInput = {
+  id?: string
+  title: string
+  description: string
+  targetAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  bannerImage?: string | null
+  category?: string | null
+  status?: string
+  programType?: string
+  contact?: string | null
+  details?: string | null
+  createdBy: string
+  approvedAt?: Date | string | null
+  rejectedBy?: string | null
+  rejectedAt?: Date | string | null
+  rejectionReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  programPeriods?: Prisma.ProgramPeriodUncheckedCreateNestedManyWithoutProgramInput
+  donations?: Prisma.DonationUncheckedCreateNestedManyWithoutProgramInput
+}
+
+export type ProgramCreateOrConnectWithoutApprovedByUserInput = {
+  where: Prisma.ProgramWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProgramCreateWithoutApprovedByUserInput, Prisma.ProgramUncheckedCreateWithoutApprovedByUserInput>
+}
+
+export type ProgramCreateManyApprovedByUserInputEnvelope = {
+  data: Prisma.ProgramCreateManyApprovedByUserInput | Prisma.ProgramCreateManyApprovedByUserInput[]
+  skipDuplicates?: boolean
+}
+
+export type ProgramCreateWithoutRejectedByUserInput = {
+  id?: string
+  title: string
+  description: string
+  targetAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  bannerImage?: string | null
+  category?: string | null
+  status?: string
+  programType?: string
+  contact?: string | null
+  details?: string | null
+  createdBy: string
+  approvedAt?: Date | string | null
+  rejectedAt?: Date | string | null
+  rejectionReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  programPeriods?: Prisma.ProgramPeriodCreateNestedManyWithoutProgramInput
+  donations?: Prisma.DonationCreateNestedManyWithoutProgramInput
+  approvedByUser?: Prisma.UserCreateNestedOneWithoutApprovedProgramsInput
+}
+
+export type ProgramUncheckedCreateWithoutRejectedByUserInput = {
+  id?: string
+  title: string
+  description: string
+  targetAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  bannerImage?: string | null
+  category?: string | null
+  status?: string
+  programType?: string
+  contact?: string | null
+  details?: string | null
+  createdBy: string
+  approvedBy?: string | null
+  approvedAt?: Date | string | null
+  rejectedAt?: Date | string | null
+  rejectionReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  programPeriods?: Prisma.ProgramPeriodUncheckedCreateNestedManyWithoutProgramInput
+  donations?: Prisma.DonationUncheckedCreateNestedManyWithoutProgramInput
+}
+
+export type ProgramCreateOrConnectWithoutRejectedByUserInput = {
+  where: Prisma.ProgramWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProgramCreateWithoutRejectedByUserInput, Prisma.ProgramUncheckedCreateWithoutRejectedByUserInput>
+}
+
+export type ProgramCreateManyRejectedByUserInputEnvelope = {
+  data: Prisma.ProgramCreateManyRejectedByUserInput | Prisma.ProgramCreateManyRejectedByUserInput[]
+  skipDuplicates?: boolean
+}
+
+export type ProgramUpsertWithWhereUniqueWithoutApprovedByUserInput = {
+  where: Prisma.ProgramWhereUniqueInput
+  update: Prisma.XOR<Prisma.ProgramUpdateWithoutApprovedByUserInput, Prisma.ProgramUncheckedUpdateWithoutApprovedByUserInput>
+  create: Prisma.XOR<Prisma.ProgramCreateWithoutApprovedByUserInput, Prisma.ProgramUncheckedCreateWithoutApprovedByUserInput>
+}
+
+export type ProgramUpdateWithWhereUniqueWithoutApprovedByUserInput = {
+  where: Prisma.ProgramWhereUniqueInput
+  data: Prisma.XOR<Prisma.ProgramUpdateWithoutApprovedByUserInput, Prisma.ProgramUncheckedUpdateWithoutApprovedByUserInput>
+}
+
+export type ProgramUpdateManyWithWhereWithoutApprovedByUserInput = {
+  where: Prisma.ProgramScalarWhereInput
+  data: Prisma.XOR<Prisma.ProgramUpdateManyMutationInput, Prisma.ProgramUncheckedUpdateManyWithoutApprovedByUserInput>
+}
+
+export type ProgramScalarWhereInput = {
+  AND?: Prisma.ProgramScalarWhereInput | Prisma.ProgramScalarWhereInput[]
+  OR?: Prisma.ProgramScalarWhereInput[]
+  NOT?: Prisma.ProgramScalarWhereInput | Prisma.ProgramScalarWhereInput[]
+  id?: Prisma.StringFilter<"Program"> | string
+  title?: Prisma.StringFilter<"Program"> | string
+  description?: Prisma.StringFilter<"Program"> | string
+  targetAmount?: Prisma.DecimalFilter<"Program"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  bannerImage?: Prisma.StringNullableFilter<"Program"> | string | null
+  category?: Prisma.StringNullableFilter<"Program"> | string | null
+  status?: Prisma.StringFilter<"Program"> | string
+  programType?: Prisma.StringFilter<"Program"> | string
+  contact?: Prisma.StringNullableFilter<"Program"> | string | null
+  details?: Prisma.StringNullableFilter<"Program"> | string | null
+  createdBy?: Prisma.StringFilter<"Program"> | string
+  approvedBy?: Prisma.StringNullableFilter<"Program"> | string | null
+  approvedAt?: Prisma.DateTimeNullableFilter<"Program"> | Date | string | null
+  rejectedBy?: Prisma.StringNullableFilter<"Program"> | string | null
+  rejectedAt?: Prisma.DateTimeNullableFilter<"Program"> | Date | string | null
+  rejectionReason?: Prisma.StringNullableFilter<"Program"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"Program"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Program"> | Date | string
+}
+
+export type ProgramUpsertWithWhereUniqueWithoutRejectedByUserInput = {
+  where: Prisma.ProgramWhereUniqueInput
+  update: Prisma.XOR<Prisma.ProgramUpdateWithoutRejectedByUserInput, Prisma.ProgramUncheckedUpdateWithoutRejectedByUserInput>
+  create: Prisma.XOR<Prisma.ProgramCreateWithoutRejectedByUserInput, Prisma.ProgramUncheckedCreateWithoutRejectedByUserInput>
+}
+
+export type ProgramUpdateWithWhereUniqueWithoutRejectedByUserInput = {
+  where: Prisma.ProgramWhereUniqueInput
+  data: Prisma.XOR<Prisma.ProgramUpdateWithoutRejectedByUserInput, Prisma.ProgramUncheckedUpdateWithoutRejectedByUserInput>
+}
+
+export type ProgramUpdateManyWithWhereWithoutRejectedByUserInput = {
+  where: Prisma.ProgramScalarWhereInput
+  data: Prisma.XOR<Prisma.ProgramUpdateManyMutationInput, Prisma.ProgramUncheckedUpdateManyWithoutRejectedByUserInput>
+}
+
 export type ProgramCreateWithoutDonationsInput = {
   id?: string
   title: string
@@ -583,9 +955,14 @@ export type ProgramCreateWithoutDonationsInput = {
   contact?: string | null
   details?: string | null
   createdBy: string
+  approvedAt?: Date | string | null
+  rejectedAt?: Date | string | null
+  rejectionReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   programPeriods?: Prisma.ProgramPeriodCreateNestedManyWithoutProgramInput
+  approvedByUser?: Prisma.UserCreateNestedOneWithoutApprovedProgramsInput
+  rejectedByUser?: Prisma.UserCreateNestedOneWithoutRejectedProgramsInput
 }
 
 export type ProgramUncheckedCreateWithoutDonationsInput = {
@@ -600,6 +977,11 @@ export type ProgramUncheckedCreateWithoutDonationsInput = {
   contact?: string | null
   details?: string | null
   createdBy: string
+  approvedBy?: string | null
+  approvedAt?: Date | string | null
+  rejectedBy?: string | null
+  rejectedAt?: Date | string | null
+  rejectionReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   programPeriods?: Prisma.ProgramPeriodUncheckedCreateNestedManyWithoutProgramInput
@@ -633,9 +1015,14 @@ export type ProgramUpdateWithoutDonationsInput = {
   contact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   programPeriods?: Prisma.ProgramPeriodUpdateManyWithoutProgramNestedInput
+  approvedByUser?: Prisma.UserUpdateOneWithoutApprovedProgramsNestedInput
+  rejectedByUser?: Prisma.UserUpdateOneWithoutRejectedProgramsNestedInput
 }
 
 export type ProgramUncheckedUpdateWithoutDonationsInput = {
@@ -650,6 +1037,11 @@ export type ProgramUncheckedUpdateWithoutDonationsInput = {
   contact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  approvedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   programPeriods?: Prisma.ProgramPeriodUncheckedUpdateManyWithoutProgramNestedInput
@@ -667,9 +1059,14 @@ export type ProgramCreateWithoutProgramPeriodsInput = {
   contact?: string | null
   details?: string | null
   createdBy: string
+  approvedAt?: Date | string | null
+  rejectedAt?: Date | string | null
+  rejectionReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   donations?: Prisma.DonationCreateNestedManyWithoutProgramInput
+  approvedByUser?: Prisma.UserCreateNestedOneWithoutApprovedProgramsInput
+  rejectedByUser?: Prisma.UserCreateNestedOneWithoutRejectedProgramsInput
 }
 
 export type ProgramUncheckedCreateWithoutProgramPeriodsInput = {
@@ -684,6 +1081,11 @@ export type ProgramUncheckedCreateWithoutProgramPeriodsInput = {
   contact?: string | null
   details?: string | null
   createdBy: string
+  approvedBy?: string | null
+  approvedAt?: Date | string | null
+  rejectedBy?: string | null
+  rejectedAt?: Date | string | null
+  rejectionReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   donations?: Prisma.DonationUncheckedCreateNestedManyWithoutProgramInput
@@ -717,9 +1119,14 @@ export type ProgramUpdateWithoutProgramPeriodsInput = {
   contact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   donations?: Prisma.DonationUpdateManyWithoutProgramNestedInput
+  approvedByUser?: Prisma.UserUpdateOneWithoutApprovedProgramsNestedInput
+  rejectedByUser?: Prisma.UserUpdateOneWithoutRejectedProgramsNestedInput
 }
 
 export type ProgramUncheckedUpdateWithoutProgramPeriodsInput = {
@@ -734,9 +1141,182 @@ export type ProgramUncheckedUpdateWithoutProgramPeriodsInput = {
   contact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  approvedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   donations?: Prisma.DonationUncheckedUpdateManyWithoutProgramNestedInput
+}
+
+export type ProgramCreateManyApprovedByUserInput = {
+  id?: string
+  title: string
+  description: string
+  targetAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  bannerImage?: string | null
+  category?: string | null
+  status?: string
+  programType?: string
+  contact?: string | null
+  details?: string | null
+  createdBy: string
+  approvedAt?: Date | string | null
+  rejectedBy?: string | null
+  rejectedAt?: Date | string | null
+  rejectionReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ProgramCreateManyRejectedByUserInput = {
+  id?: string
+  title: string
+  description: string
+  targetAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  bannerImage?: string | null
+  category?: string | null
+  status?: string
+  programType?: string
+  contact?: string | null
+  details?: string | null
+  createdBy: string
+  approvedBy?: string | null
+  approvedAt?: Date | string | null
+  rejectedAt?: Date | string | null
+  rejectionReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ProgramUpdateWithoutApprovedByUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  targetAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  bannerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  programType?: Prisma.StringFieldUpdateOperationsInput | string
+  contact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  programPeriods?: Prisma.ProgramPeriodUpdateManyWithoutProgramNestedInput
+  donations?: Prisma.DonationUpdateManyWithoutProgramNestedInput
+  rejectedByUser?: Prisma.UserUpdateOneWithoutRejectedProgramsNestedInput
+}
+
+export type ProgramUncheckedUpdateWithoutApprovedByUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  targetAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  bannerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  programType?: Prisma.StringFieldUpdateOperationsInput | string
+  contact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  programPeriods?: Prisma.ProgramPeriodUncheckedUpdateManyWithoutProgramNestedInput
+  donations?: Prisma.DonationUncheckedUpdateManyWithoutProgramNestedInput
+}
+
+export type ProgramUncheckedUpdateManyWithoutApprovedByUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  targetAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  bannerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  programType?: Prisma.StringFieldUpdateOperationsInput | string
+  contact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ProgramUpdateWithoutRejectedByUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  targetAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  bannerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  programType?: Prisma.StringFieldUpdateOperationsInput | string
+  contact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  programPeriods?: Prisma.ProgramPeriodUpdateManyWithoutProgramNestedInput
+  donations?: Prisma.DonationUpdateManyWithoutProgramNestedInput
+  approvedByUser?: Prisma.UserUpdateOneWithoutApprovedProgramsNestedInput
+}
+
+export type ProgramUncheckedUpdateWithoutRejectedByUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  targetAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  bannerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  programType?: Prisma.StringFieldUpdateOperationsInput | string
+  contact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  approvedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  programPeriods?: Prisma.ProgramPeriodUncheckedUpdateManyWithoutProgramNestedInput
+  donations?: Prisma.DonationUncheckedUpdateManyWithoutProgramNestedInput
+}
+
+export type ProgramUncheckedUpdateManyWithoutRejectedByUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  targetAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  bannerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  programType?: Prisma.StringFieldUpdateOperationsInput | string
+  contact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  approvedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -791,10 +1371,17 @@ export type ProgramSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   contact?: boolean
   details?: boolean
   createdBy?: boolean
+  approvedBy?: boolean
+  approvedAt?: boolean
+  rejectedBy?: boolean
+  rejectedAt?: boolean
+  rejectionReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   programPeriods?: boolean | Prisma.Program$programPeriodsArgs<ExtArgs>
   donations?: boolean | Prisma.Program$donationsArgs<ExtArgs>
+  approvedByUser?: boolean | Prisma.Program$approvedByUserArgs<ExtArgs>
+  rejectedByUser?: boolean | Prisma.Program$rejectedByUserArgs<ExtArgs>
   _count?: boolean | Prisma.ProgramCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["program"]>
 
@@ -810,8 +1397,15 @@ export type ProgramSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   contact?: boolean
   details?: boolean
   createdBy?: boolean
+  approvedBy?: boolean
+  approvedAt?: boolean
+  rejectedBy?: boolean
+  rejectedAt?: boolean
+  rejectionReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  approvedByUser?: boolean | Prisma.Program$approvedByUserArgs<ExtArgs>
+  rejectedByUser?: boolean | Prisma.Program$rejectedByUserArgs<ExtArgs>
 }, ExtArgs["result"]["program"]>
 
 export type ProgramSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -826,8 +1420,15 @@ export type ProgramSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   contact?: boolean
   details?: boolean
   createdBy?: boolean
+  approvedBy?: boolean
+  approvedAt?: boolean
+  rejectedBy?: boolean
+  rejectedAt?: boolean
+  rejectionReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  approvedByUser?: boolean | Prisma.Program$approvedByUserArgs<ExtArgs>
+  rejectedByUser?: boolean | Prisma.Program$rejectedByUserArgs<ExtArgs>
 }, ExtArgs["result"]["program"]>
 
 export type ProgramSelectScalar = {
@@ -842,24 +1443,39 @@ export type ProgramSelectScalar = {
   contact?: boolean
   details?: boolean
   createdBy?: boolean
+  approvedBy?: boolean
+  approvedAt?: boolean
+  rejectedBy?: boolean
+  rejectedAt?: boolean
+  rejectionReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ProgramOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "targetAmount" | "bannerImage" | "category" | "status" | "programType" | "contact" | "details" | "createdBy" | "createdAt" | "updatedAt", ExtArgs["result"]["program"]>
+export type ProgramOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "targetAmount" | "bannerImage" | "category" | "status" | "programType" | "contact" | "details" | "createdBy" | "approvedBy" | "approvedAt" | "rejectedBy" | "rejectedAt" | "rejectionReason" | "createdAt" | "updatedAt", ExtArgs["result"]["program"]>
 export type ProgramInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   programPeriods?: boolean | Prisma.Program$programPeriodsArgs<ExtArgs>
   donations?: boolean | Prisma.Program$donationsArgs<ExtArgs>
+  approvedByUser?: boolean | Prisma.Program$approvedByUserArgs<ExtArgs>
+  rejectedByUser?: boolean | Prisma.Program$rejectedByUserArgs<ExtArgs>
   _count?: boolean | Prisma.ProgramCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type ProgramIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type ProgramIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type ProgramIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  approvedByUser?: boolean | Prisma.Program$approvedByUserArgs<ExtArgs>
+  rejectedByUser?: boolean | Prisma.Program$rejectedByUserArgs<ExtArgs>
+}
+export type ProgramIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  approvedByUser?: boolean | Prisma.Program$approvedByUserArgs<ExtArgs>
+  rejectedByUser?: boolean | Prisma.Program$rejectedByUserArgs<ExtArgs>
+}
 
 export type $ProgramPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Program"
   objects: {
     programPeriods: Prisma.$ProgramPeriodPayload<ExtArgs>[]
     donations: Prisma.$DonationPayload<ExtArgs>[]
+    approvedByUser: Prisma.$UserPayload<ExtArgs> | null
+    rejectedByUser: Prisma.$UserPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -873,6 +1489,11 @@ export type $ProgramPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     contact: string | null
     details: string | null
     createdBy: string
+    approvedBy: string | null
+    approvedAt: Date | null
+    rejectedBy: string | null
+    rejectedAt: Date | null
+    rejectionReason: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["program"]>
@@ -1271,6 +1892,8 @@ export interface Prisma__ProgramClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   programPeriods<T extends Prisma.Program$programPeriodsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Program$programPeriodsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProgramPeriodPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   donations<T extends Prisma.Program$donationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Program$donationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DonationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  approvedByUser<T extends Prisma.Program$approvedByUserArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Program$approvedByUserArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  rejectedByUser<T extends Prisma.Program$rejectedByUserArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Program$rejectedByUserArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1311,6 +1934,11 @@ export interface ProgramFieldRefs {
   readonly contact: Prisma.FieldRef<"Program", 'String'>
   readonly details: Prisma.FieldRef<"Program", 'String'>
   readonly createdBy: Prisma.FieldRef<"Program", 'String'>
+  readonly approvedBy: Prisma.FieldRef<"Program", 'String'>
+  readonly approvedAt: Prisma.FieldRef<"Program", 'DateTime'>
+  readonly rejectedBy: Prisma.FieldRef<"Program", 'String'>
+  readonly rejectedAt: Prisma.FieldRef<"Program", 'DateTime'>
+  readonly rejectionReason: Prisma.FieldRef<"Program", 'String'>
   readonly createdAt: Prisma.FieldRef<"Program", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Program", 'DateTime'>
 }
@@ -1562,6 +2190,10 @@ export type ProgramCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensi
    */
   data: Prisma.ProgramCreateManyInput | Prisma.ProgramCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProgramIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1632,6 +2264,10 @@ export type ProgramUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensi
    * Limit how many Programs to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProgramIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1746,6 +2382,44 @@ export type Program$donationsArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.DonationScalarFieldEnum | Prisma.DonationScalarFieldEnum[]
+}
+
+/**
+ * Program.approvedByUser
+ */
+export type Program$approvedByUserArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
+ * Program.rejectedByUser
+ */
+export type Program$rejectedByUserArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
 }
 
 /**

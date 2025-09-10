@@ -24,6 +24,7 @@ import {
   ChevronDown,
   Settings,
   Shield,
+  Home,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -139,6 +140,16 @@ export default function UserMenu() {
               <Link href={'/admin/home' as any}>
                 <Shield className="w-4 h-4" />
                 Admin Dashboard
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              asChild
+              className="flex items-center gap-2 cursor-pointer"
+            >
+              <Link href={'/' as any}>
+                <Home className="w-4 h-4" />
+                Back to Homepage
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
