@@ -1058,17 +1058,17 @@ export const UserScalarFieldEnum = {
   email: 'email',
   emailVerified: 'emailVerified',
   image: 'image',
-  role: 'role',
-  banned: 'banned',
-  banReason: 'banReason',
-  banExpires: 'banExpires',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
+  banExpires: 'banExpires',
+  banReason: 'banReason',
+  banned: 'banned',
+  role: 'role',
   fullName: 'fullName',
-  firstName: 'firstName',
-  lastName: 'lastName',
   phone: 'phone',
-  bio: 'bio'
+  bio: 'bio',
+  firstName: 'firstName',
+  lastName: 'lastName'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -1167,13 +1167,13 @@ export const ProgramScalarFieldEnum = {
   contact: 'contact',
   details: 'details',
   createdBy: 'createdBy',
-  approvedBy: 'approvedBy',
-  approvedAt: 'approvedAt',
-  rejectedBy: 'rejectedBy',
-  rejectedAt: 'rejectedAt',
-  rejectionReason: 'rejectionReason',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  approvedAt: 'approvedAt',
+  approvedBy: 'approvedBy',
+  rejectedAt: 'rejectedAt',
+  rejectedBy: 'rejectedBy',
+  rejectionReason: 'rejectionReason'
 } as const
 
 export type ProgramScalarFieldEnum = (typeof ProgramScalarFieldEnum)[keyof typeof ProgramScalarFieldEnum]

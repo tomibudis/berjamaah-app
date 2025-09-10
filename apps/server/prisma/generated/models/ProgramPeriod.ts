@@ -295,8 +295,8 @@ export type ProgramPeriodWhereInput = {
   nextActivationDate?: Prisma.DateTimeNullableFilter<"ProgramPeriod"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ProgramPeriod"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProgramPeriod"> | Date | string
-  program?: Prisma.XOR<Prisma.ProgramScalarRelationFilter, Prisma.ProgramWhereInput>
   donations?: Prisma.DonationListRelationFilter
+  program?: Prisma.XOR<Prisma.ProgramScalarRelationFilter, Prisma.ProgramWhereInput>
 }
 
 export type ProgramPeriodOrderByWithRelationInput = {
@@ -313,8 +313,8 @@ export type ProgramPeriodOrderByWithRelationInput = {
   nextActivationDate?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  program?: Prisma.ProgramOrderByWithRelationInput
   donations?: Prisma.DonationOrderByRelationAggregateInput
+  program?: Prisma.ProgramOrderByWithRelationInput
 }
 
 export type ProgramPeriodWhereUniqueInput = Prisma.AtLeast<{
@@ -334,8 +334,8 @@ export type ProgramPeriodWhereUniqueInput = Prisma.AtLeast<{
   nextActivationDate?: Prisma.DateTimeNullableFilter<"ProgramPeriod"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ProgramPeriod"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProgramPeriod"> | Date | string
-  program?: Prisma.XOR<Prisma.ProgramScalarRelationFilter, Prisma.ProgramWhereInput>
   donations?: Prisma.DonationListRelationFilter
+  program?: Prisma.XOR<Prisma.ProgramScalarRelationFilter, Prisma.ProgramWhereInput>
 }, "id">
 
 export type ProgramPeriodOrderByWithAggregationInput = {
@@ -391,8 +391,8 @@ export type ProgramPeriodCreateInput = {
   nextActivationDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  program: Prisma.ProgramCreateNestedOneWithoutProgramPeriodsInput
   donations?: Prisma.DonationCreateNestedManyWithoutProgramPeriodInput
+  program: Prisma.ProgramCreateNestedOneWithoutProgramPeriodsInput
 }
 
 export type ProgramPeriodUncheckedCreateInput = {
@@ -425,8 +425,8 @@ export type ProgramPeriodUpdateInput = {
   nextActivationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  program?: Prisma.ProgramUpdateOneRequiredWithoutProgramPeriodsNestedInput
   donations?: Prisma.DonationUpdateManyWithoutProgramPeriodNestedInput
+  program?: Prisma.ProgramUpdateOneRequiredWithoutProgramPeriodsNestedInput
 }
 
 export type ProgramPeriodUncheckedUpdateInput = {
@@ -900,8 +900,8 @@ export type ProgramPeriodSelect<ExtArgs extends runtime.Types.Extensions.Interna
   nextActivationDate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  program?: boolean | Prisma.ProgramDefaultArgs<ExtArgs>
   donations?: boolean | Prisma.ProgramPeriod$donationsArgs<ExtArgs>
+  program?: boolean | Prisma.ProgramDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.ProgramPeriodCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["programPeriod"]>
 
@@ -957,8 +957,8 @@ export type ProgramPeriodSelectScalar = {
 
 export type ProgramPeriodOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "programId" | "startDate" | "endDate" | "cycleNumber" | "currentAmount" | "recurringFrequency" | "recurringDay" | "recurringDurationDays" | "totalCycles" | "nextActivationDate" | "createdAt" | "updatedAt", ExtArgs["result"]["programPeriod"]>
 export type ProgramPeriodInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  program?: boolean | Prisma.ProgramDefaultArgs<ExtArgs>
   donations?: boolean | Prisma.ProgramPeriod$donationsArgs<ExtArgs>
+  program?: boolean | Prisma.ProgramDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.ProgramPeriodCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProgramPeriodIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -971,8 +971,8 @@ export type ProgramPeriodIncludeUpdateManyAndReturn<ExtArgs extends runtime.Type
 export type $ProgramPeriodPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ProgramPeriod"
   objects: {
-    program: Prisma.$ProgramPayload<ExtArgs>
     donations: Prisma.$DonationPayload<ExtArgs>[]
+    program: Prisma.$ProgramPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1382,8 +1382,8 @@ readonly fields: ProgramPeriodFieldRefs;
  */
 export interface Prisma__ProgramPeriodClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  program<T extends Prisma.ProgramDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProgramDefaultArgs<ExtArgs>>): Prisma.Prisma__ProgramClient<runtime.Types.Result.GetResult<Prisma.$ProgramPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   donations<T extends Prisma.ProgramPeriod$donationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProgramPeriod$donationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DonationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  program<T extends Prisma.ProgramDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProgramDefaultArgs<ExtArgs>>): Prisma.Prisma__ProgramClient<runtime.Types.Result.GetResult<Prisma.$ProgramPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

@@ -1,41 +1,33 @@
-// Authentication and user management schema
-// This file contains models for user authentication, sessions, and accounts
-
 model User {
-  id            String    @id @map("_id")
-  name          String
-  email         String
-  emailVerified Boolean
-  image         String?
-  role          String    @default("user") // user | admin
-  banned        Boolean   @default(false)
-  banReason     String?
-  banExpires    DateTime?
-  createdAt     DateTime
-  updatedAt     DateTime
-  sessions      Session[]
-  accounts      Account[]
+  id                String     @id @map("_id")
+  name              String
+  email             String     @unique
+  emailVerified     Boolean
+  image             String?
+  createdAt         DateTime
+  updatedAt         DateTime
+  banExpires        DateTime?
+  banReason         String?
+  banned            Boolean    @default(false)
+  role              String     @default("user")
+  fullName          String?    @map("full_name")
+  phone             String?
+  bio               String?
+  firstName         String?    @map("first_name")
+  lastName          String?    @map("last_name")
+  accounts          Account[]
+  verifiedDonations Donation[] @relation("VerifiedByAdmin")
+  approvedPrograms  Program[]  @relation("ApprovedPrograms")
+  rejectedPrograms  Program[]  @relation("RejectedPrograms")
+  sessions          Session[]
 
-  // Additional admin fields
-  fullName       String?  @map("full_name")
-  firstName      String?  @map("first_name")
-  lastName       String?  @map("last_name")
-  phone          String?
-  bio            String?
-
-  // Relations for admin functionality
-  verifiedDonations     Donation[]           @relation("VerifiedByAdmin")
-  approvedPrograms      Program[]            @relation("ApprovedPrograms")
-  rejectedPrograms      Program[]            @relation("RejectedPrograms")
-
-  @@unique([email])
   @@map("user")
 }
 
 model Session {
   id             String   @id @map("_id")
   expiresAt      DateTime
-  token          String
+  token          String   @unique
   createdAt      DateTime
   updatedAt      DateTime
   ipAddress      String?
@@ -44,7 +36,6 @@ model Session {
   impersonatedBy String?
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([token])
   @@map("session")
 }
 
@@ -53,7 +44,6 @@ model Account {
   accountId             String
   providerId            String
   userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -63,6 +53,7 @@ model Account {
   password              String?
   createdAt             DateTime
   updatedAt             DateTime
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("account")
 }

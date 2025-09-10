@@ -311,10 +311,10 @@ export type DonationWhereInput = {
   donationReferenceNumber?: Prisma.StringFilter<"Donation"> | string
   createdAt?: Prisma.DateTimeFilter<"Donation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Donation"> | Date | string
+  donationProofs?: Prisma.DonationProofListRelationFilter
   program?: Prisma.XOR<Prisma.ProgramScalarRelationFilter, Prisma.ProgramWhereInput>
   programPeriod?: Prisma.XOR<Prisma.ProgramPeriodScalarRelationFilter, Prisma.ProgramPeriodWhereInput>
   verifiedByAdmin?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
-  donationProofs?: Prisma.DonationProofListRelationFilter
 }
 
 export type DonationOrderByWithRelationInput = {
@@ -335,10 +335,10 @@ export type DonationOrderByWithRelationInput = {
   donationReferenceNumber?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  donationProofs?: Prisma.DonationProofOrderByRelationAggregateInput
   program?: Prisma.ProgramOrderByWithRelationInput
   programPeriod?: Prisma.ProgramPeriodOrderByWithRelationInput
   verifiedByAdmin?: Prisma.UserOrderByWithRelationInput
-  donationProofs?: Prisma.DonationProofOrderByRelationAggregateInput
 }
 
 export type DonationWhereUniqueInput = Prisma.AtLeast<{
@@ -362,10 +362,10 @@ export type DonationWhereUniqueInput = Prisma.AtLeast<{
   verifiedAt?: Prisma.DateTimeNullableFilter<"Donation"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Donation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Donation"> | Date | string
+  donationProofs?: Prisma.DonationProofListRelationFilter
   program?: Prisma.XOR<Prisma.ProgramScalarRelationFilter, Prisma.ProgramWhereInput>
   programPeriod?: Prisma.XOR<Prisma.ProgramPeriodScalarRelationFilter, Prisma.ProgramPeriodWhereInput>
   verifiedByAdmin?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
-  donationProofs?: Prisma.DonationProofListRelationFilter
 }, "id" | "donationReferenceNumber">
 
 export type DonationOrderByWithAggregationInput = {
@@ -431,10 +431,10 @@ export type DonationCreateInput = {
   donationReferenceNumber: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  donationProofs?: Prisma.DonationProofCreateNestedManyWithoutDonationInput
   program: Prisma.ProgramCreateNestedOneWithoutDonationsInput
   programPeriod: Prisma.ProgramPeriodCreateNestedOneWithoutDonationsInput
   verifiedByAdmin?: Prisma.UserCreateNestedOneWithoutVerifiedDonationsInput
-  donationProofs?: Prisma.DonationProofCreateNestedManyWithoutDonationInput
 }
 
 export type DonationUncheckedCreateInput = {
@@ -473,10 +473,10 @@ export type DonationUpdateInput = {
   donationReferenceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  donationProofs?: Prisma.DonationProofUpdateManyWithoutDonationNestedInput
   program?: Prisma.ProgramUpdateOneRequiredWithoutDonationsNestedInput
   programPeriod?: Prisma.ProgramPeriodUpdateOneRequiredWithoutDonationsNestedInput
   verifiedByAdmin?: Prisma.UserUpdateOneWithoutVerifiedDonationsNestedInput
-  donationProofs?: Prisma.DonationProofUpdateManyWithoutDonationNestedInput
 }
 
 export type DonationUncheckedUpdateInput = {
@@ -803,9 +803,9 @@ export type DonationCreateWithoutVerifiedByAdminInput = {
   donationReferenceNumber: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  donationProofs?: Prisma.DonationProofCreateNestedManyWithoutDonationInput
   program: Prisma.ProgramCreateNestedOneWithoutDonationsInput
   programPeriod: Prisma.ProgramPeriodCreateNestedOneWithoutDonationsInput
-  donationProofs?: Prisma.DonationProofCreateNestedManyWithoutDonationInput
 }
 
 export type DonationUncheckedCreateWithoutVerifiedByAdminInput = {
@@ -988,9 +988,9 @@ export type DonationCreateWithoutProgramInput = {
   donationReferenceNumber: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  donationProofs?: Prisma.DonationProofCreateNestedManyWithoutDonationInput
   programPeriod: Prisma.ProgramPeriodCreateNestedOneWithoutDonationsInput
   verifiedByAdmin?: Prisma.UserCreateNestedOneWithoutVerifiedDonationsInput
-  donationProofs?: Prisma.DonationProofCreateNestedManyWithoutDonationInput
 }
 
 export type DonationUncheckedCreateWithoutProgramInput = {
@@ -1054,9 +1054,9 @@ export type DonationCreateWithoutProgramPeriodInput = {
   donationReferenceNumber: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  donationProofs?: Prisma.DonationProofCreateNestedManyWithoutDonationInput
   program: Prisma.ProgramCreateNestedOneWithoutDonationsInput
   verifiedByAdmin?: Prisma.UserCreateNestedOneWithoutVerifiedDonationsInput
-  donationProofs?: Prisma.DonationProofCreateNestedManyWithoutDonationInput
 }
 
 export type DonationUncheckedCreateWithoutProgramPeriodInput = {
@@ -1139,9 +1139,9 @@ export type DonationUpdateWithoutVerifiedByAdminInput = {
   donationReferenceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  donationProofs?: Prisma.DonationProofUpdateManyWithoutDonationNestedInput
   program?: Prisma.ProgramUpdateOneRequiredWithoutDonationsNestedInput
   programPeriod?: Prisma.ProgramPeriodUpdateOneRequiredWithoutDonationsNestedInput
-  donationProofs?: Prisma.DonationProofUpdateManyWithoutDonationNestedInput
 }
 
 export type DonationUncheckedUpdateWithoutVerifiedByAdminInput = {
@@ -1217,9 +1217,9 @@ export type DonationUpdateWithoutProgramInput = {
   donationReferenceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  donationProofs?: Prisma.DonationProofUpdateManyWithoutDonationNestedInput
   programPeriod?: Prisma.ProgramPeriodUpdateOneRequiredWithoutDonationsNestedInput
   verifiedByAdmin?: Prisma.UserUpdateOneWithoutVerifiedDonationsNestedInput
-  donationProofs?: Prisma.DonationProofUpdateManyWithoutDonationNestedInput
 }
 
 export type DonationUncheckedUpdateWithoutProgramInput = {
@@ -1295,9 +1295,9 @@ export type DonationUpdateWithoutProgramPeriodInput = {
   donationReferenceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  donationProofs?: Prisma.DonationProofUpdateManyWithoutDonationNestedInput
   program?: Prisma.ProgramUpdateOneRequiredWithoutDonationsNestedInput
   verifiedByAdmin?: Prisma.UserUpdateOneWithoutVerifiedDonationsNestedInput
-  donationProofs?: Prisma.DonationProofUpdateManyWithoutDonationNestedInput
 }
 
 export type DonationUncheckedUpdateWithoutProgramPeriodInput = {
@@ -1388,10 +1388,10 @@ export type DonationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   donationReferenceNumber?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  donationProofs?: boolean | Prisma.Donation$donationProofsArgs<ExtArgs>
   program?: boolean | Prisma.ProgramDefaultArgs<ExtArgs>
   programPeriod?: boolean | Prisma.ProgramPeriodDefaultArgs<ExtArgs>
   verifiedByAdmin?: boolean | Prisma.Donation$verifiedByAdminArgs<ExtArgs>
-  donationProofs?: boolean | Prisma.Donation$donationProofsArgs<ExtArgs>
   _count?: boolean | Prisma.DonationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["donation"]>
 
@@ -1463,10 +1463,10 @@ export type DonationSelectScalar = {
 
 export type DonationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "donorName" | "donorEmail" | "donorPhone" | "programId" | "programPeriodId" | "verifiedByAdminId" | "amount" | "status" | "paymentMethod" | "bankAccountSender" | "bankAccountReceiver" | "verifiedAt" | "donationReferenceNumber" | "createdAt" | "updatedAt", ExtArgs["result"]["donation"]>
 export type DonationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  donationProofs?: boolean | Prisma.Donation$donationProofsArgs<ExtArgs>
   program?: boolean | Prisma.ProgramDefaultArgs<ExtArgs>
   programPeriod?: boolean | Prisma.ProgramPeriodDefaultArgs<ExtArgs>
   verifiedByAdmin?: boolean | Prisma.Donation$verifiedByAdminArgs<ExtArgs>
-  donationProofs?: boolean | Prisma.Donation$donationProofsArgs<ExtArgs>
   _count?: boolean | Prisma.DonationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DonationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1483,10 +1483,10 @@ export type DonationIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
 export type $DonationPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Donation"
   objects: {
+    donationProofs: Prisma.$DonationProofPayload<ExtArgs>[]
     program: Prisma.$ProgramPayload<ExtArgs>
     programPeriod: Prisma.$ProgramPeriodPayload<ExtArgs>
     verifiedByAdmin: Prisma.$UserPayload<ExtArgs> | null
-    donationProofs: Prisma.$DonationProofPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1900,10 +1900,10 @@ readonly fields: DonationFieldRefs;
  */
 export interface Prisma__DonationClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  donationProofs<T extends Prisma.Donation$donationProofsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Donation$donationProofsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DonationProofPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   program<T extends Prisma.ProgramDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProgramDefaultArgs<ExtArgs>>): Prisma.Prisma__ProgramClient<runtime.Types.Result.GetResult<Prisma.$ProgramPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   programPeriod<T extends Prisma.ProgramPeriodDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProgramPeriodDefaultArgs<ExtArgs>>): Prisma.Prisma__ProgramPeriodClient<runtime.Types.Result.GetResult<Prisma.$ProgramPeriodPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   verifiedByAdmin<T extends Prisma.Donation$verifiedByAdminArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Donation$verifiedByAdminArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  donationProofs<T extends Prisma.Donation$donationProofsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Donation$donationProofsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DonationProofPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2346,25 +2346,6 @@ export type DonationDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
 }
 
 /**
- * Donation.verifiedByAdmin
- */
-export type Donation$verifiedByAdminArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the User
-   */
-  select?: Prisma.UserSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the User
-   */
-  omit?: Prisma.UserOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.UserInclude<ExtArgs> | null
-  where?: Prisma.UserWhereInput
-}
-
-/**
  * Donation.donationProofs
  */
 export type Donation$donationProofsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2386,6 +2367,25 @@ export type Donation$donationProofsArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.DonationProofScalarFieldEnum | Prisma.DonationProofScalarFieldEnum[]
+}
+
+/**
+ * Donation.verifiedByAdmin
+ */
+export type Donation$verifiedByAdminArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
 }
 
 /**

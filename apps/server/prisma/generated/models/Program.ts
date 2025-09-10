@@ -45,13 +45,13 @@ export type ProgramMinAggregateOutputType = {
   contact: string | null
   details: string | null
   createdBy: string | null
-  approvedBy: string | null
-  approvedAt: Date | null
-  rejectedBy: string | null
-  rejectedAt: Date | null
-  rejectionReason: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  approvedAt: Date | null
+  approvedBy: string | null
+  rejectedAt: Date | null
+  rejectedBy: string | null
+  rejectionReason: string | null
 }
 
 export type ProgramMaxAggregateOutputType = {
@@ -66,13 +66,13 @@ export type ProgramMaxAggregateOutputType = {
   contact: string | null
   details: string | null
   createdBy: string | null
-  approvedBy: string | null
-  approvedAt: Date | null
-  rejectedBy: string | null
-  rejectedAt: Date | null
-  rejectionReason: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  approvedAt: Date | null
+  approvedBy: string | null
+  rejectedAt: Date | null
+  rejectedBy: string | null
+  rejectionReason: string | null
 }
 
 export type ProgramCountAggregateOutputType = {
@@ -87,13 +87,13 @@ export type ProgramCountAggregateOutputType = {
   contact: number
   details: number
   createdBy: number
-  approvedBy: number
-  approvedAt: number
-  rejectedBy: number
-  rejectedAt: number
-  rejectionReason: number
   createdAt: number
   updatedAt: number
+  approvedAt: number
+  approvedBy: number
+  rejectedAt: number
+  rejectedBy: number
+  rejectionReason: number
   _all: number
 }
 
@@ -118,13 +118,13 @@ export type ProgramMinAggregateInputType = {
   contact?: true
   details?: true
   createdBy?: true
-  approvedBy?: true
-  approvedAt?: true
-  rejectedBy?: true
-  rejectedAt?: true
-  rejectionReason?: true
   createdAt?: true
   updatedAt?: true
+  approvedAt?: true
+  approvedBy?: true
+  rejectedAt?: true
+  rejectedBy?: true
+  rejectionReason?: true
 }
 
 export type ProgramMaxAggregateInputType = {
@@ -139,13 +139,13 @@ export type ProgramMaxAggregateInputType = {
   contact?: true
   details?: true
   createdBy?: true
-  approvedBy?: true
-  approvedAt?: true
-  rejectedBy?: true
-  rejectedAt?: true
-  rejectionReason?: true
   createdAt?: true
   updatedAt?: true
+  approvedAt?: true
+  approvedBy?: true
+  rejectedAt?: true
+  rejectedBy?: true
+  rejectionReason?: true
 }
 
 export type ProgramCountAggregateInputType = {
@@ -160,13 +160,13 @@ export type ProgramCountAggregateInputType = {
   contact?: true
   details?: true
   createdBy?: true
-  approvedBy?: true
-  approvedAt?: true
-  rejectedBy?: true
-  rejectedAt?: true
-  rejectionReason?: true
   createdAt?: true
   updatedAt?: true
+  approvedAt?: true
+  approvedBy?: true
+  rejectedAt?: true
+  rejectedBy?: true
+  rejectionReason?: true
   _all?: true
 }
 
@@ -268,13 +268,13 @@ export type ProgramGroupByOutputType = {
   contact: string | null
   details: string | null
   createdBy: string
-  approvedBy: string | null
-  approvedAt: Date | null
-  rejectedBy: string | null
-  rejectedAt: Date | null
-  rejectionReason: string | null
   createdAt: Date
   updatedAt: Date
+  approvedAt: Date | null
+  approvedBy: string | null
+  rejectedAt: Date | null
+  rejectedBy: string | null
+  rejectionReason: string | null
   _count: ProgramCountAggregateOutputType | null
   _avg: ProgramAvgAggregateOutputType | null
   _sum: ProgramSumAggregateOutputType | null
@@ -312,15 +312,15 @@ export type ProgramWhereInput = {
   contact?: Prisma.StringNullableFilter<"Program"> | string | null
   details?: Prisma.StringNullableFilter<"Program"> | string | null
   createdBy?: Prisma.StringFilter<"Program"> | string
-  approvedBy?: Prisma.StringNullableFilter<"Program"> | string | null
-  approvedAt?: Prisma.DateTimeNullableFilter<"Program"> | Date | string | null
-  rejectedBy?: Prisma.StringNullableFilter<"Program"> | string | null
-  rejectedAt?: Prisma.DateTimeNullableFilter<"Program"> | Date | string | null
-  rejectionReason?: Prisma.StringNullableFilter<"Program"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Program"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Program"> | Date | string
-  programPeriods?: Prisma.ProgramPeriodListRelationFilter
+  approvedAt?: Prisma.DateTimeNullableFilter<"Program"> | Date | string | null
+  approvedBy?: Prisma.StringNullableFilter<"Program"> | string | null
+  rejectedAt?: Prisma.DateTimeNullableFilter<"Program"> | Date | string | null
+  rejectedBy?: Prisma.StringNullableFilter<"Program"> | string | null
+  rejectionReason?: Prisma.StringNullableFilter<"Program"> | string | null
   donations?: Prisma.DonationListRelationFilter
+  programPeriods?: Prisma.ProgramPeriodListRelationFilter
   approvedByUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   rejectedByUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }
@@ -337,15 +337,15 @@ export type ProgramOrderByWithRelationInput = {
   contact?: Prisma.SortOrderInput | Prisma.SortOrder
   details?: Prisma.SortOrderInput | Prisma.SortOrder
   createdBy?: Prisma.SortOrder
-  approvedBy?: Prisma.SortOrderInput | Prisma.SortOrder
-  approvedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  rejectedBy?: Prisma.SortOrderInput | Prisma.SortOrder
-  rejectedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  rejectionReason?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  programPeriods?: Prisma.ProgramPeriodOrderByRelationAggregateInput
+  approvedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  approvedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  rejectedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  rejectedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrderInput | Prisma.SortOrder
   donations?: Prisma.DonationOrderByRelationAggregateInput
+  programPeriods?: Prisma.ProgramPeriodOrderByRelationAggregateInput
   approvedByUser?: Prisma.UserOrderByWithRelationInput
   rejectedByUser?: Prisma.UserOrderByWithRelationInput
 }
@@ -365,15 +365,15 @@ export type ProgramWhereUniqueInput = Prisma.AtLeast<{
   contact?: Prisma.StringNullableFilter<"Program"> | string | null
   details?: Prisma.StringNullableFilter<"Program"> | string | null
   createdBy?: Prisma.StringFilter<"Program"> | string
-  approvedBy?: Prisma.StringNullableFilter<"Program"> | string | null
-  approvedAt?: Prisma.DateTimeNullableFilter<"Program"> | Date | string | null
-  rejectedBy?: Prisma.StringNullableFilter<"Program"> | string | null
-  rejectedAt?: Prisma.DateTimeNullableFilter<"Program"> | Date | string | null
-  rejectionReason?: Prisma.StringNullableFilter<"Program"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Program"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Program"> | Date | string
-  programPeriods?: Prisma.ProgramPeriodListRelationFilter
+  approvedAt?: Prisma.DateTimeNullableFilter<"Program"> | Date | string | null
+  approvedBy?: Prisma.StringNullableFilter<"Program"> | string | null
+  rejectedAt?: Prisma.DateTimeNullableFilter<"Program"> | Date | string | null
+  rejectedBy?: Prisma.StringNullableFilter<"Program"> | string | null
+  rejectionReason?: Prisma.StringNullableFilter<"Program"> | string | null
   donations?: Prisma.DonationListRelationFilter
+  programPeriods?: Prisma.ProgramPeriodListRelationFilter
   approvedByUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   rejectedByUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }, "id">
@@ -390,13 +390,13 @@ export type ProgramOrderByWithAggregationInput = {
   contact?: Prisma.SortOrderInput | Prisma.SortOrder
   details?: Prisma.SortOrderInput | Prisma.SortOrder
   createdBy?: Prisma.SortOrder
-  approvedBy?: Prisma.SortOrderInput | Prisma.SortOrder
-  approvedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  rejectedBy?: Prisma.SortOrderInput | Prisma.SortOrder
-  rejectedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  rejectionReason?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  approvedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  approvedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  rejectedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  rejectedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ProgramCountOrderByAggregateInput
   _avg?: Prisma.ProgramAvgOrderByAggregateInput
   _max?: Prisma.ProgramMaxOrderByAggregateInput
@@ -419,13 +419,13 @@ export type ProgramScalarWhereWithAggregatesInput = {
   contact?: Prisma.StringNullableWithAggregatesFilter<"Program"> | string | null
   details?: Prisma.StringNullableWithAggregatesFilter<"Program"> | string | null
   createdBy?: Prisma.StringWithAggregatesFilter<"Program"> | string
-  approvedBy?: Prisma.StringNullableWithAggregatesFilter<"Program"> | string | null
-  approvedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Program"> | Date | string | null
-  rejectedBy?: Prisma.StringNullableWithAggregatesFilter<"Program"> | string | null
-  rejectedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Program"> | Date | string | null
-  rejectionReason?: Prisma.StringNullableWithAggregatesFilter<"Program"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Program"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Program"> | Date | string
+  approvedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Program"> | Date | string | null
+  approvedBy?: Prisma.StringNullableWithAggregatesFilter<"Program"> | string | null
+  rejectedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Program"> | Date | string | null
+  rejectedBy?: Prisma.StringNullableWithAggregatesFilter<"Program"> | string | null
+  rejectionReason?: Prisma.StringNullableWithAggregatesFilter<"Program"> | string | null
 }
 
 export type ProgramCreateInput = {
@@ -440,13 +440,13 @@ export type ProgramCreateInput = {
   contact?: string | null
   details?: string | null
   createdBy: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   approvedAt?: Date | string | null
   rejectedAt?: Date | string | null
   rejectionReason?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  programPeriods?: Prisma.ProgramPeriodCreateNestedManyWithoutProgramInput
   donations?: Prisma.DonationCreateNestedManyWithoutProgramInput
+  programPeriods?: Prisma.ProgramPeriodCreateNestedManyWithoutProgramInput
   approvedByUser?: Prisma.UserCreateNestedOneWithoutApprovedProgramsInput
   rejectedByUser?: Prisma.UserCreateNestedOneWithoutRejectedProgramsInput
 }
@@ -463,15 +463,15 @@ export type ProgramUncheckedCreateInput = {
   contact?: string | null
   details?: string | null
   createdBy: string
-  approvedBy?: string | null
-  approvedAt?: Date | string | null
-  rejectedBy?: string | null
-  rejectedAt?: Date | string | null
-  rejectionReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  programPeriods?: Prisma.ProgramPeriodUncheckedCreateNestedManyWithoutProgramInput
+  approvedAt?: Date | string | null
+  approvedBy?: string | null
+  rejectedAt?: Date | string | null
+  rejectedBy?: string | null
+  rejectionReason?: string | null
   donations?: Prisma.DonationUncheckedCreateNestedManyWithoutProgramInput
+  programPeriods?: Prisma.ProgramPeriodUncheckedCreateNestedManyWithoutProgramInput
 }
 
 export type ProgramUpdateInput = {
@@ -486,13 +486,13 @@ export type ProgramUpdateInput = {
   contact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  programPeriods?: Prisma.ProgramPeriodUpdateManyWithoutProgramNestedInput
   donations?: Prisma.DonationUpdateManyWithoutProgramNestedInput
+  programPeriods?: Prisma.ProgramPeriodUpdateManyWithoutProgramNestedInput
   approvedByUser?: Prisma.UserUpdateOneWithoutApprovedProgramsNestedInput
   rejectedByUser?: Prisma.UserUpdateOneWithoutRejectedProgramsNestedInput
 }
@@ -509,15 +509,15 @@ export type ProgramUncheckedUpdateInput = {
   contact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
-  approvedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  rejectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  programPeriods?: Prisma.ProgramPeriodUncheckedUpdateManyWithoutProgramNestedInput
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   donations?: Prisma.DonationUncheckedUpdateManyWithoutProgramNestedInput
+  programPeriods?: Prisma.ProgramPeriodUncheckedUpdateManyWithoutProgramNestedInput
 }
 
 export type ProgramCreateManyInput = {
@@ -532,13 +532,13 @@ export type ProgramCreateManyInput = {
   contact?: string | null
   details?: string | null
   createdBy: string
-  approvedBy?: string | null
-  approvedAt?: Date | string | null
-  rejectedBy?: string | null
-  rejectedAt?: Date | string | null
-  rejectionReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  approvedAt?: Date | string | null
+  approvedBy?: string | null
+  rejectedAt?: Date | string | null
+  rejectedBy?: string | null
+  rejectionReason?: string | null
 }
 
 export type ProgramUpdateManyMutationInput = {
@@ -553,11 +553,11 @@ export type ProgramUpdateManyMutationInput = {
   contact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ProgramUncheckedUpdateManyInput = {
@@ -572,13 +572,13 @@ export type ProgramUncheckedUpdateManyInput = {
   contact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
-  approvedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  rejectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ProgramListRelationFilter = {
@@ -608,13 +608,13 @@ export type ProgramCountOrderByAggregateInput = {
   contact?: Prisma.SortOrder
   details?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
-  approvedBy?: Prisma.SortOrder
-  approvedAt?: Prisma.SortOrder
-  rejectedBy?: Prisma.SortOrder
-  rejectedAt?: Prisma.SortOrder
-  rejectionReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  approvedAt?: Prisma.SortOrder
+  approvedBy?: Prisma.SortOrder
+  rejectedAt?: Prisma.SortOrder
+  rejectedBy?: Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrder
 }
 
 export type ProgramAvgOrderByAggregateInput = {
@@ -633,13 +633,13 @@ export type ProgramMaxOrderByAggregateInput = {
   contact?: Prisma.SortOrder
   details?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
-  approvedBy?: Prisma.SortOrder
-  approvedAt?: Prisma.SortOrder
-  rejectedBy?: Prisma.SortOrder
-  rejectedAt?: Prisma.SortOrder
-  rejectionReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  approvedAt?: Prisma.SortOrder
+  approvedBy?: Prisma.SortOrder
+  rejectedAt?: Prisma.SortOrder
+  rejectedBy?: Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrder
 }
 
 export type ProgramMinOrderByAggregateInput = {
@@ -654,13 +654,13 @@ export type ProgramMinOrderByAggregateInput = {
   contact?: Prisma.SortOrder
   details?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
-  approvedBy?: Prisma.SortOrder
-  approvedAt?: Prisma.SortOrder
-  rejectedBy?: Prisma.SortOrder
-  rejectedAt?: Prisma.SortOrder
-  rejectionReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  approvedAt?: Prisma.SortOrder
+  approvedBy?: Prisma.SortOrder
+  rejectedAt?: Prisma.SortOrder
+  rejectedBy?: Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrder
 }
 
 export type ProgramSumOrderByAggregateInput = {
@@ -791,13 +791,13 @@ export type ProgramCreateWithoutApprovedByUserInput = {
   contact?: string | null
   details?: string | null
   createdBy: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   approvedAt?: Date | string | null
   rejectedAt?: Date | string | null
   rejectionReason?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  programPeriods?: Prisma.ProgramPeriodCreateNestedManyWithoutProgramInput
   donations?: Prisma.DonationCreateNestedManyWithoutProgramInput
+  programPeriods?: Prisma.ProgramPeriodCreateNestedManyWithoutProgramInput
   rejectedByUser?: Prisma.UserCreateNestedOneWithoutRejectedProgramsInput
 }
 
@@ -813,14 +813,14 @@ export type ProgramUncheckedCreateWithoutApprovedByUserInput = {
   contact?: string | null
   details?: string | null
   createdBy: string
-  approvedAt?: Date | string | null
-  rejectedBy?: string | null
-  rejectedAt?: Date | string | null
-  rejectionReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  programPeriods?: Prisma.ProgramPeriodUncheckedCreateNestedManyWithoutProgramInput
+  approvedAt?: Date | string | null
+  rejectedAt?: Date | string | null
+  rejectedBy?: string | null
+  rejectionReason?: string | null
   donations?: Prisma.DonationUncheckedCreateNestedManyWithoutProgramInput
+  programPeriods?: Prisma.ProgramPeriodUncheckedCreateNestedManyWithoutProgramInput
 }
 
 export type ProgramCreateOrConnectWithoutApprovedByUserInput = {
@@ -845,13 +845,13 @@ export type ProgramCreateWithoutRejectedByUserInput = {
   contact?: string | null
   details?: string | null
   createdBy: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   approvedAt?: Date | string | null
   rejectedAt?: Date | string | null
   rejectionReason?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  programPeriods?: Prisma.ProgramPeriodCreateNestedManyWithoutProgramInput
   donations?: Prisma.DonationCreateNestedManyWithoutProgramInput
+  programPeriods?: Prisma.ProgramPeriodCreateNestedManyWithoutProgramInput
   approvedByUser?: Prisma.UserCreateNestedOneWithoutApprovedProgramsInput
 }
 
@@ -867,14 +867,14 @@ export type ProgramUncheckedCreateWithoutRejectedByUserInput = {
   contact?: string | null
   details?: string | null
   createdBy: string
-  approvedBy?: string | null
-  approvedAt?: Date | string | null
-  rejectedAt?: Date | string | null
-  rejectionReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  programPeriods?: Prisma.ProgramPeriodUncheckedCreateNestedManyWithoutProgramInput
+  approvedAt?: Date | string | null
+  approvedBy?: string | null
+  rejectedAt?: Date | string | null
+  rejectionReason?: string | null
   donations?: Prisma.DonationUncheckedCreateNestedManyWithoutProgramInput
+  programPeriods?: Prisma.ProgramPeriodUncheckedCreateNestedManyWithoutProgramInput
 }
 
 export type ProgramCreateOrConnectWithoutRejectedByUserInput = {
@@ -918,13 +918,13 @@ export type ProgramScalarWhereInput = {
   contact?: Prisma.StringNullableFilter<"Program"> | string | null
   details?: Prisma.StringNullableFilter<"Program"> | string | null
   createdBy?: Prisma.StringFilter<"Program"> | string
-  approvedBy?: Prisma.StringNullableFilter<"Program"> | string | null
-  approvedAt?: Prisma.DateTimeNullableFilter<"Program"> | Date | string | null
-  rejectedBy?: Prisma.StringNullableFilter<"Program"> | string | null
-  rejectedAt?: Prisma.DateTimeNullableFilter<"Program"> | Date | string | null
-  rejectionReason?: Prisma.StringNullableFilter<"Program"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Program"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Program"> | Date | string
+  approvedAt?: Prisma.DateTimeNullableFilter<"Program"> | Date | string | null
+  approvedBy?: Prisma.StringNullableFilter<"Program"> | string | null
+  rejectedAt?: Prisma.DateTimeNullableFilter<"Program"> | Date | string | null
+  rejectedBy?: Prisma.StringNullableFilter<"Program"> | string | null
+  rejectionReason?: Prisma.StringNullableFilter<"Program"> | string | null
 }
 
 export type ProgramUpsertWithWhereUniqueWithoutRejectedByUserInput = {
@@ -955,11 +955,11 @@ export type ProgramCreateWithoutDonationsInput = {
   contact?: string | null
   details?: string | null
   createdBy: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   approvedAt?: Date | string | null
   rejectedAt?: Date | string | null
   rejectionReason?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
   programPeriods?: Prisma.ProgramPeriodCreateNestedManyWithoutProgramInput
   approvedByUser?: Prisma.UserCreateNestedOneWithoutApprovedProgramsInput
   rejectedByUser?: Prisma.UserCreateNestedOneWithoutRejectedProgramsInput
@@ -977,13 +977,13 @@ export type ProgramUncheckedCreateWithoutDonationsInput = {
   contact?: string | null
   details?: string | null
   createdBy: string
-  approvedBy?: string | null
-  approvedAt?: Date | string | null
-  rejectedBy?: string | null
-  rejectedAt?: Date | string | null
-  rejectionReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  approvedAt?: Date | string | null
+  approvedBy?: string | null
+  rejectedAt?: Date | string | null
+  rejectedBy?: string | null
+  rejectionReason?: string | null
   programPeriods?: Prisma.ProgramPeriodUncheckedCreateNestedManyWithoutProgramInput
 }
 
@@ -1015,11 +1015,11 @@ export type ProgramUpdateWithoutDonationsInput = {
   contact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   programPeriods?: Prisma.ProgramPeriodUpdateManyWithoutProgramNestedInput
   approvedByUser?: Prisma.UserUpdateOneWithoutApprovedProgramsNestedInput
   rejectedByUser?: Prisma.UserUpdateOneWithoutRejectedProgramsNestedInput
@@ -1037,13 +1037,13 @@ export type ProgramUncheckedUpdateWithoutDonationsInput = {
   contact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
-  approvedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  rejectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   programPeriods?: Prisma.ProgramPeriodUncheckedUpdateManyWithoutProgramNestedInput
 }
 
@@ -1059,11 +1059,11 @@ export type ProgramCreateWithoutProgramPeriodsInput = {
   contact?: string | null
   details?: string | null
   createdBy: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   approvedAt?: Date | string | null
   rejectedAt?: Date | string | null
   rejectionReason?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
   donations?: Prisma.DonationCreateNestedManyWithoutProgramInput
   approvedByUser?: Prisma.UserCreateNestedOneWithoutApprovedProgramsInput
   rejectedByUser?: Prisma.UserCreateNestedOneWithoutRejectedProgramsInput
@@ -1081,13 +1081,13 @@ export type ProgramUncheckedCreateWithoutProgramPeriodsInput = {
   contact?: string | null
   details?: string | null
   createdBy: string
-  approvedBy?: string | null
-  approvedAt?: Date | string | null
-  rejectedBy?: string | null
-  rejectedAt?: Date | string | null
-  rejectionReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  approvedAt?: Date | string | null
+  approvedBy?: string | null
+  rejectedAt?: Date | string | null
+  rejectedBy?: string | null
+  rejectionReason?: string | null
   donations?: Prisma.DonationUncheckedCreateNestedManyWithoutProgramInput
 }
 
@@ -1119,11 +1119,11 @@ export type ProgramUpdateWithoutProgramPeriodsInput = {
   contact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   donations?: Prisma.DonationUpdateManyWithoutProgramNestedInput
   approvedByUser?: Prisma.UserUpdateOneWithoutApprovedProgramsNestedInput
   rejectedByUser?: Prisma.UserUpdateOneWithoutRejectedProgramsNestedInput
@@ -1141,13 +1141,13 @@ export type ProgramUncheckedUpdateWithoutProgramPeriodsInput = {
   contact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
-  approvedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  rejectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   donations?: Prisma.DonationUncheckedUpdateManyWithoutProgramNestedInput
 }
 
@@ -1163,12 +1163,12 @@ export type ProgramCreateManyApprovedByUserInput = {
   contact?: string | null
   details?: string | null
   createdBy: string
-  approvedAt?: Date | string | null
-  rejectedBy?: string | null
-  rejectedAt?: Date | string | null
-  rejectionReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  approvedAt?: Date | string | null
+  rejectedAt?: Date | string | null
+  rejectedBy?: string | null
+  rejectionReason?: string | null
 }
 
 export type ProgramCreateManyRejectedByUserInput = {
@@ -1183,12 +1183,12 @@ export type ProgramCreateManyRejectedByUserInput = {
   contact?: string | null
   details?: string | null
   createdBy: string
-  approvedBy?: string | null
-  approvedAt?: Date | string | null
-  rejectedAt?: Date | string | null
-  rejectionReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  approvedAt?: Date | string | null
+  approvedBy?: string | null
+  rejectedAt?: Date | string | null
+  rejectionReason?: string | null
 }
 
 export type ProgramUpdateWithoutApprovedByUserInput = {
@@ -1203,13 +1203,13 @@ export type ProgramUpdateWithoutApprovedByUserInput = {
   contact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  programPeriods?: Prisma.ProgramPeriodUpdateManyWithoutProgramNestedInput
   donations?: Prisma.DonationUpdateManyWithoutProgramNestedInput
+  programPeriods?: Prisma.ProgramPeriodUpdateManyWithoutProgramNestedInput
   rejectedByUser?: Prisma.UserUpdateOneWithoutRejectedProgramsNestedInput
 }
 
@@ -1225,14 +1225,14 @@ export type ProgramUncheckedUpdateWithoutApprovedByUserInput = {
   contact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
-  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  rejectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  programPeriods?: Prisma.ProgramPeriodUncheckedUpdateManyWithoutProgramNestedInput
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   donations?: Prisma.DonationUncheckedUpdateManyWithoutProgramNestedInput
+  programPeriods?: Prisma.ProgramPeriodUncheckedUpdateManyWithoutProgramNestedInput
 }
 
 export type ProgramUncheckedUpdateManyWithoutApprovedByUserInput = {
@@ -1247,12 +1247,12 @@ export type ProgramUncheckedUpdateManyWithoutApprovedByUserInput = {
   contact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
-  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  rejectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ProgramUpdateWithoutRejectedByUserInput = {
@@ -1267,13 +1267,13 @@ export type ProgramUpdateWithoutRejectedByUserInput = {
   contact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  programPeriods?: Prisma.ProgramPeriodUpdateManyWithoutProgramNestedInput
   donations?: Prisma.DonationUpdateManyWithoutProgramNestedInput
+  programPeriods?: Prisma.ProgramPeriodUpdateManyWithoutProgramNestedInput
   approvedByUser?: Prisma.UserUpdateOneWithoutApprovedProgramsNestedInput
 }
 
@@ -1289,14 +1289,14 @@ export type ProgramUncheckedUpdateWithoutRejectedByUserInput = {
   contact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
-  approvedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  programPeriods?: Prisma.ProgramPeriodUncheckedUpdateManyWithoutProgramNestedInput
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   donations?: Prisma.DonationUncheckedUpdateManyWithoutProgramNestedInput
+  programPeriods?: Prisma.ProgramPeriodUncheckedUpdateManyWithoutProgramNestedInput
 }
 
 export type ProgramUncheckedUpdateManyWithoutRejectedByUserInput = {
@@ -1311,12 +1311,12 @@ export type ProgramUncheckedUpdateManyWithoutRejectedByUserInput = {
   contact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   details?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
-  approvedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -1325,13 +1325,13 @@ export type ProgramUncheckedUpdateManyWithoutRejectedByUserInput = {
  */
 
 export type ProgramCountOutputType = {
-  programPeriods: number
   donations: number
+  programPeriods: number
 }
 
 export type ProgramCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  programPeriods?: boolean | ProgramCountOutputTypeCountProgramPeriodsArgs
   donations?: boolean | ProgramCountOutputTypeCountDonationsArgs
+  programPeriods?: boolean | ProgramCountOutputTypeCountProgramPeriodsArgs
 }
 
 /**
@@ -1347,15 +1347,15 @@ export type ProgramCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Exte
 /**
  * ProgramCountOutputType without action
  */
-export type ProgramCountOutputTypeCountProgramPeriodsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ProgramPeriodWhereInput
+export type ProgramCountOutputTypeCountDonationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DonationWhereInput
 }
 
 /**
  * ProgramCountOutputType without action
  */
-export type ProgramCountOutputTypeCountDonationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.DonationWhereInput
+export type ProgramCountOutputTypeCountProgramPeriodsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProgramPeriodWhereInput
 }
 
 
@@ -1371,15 +1371,15 @@ export type ProgramSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   contact?: boolean
   details?: boolean
   createdBy?: boolean
-  approvedBy?: boolean
-  approvedAt?: boolean
-  rejectedBy?: boolean
-  rejectedAt?: boolean
-  rejectionReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  programPeriods?: boolean | Prisma.Program$programPeriodsArgs<ExtArgs>
+  approvedAt?: boolean
+  approvedBy?: boolean
+  rejectedAt?: boolean
+  rejectedBy?: boolean
+  rejectionReason?: boolean
   donations?: boolean | Prisma.Program$donationsArgs<ExtArgs>
+  programPeriods?: boolean | Prisma.Program$programPeriodsArgs<ExtArgs>
   approvedByUser?: boolean | Prisma.Program$approvedByUserArgs<ExtArgs>
   rejectedByUser?: boolean | Prisma.Program$rejectedByUserArgs<ExtArgs>
   _count?: boolean | Prisma.ProgramCountOutputTypeDefaultArgs<ExtArgs>
@@ -1397,13 +1397,13 @@ export type ProgramSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   contact?: boolean
   details?: boolean
   createdBy?: boolean
-  approvedBy?: boolean
-  approvedAt?: boolean
-  rejectedBy?: boolean
-  rejectedAt?: boolean
-  rejectionReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  approvedAt?: boolean
+  approvedBy?: boolean
+  rejectedAt?: boolean
+  rejectedBy?: boolean
+  rejectionReason?: boolean
   approvedByUser?: boolean | Prisma.Program$approvedByUserArgs<ExtArgs>
   rejectedByUser?: boolean | Prisma.Program$rejectedByUserArgs<ExtArgs>
 }, ExtArgs["result"]["program"]>
@@ -1420,13 +1420,13 @@ export type ProgramSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   contact?: boolean
   details?: boolean
   createdBy?: boolean
-  approvedBy?: boolean
-  approvedAt?: boolean
-  rejectedBy?: boolean
-  rejectedAt?: boolean
-  rejectionReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  approvedAt?: boolean
+  approvedBy?: boolean
+  rejectedAt?: boolean
+  rejectedBy?: boolean
+  rejectionReason?: boolean
   approvedByUser?: boolean | Prisma.Program$approvedByUserArgs<ExtArgs>
   rejectedByUser?: boolean | Prisma.Program$rejectedByUserArgs<ExtArgs>
 }, ExtArgs["result"]["program"]>
@@ -1443,19 +1443,19 @@ export type ProgramSelectScalar = {
   contact?: boolean
   details?: boolean
   createdBy?: boolean
-  approvedBy?: boolean
-  approvedAt?: boolean
-  rejectedBy?: boolean
-  rejectedAt?: boolean
-  rejectionReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  approvedAt?: boolean
+  approvedBy?: boolean
+  rejectedAt?: boolean
+  rejectedBy?: boolean
+  rejectionReason?: boolean
 }
 
-export type ProgramOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "targetAmount" | "bannerImage" | "category" | "status" | "programType" | "contact" | "details" | "createdBy" | "approvedBy" | "approvedAt" | "rejectedBy" | "rejectedAt" | "rejectionReason" | "createdAt" | "updatedAt", ExtArgs["result"]["program"]>
+export type ProgramOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "targetAmount" | "bannerImage" | "category" | "status" | "programType" | "contact" | "details" | "createdBy" | "createdAt" | "updatedAt" | "approvedAt" | "approvedBy" | "rejectedAt" | "rejectedBy" | "rejectionReason", ExtArgs["result"]["program"]>
 export type ProgramInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  programPeriods?: boolean | Prisma.Program$programPeriodsArgs<ExtArgs>
   donations?: boolean | Prisma.Program$donationsArgs<ExtArgs>
+  programPeriods?: boolean | Prisma.Program$programPeriodsArgs<ExtArgs>
   approvedByUser?: boolean | Prisma.Program$approvedByUserArgs<ExtArgs>
   rejectedByUser?: boolean | Prisma.Program$rejectedByUserArgs<ExtArgs>
   _count?: boolean | Prisma.ProgramCountOutputTypeDefaultArgs<ExtArgs>
@@ -1472,8 +1472,8 @@ export type ProgramIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
 export type $ProgramPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Program"
   objects: {
-    programPeriods: Prisma.$ProgramPeriodPayload<ExtArgs>[]
     donations: Prisma.$DonationPayload<ExtArgs>[]
+    programPeriods: Prisma.$ProgramPeriodPayload<ExtArgs>[]
     approvedByUser: Prisma.$UserPayload<ExtArgs> | null
     rejectedByUser: Prisma.$UserPayload<ExtArgs> | null
   }
@@ -1489,13 +1489,13 @@ export type $ProgramPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     contact: string | null
     details: string | null
     createdBy: string
-    approvedBy: string | null
-    approvedAt: Date | null
-    rejectedBy: string | null
-    rejectedAt: Date | null
-    rejectionReason: string | null
     createdAt: Date
     updatedAt: Date
+    approvedAt: Date | null
+    approvedBy: string | null
+    rejectedAt: Date | null
+    rejectedBy: string | null
+    rejectionReason: string | null
   }, ExtArgs["result"]["program"]>
   composites: {}
 }
@@ -1890,8 +1890,8 @@ readonly fields: ProgramFieldRefs;
  */
 export interface Prisma__ProgramClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  programPeriods<T extends Prisma.Program$programPeriodsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Program$programPeriodsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProgramPeriodPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   donations<T extends Prisma.Program$donationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Program$donationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DonationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  programPeriods<T extends Prisma.Program$programPeriodsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Program$programPeriodsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProgramPeriodPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   approvedByUser<T extends Prisma.Program$approvedByUserArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Program$approvedByUserArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   rejectedByUser<T extends Prisma.Program$rejectedByUserArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Program$rejectedByUserArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
@@ -1934,13 +1934,13 @@ export interface ProgramFieldRefs {
   readonly contact: Prisma.FieldRef<"Program", 'String'>
   readonly details: Prisma.FieldRef<"Program", 'String'>
   readonly createdBy: Prisma.FieldRef<"Program", 'String'>
-  readonly approvedBy: Prisma.FieldRef<"Program", 'String'>
-  readonly approvedAt: Prisma.FieldRef<"Program", 'DateTime'>
-  readonly rejectedBy: Prisma.FieldRef<"Program", 'String'>
-  readonly rejectedAt: Prisma.FieldRef<"Program", 'DateTime'>
-  readonly rejectionReason: Prisma.FieldRef<"Program", 'String'>
   readonly createdAt: Prisma.FieldRef<"Program", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Program", 'DateTime'>
+  readonly approvedAt: Prisma.FieldRef<"Program", 'DateTime'>
+  readonly approvedBy: Prisma.FieldRef<"Program", 'String'>
+  readonly rejectedAt: Prisma.FieldRef<"Program", 'DateTime'>
+  readonly rejectedBy: Prisma.FieldRef<"Program", 'String'>
+  readonly rejectionReason: Prisma.FieldRef<"Program", 'String'>
 }
     
 
@@ -2337,30 +2337,6 @@ export type ProgramDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
 }
 
 /**
- * Program.programPeriods
- */
-export type Program$programPeriodsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the ProgramPeriod
-   */
-  select?: Prisma.ProgramPeriodSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the ProgramPeriod
-   */
-  omit?: Prisma.ProgramPeriodOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ProgramPeriodInclude<ExtArgs> | null
-  where?: Prisma.ProgramPeriodWhereInput
-  orderBy?: Prisma.ProgramPeriodOrderByWithRelationInput | Prisma.ProgramPeriodOrderByWithRelationInput[]
-  cursor?: Prisma.ProgramPeriodWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.ProgramPeriodScalarFieldEnum | Prisma.ProgramPeriodScalarFieldEnum[]
-}
-
-/**
  * Program.donations
  */
 export type Program$donationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2382,6 +2358,30 @@ export type Program$donationsArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.DonationScalarFieldEnum | Prisma.DonationScalarFieldEnum[]
+}
+
+/**
+ * Program.programPeriods
+ */
+export type Program$programPeriodsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProgramPeriod
+   */
+  select?: Prisma.ProgramPeriodSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProgramPeriod
+   */
+  omit?: Prisma.ProgramPeriodOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProgramPeriodInclude<ExtArgs> | null
+  where?: Prisma.ProgramPeriodWhereInput
+  orderBy?: Prisma.ProgramPeriodOrderByWithRelationInput | Prisma.ProgramPeriodOrderByWithRelationInput[]
+  cursor?: Prisma.ProgramPeriodWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProgramPeriodScalarFieldEnum | Prisma.ProgramPeriodScalarFieldEnum[]
 }
 
 /**

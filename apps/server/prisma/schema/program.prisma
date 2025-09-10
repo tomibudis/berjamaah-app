@@ -1,56 +1,46 @@
-// Program management schema
-// This file contains models for programs, program periods, and related entities
-
 model Program {
-  id           String   @id @default(cuid())
-  title        String
-  description  String
-  targetAmount Decimal  @map("target_amount") @db.Decimal(15, 2)
-  bannerImage  String?  @map("banner_image")
-  category     String?
-  status       String   @default("draft") // 'draft', 'pending', 'active', 'paused', 'ended', 'rejected'
-  programType  String   @default("one_time") @map("program_type") // 'one_time', 'multiple', 'selected_date'
-  contact      String?
-  details      String?  // Additional program details
-  createdBy    String   @map("created_by")
-  approvedBy   String?  @map("approved_by") // Admin who approved the program
-  approvedAt   DateTime? @map("approved_at") // When the program was approved
-  rejectedBy   String?  @map("rejected_by") // Admin who rejected the program
-  rejectedAt   DateTime? @map("rejected_at") // When the program was rejected
-  rejectionReason String? @map("rejection_reason") // Reason for rejection
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
-
-  // Relations
-  programPeriods ProgramPeriod[]
-  donations      Donation[]
-  approvedByUser User? @relation("ApprovedPrograms", fields: [approvedBy], references: [id])
-  rejectedByUser User? @relation("RejectedPrograms", fields: [rejectedBy], references: [id])
+  id              String          @id @default(cuid())
+  title           String
+  description     String
+  targetAmount    Decimal         @map("target_amount") @db.Decimal(15, 2)
+  bannerImage     String?         @map("banner_image")
+  category        String?
+  status          String          @default("draft")
+  programType     String          @default("one_time") @map("program_type")
+  contact         String?
+  details         String?
+  createdBy       String          @map("created_by")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+  approvedAt      DateTime?       @map("approved_at")
+  approvedBy      String?         @map("approved_by")
+  rejectedAt      DateTime?       @map("rejected_at")
+  rejectedBy      String?         @map("rejected_by")
+  rejectionReason String?         @map("rejection_reason")
+  donations       Donation[]
+  programPeriods  ProgramPeriod[]
+  approvedByUser  User?           @relation("ApprovedPrograms", fields: [approvedBy], references: [id])
+  rejectedByUser  User?           @relation("RejectedPrograms", fields: [rejectedBy], references: [id])
 
   @@map("programs")
 }
 
 model ProgramPeriod {
-  id                    String    @id @default(cuid())
-  programId             String    @map("program_id")
-  startDate             DateTime  @map("start_date")
-  endDate               DateTime  @map("end_date")
-  cycleNumber           Int?      @map("cycle_number") // for recurring programs (1, 2, 3, etc.), null for one_time
-  currentAmount         Decimal   @default(0) @map("current_amount") @db.Decimal(15, 2) // total donations received in this period
-  
-  // Recurring settings (only for recurring programs)
-  recurringFrequency    String?   @map("recurring_frequency") // 'weekly', 'monthly', 'quarterly', 'yearly' (null for one_time)
-  recurringDay          Int?      @map("recurring_day") // day of week (1-7) or day of month (1-31) (null for one_time)
-  recurringDurationDays Int?      @map("recurring_duration_days") // how many days each activation lasts (null for one_time)
-  totalCycles           Int?      @map("total_cycles") // null for indefinite, number for limited cycles (null for one_time)
-  nextActivationDate    DateTime? @map("next_activation_date") // when the next period should be created
-  
-  createdAt             DateTime  @default(now()) @map("created_at")
-  updatedAt             DateTime  @updatedAt @map("updated_at")
-
-  // Relations
-  program   Program   @relation(fields: [programId], references: [id], onDelete: Cascade)
-  donations Donation[]
+  id                    String     @id @default(cuid())
+  programId             String     @map("program_id")
+  startDate             DateTime   @map("start_date")
+  endDate               DateTime   @map("end_date")
+  cycleNumber           Int?       @map("cycle_number")
+  currentAmount         Decimal    @default(0) @map("current_amount") @db.Decimal(15, 2)
+  recurringFrequency    String?    @map("recurring_frequency")
+  recurringDay          Int?       @map("recurring_day")
+  recurringDurationDays Int?       @map("recurring_duration_days")
+  totalCycles           Int?       @map("total_cycles")
+  nextActivationDate    DateTime?  @map("next_activation_date")
+  createdAt             DateTime   @default(now()) @map("created_at")
+  updatedAt             DateTime   @updatedAt @map("updated_at")
+  donations             Donation[]
+  program               Program    @relation(fields: [programId], references: [id], onDelete: Cascade)
 
   @@map("program_periods")
 }
