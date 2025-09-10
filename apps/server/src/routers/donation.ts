@@ -165,11 +165,12 @@ export const donationRouter = router({
         const transformedPrograms = programs.map((program: any) => {
           const activePeriod = program.programPeriods[0];
           const totalDonations = program.donations.reduce(
-            (sum, donation) => sum + Number(donation.amount),
+            (sum: number, donation: any) => sum + Number(donation.amount),
             0
           );
-          const uniqueDonors = new Set(program.donations.map(d => d.userId))
-            .size;
+          const uniqueDonors = new Set(
+            program.donations.map((d: any) => d.userId)
+          ).size;
           const progress =
             Number(program.targetAmount) > 0
               ? Math.round(
@@ -389,10 +390,12 @@ export const donationRouter = router({
         }
 
         const totalDonations = program.donations.reduce(
-          (sum, donation) => sum + Number(donation.amount),
+          (sum: number, donation: any) => sum + Number(donation.amount),
           0
         );
-        const uniqueDonors = new Set(program.donations.map(d => d.userId)).size;
+        const uniqueDonors = new Set(
+          program.donations.map((d: any) => d.userId)
+        ).size;
         const progress =
           Number(program.targetAmount) > 0
             ? Math.round((totalDonations / Number(program.targetAmount)) * 100)

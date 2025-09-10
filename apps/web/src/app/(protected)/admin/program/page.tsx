@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
@@ -58,7 +58,7 @@ interface Program {
   };
 }
 
-export default function ProgramPage() {
+function ProgramPageContent() {
   const [selectedProgramId, setSelectedProgramId] = useState<string | null>(
     null
   );
@@ -512,5 +512,13 @@ export default function ProgramPage() {
         </Drawer>
       )}
     </div>
+  );
+}
+
+export default function ProgramPage() {
+  return (
+    <Suspense fallback={<Loader />}>
+      <ProgramPageContent />
+    </Suspense>
   );
 }
