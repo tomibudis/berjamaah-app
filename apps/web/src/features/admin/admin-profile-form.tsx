@@ -20,6 +20,18 @@ const profileSchema = z.object({
 
 type ProfileFormData = z.infer<typeof profileSchema>;
 
+type UserProfile = {
+  id: string;
+  name: string;
+  email: string;
+  firstName: string | null;
+  lastName: string | null;
+  phone: string | null;
+  bio: string | null;
+  image: string | null;
+  role: string;
+};
+
 export function AdminProfileForm() {
   const queryClient = useQueryClient();
 
@@ -27,6 +39,9 @@ export function AdminProfileForm() {
   const { data: userProfile, isLoading: isLoadingProfile } = useQuery(
     trpc.user.getProfile.queryOptions()
   );
+
+  // Type assertion to ensure proper typing
+  const typedUserProfile = userProfile as UserProfile | undefined;
 
   // Update profile mutation
   const updateProfileMutation = useMutation({
@@ -54,13 +69,13 @@ export function AdminProfileForm() {
 
   // Prepopulate form when user data is loaded
   useEffect(() => {
-    if (userProfile) {
-      setValue('firstName', userProfile.firstName || '');
-      setValue('lastName', userProfile.lastName || '');
-      setValue('phone', userProfile.phone || '');
-      setValue('bio', userProfile.bio || '');
+    if (typedUserProfile) {
+      setValue('firstName', typedUserProfile.firstName || '');
+      setValue('lastName', typedUserProfile.lastName || '');
+      setValue('phone', typedUserProfile.phone || '');
+      setValue('bio', typedUserProfile.bio || '');
     }
-  }, [userProfile, setValue]);
+  }, [typedUserProfile, setValue]);
 
   const onSubmit = async (data: ProfileFormData) => {
     await updateProfileMutation.mutateAsync(data);
@@ -80,9 +95,9 @@ export function AdminProfileForm() {
         {/* Profile Photo */}
         <div className="flex items-center space-x-4">
           <div className="w-16 h-16 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center">
-            {userProfile?.image ? (
+            {typedUserProfile?.image ? (
               <img
-                src={userProfile.image}
+                src={typedUserProfile.image}
                 alt="Profile"
                 className="w-16 h-16 rounded-full object-cover"
               />
@@ -98,10 +113,10 @@ export function AdminProfileForm() {
           </div>
           <div>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              {userProfile?.email}
+              {typedUserProfile?.email}
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-500">
-              {userProfile?.role === 'admin' ? 'Administrator' : 'User'}
+              {typedUserProfile?.role === 'admin' ? 'Administrator' : 'User'}
             </p>
           </div>
         </div>
