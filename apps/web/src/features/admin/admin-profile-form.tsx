@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -55,10 +55,10 @@ export function AdminProfileForm() {
   // Prepopulate form when user data is loaded
   useEffect(() => {
     if (userProfile) {
-      setValue('firstName', userProfile?.firstName || '');
-      setValue('lastName', userProfile?.lastName || '');
-      setValue('phone', (userProfile as any).phone || '');
-      setValue('bio', (userProfile as any).bio || '');
+      setValue('firstName', userProfile.firstName || '');
+      setValue('lastName', userProfile.lastName || '');
+      setValue('phone', userProfile.phone || '');
+      setValue('bio', userProfile.bio || '');
     }
   }, [userProfile, setValue]);
 
@@ -80,9 +80,9 @@ export function AdminProfileForm() {
         {/* Profile Photo */}
         <div className="flex items-center space-x-4">
           <div className="w-16 h-16 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center">
-            {(userProfile as any)?.image ? (
+            {userProfile?.image ? (
               <img
-                src={(userProfile as any).image}
+                src={userProfile.image}
                 alt="Profile"
                 className="w-16 h-16 rounded-full object-cover"
               />
@@ -98,12 +98,10 @@ export function AdminProfileForm() {
           </div>
           <div>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              {(userProfile as any)?.email}
+              {userProfile?.email}
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-500">
-              {(userProfile as any)?.role === 'admin'
-                ? 'Administrator'
-                : 'User'}
+              {userProfile?.role === 'admin' ? 'Administrator' : 'User'}
             </p>
           </div>
         </div>
