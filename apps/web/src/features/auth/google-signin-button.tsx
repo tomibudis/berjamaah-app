@@ -13,7 +13,7 @@ export default function GoogleSignInButton() {
     try {
       await authClient.signIn.social({
         provider: 'google',
-        callbackURL: 'http://localhost:3001/',
+        callbackURL: process.env.NEXT_PUBLIC_FRONTEND_URL,
       });
     } catch (error) {
       toast.error('Failed to sign in with Google');
