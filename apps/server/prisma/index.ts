@@ -1,11 +1,6 @@
+import 'dotenv/config';
 import { PrismaClient } from './generated/client';
 
-const prisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: process.env.DIRECT_URL,
-    },
-  },
-});
+const prisma = new PrismaClient()
 
 export default prisma;
