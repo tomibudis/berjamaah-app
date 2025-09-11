@@ -6,10 +6,5 @@
     "app/api/**/*.ts": {
       "maxDuration": 30
     }
-  },
-  "build": {
-    "env": {
-      "PRISMA_GENERATE_DATAPROXY": "true"
-    }
   }
 }

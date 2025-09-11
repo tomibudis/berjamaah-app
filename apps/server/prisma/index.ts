@@ -17,12 +17,19 @@ if (
   );
 }
 
+// Force Prisma to use direct connection by setting environment variable
+process.env.DATABASE_URL = databaseUrl;
+
 const prisma = new PrismaClient({
   datasources: {
     db: {
       url: databaseUrl,
     },
   },
+  log:
+    process.env.NODE_ENV === 'development'
+      ? ['query', 'error', 'warn']
+      : ['error'],
 });
 
 export default prisma;
