@@ -25,7 +25,7 @@
 		"turbo": "^2.5.4"
 	},
 	"lint-staged": {
-		"**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue,astro,svelte}": ""
+		"**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue,astro,svelte,json}": ""
 	},
 	"packageManager": "npm@11.4.2"
 }
