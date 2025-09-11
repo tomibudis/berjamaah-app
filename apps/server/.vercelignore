@@ -7,7 +7,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
-.next
 .vercel
 prisma/migrations
 *.tsbuildinfo
+# Keep .next but exclude cache
+.next/cache
+.next/static/chunks/webpack-*
