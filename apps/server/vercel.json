@@ -1,11 +1,10 @@
 {
-  "buildCommand": "npm run vercel-build",
-  "installCommand": "npm install && npx prisma generate",
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
   "framework": "nextjs",
   "functions": {
     "app/api/**/*.ts": {
       "maxDuration": 30
     }
-  },
-  "outputDirectory": ".next"
+  }
 }

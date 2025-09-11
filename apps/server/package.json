@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "npx prisma generate && npx prisma migrate deploy && next build && tsx prisma/seed.ts",
+    "build": "npx prisma migrate deploy && next build && tsx prisma/seed.ts",
     "start": "next start",
     "postinstall": "npx prisma generate",
     "db:push": "prisma db push",
@@ -13,8 +13,6 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
     "db:reset": "prisma migrate reset --force && npm run db:seed",
-    "vercel-build": "npx prisma generate && npx prisma migrate deploy && next build && node scripts/copy-prisma-binary.js",
-    "copy-prisma-binary": "node scripts/copy-prisma-binary.js",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
