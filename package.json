@@ -1,31 +1,31 @@
 {
-	"name": "berjamaah-app",
-	"private": true,
-	"workspaces": [
-		"apps/*",
-		"packages/*"
-	],
-	"scripts": {
-		"prepare": "husky || true",
-		"dev": "turbo dev",
-		"build": "turbo build",
-		"check-types": "turbo check-types",
-		"dev:native": "turbo -F native dev",
-		"dev:web": "turbo -F web dev",
-		"dev:server": "turbo -F server dev",
-		"db:push": "turbo -F server db:push",
-		"db:studio": "turbo -F server db:studio",
-		"db:generate": "turbo -F server db:generate",
-		"db:migrate": "turbo -F server db:migrate"
-	},
-	"devDependencies": {
-		"husky": "^9.1.7",
-		"lint-staged": "^16.1.2",
-		"prettier": "^3.6.2",
-		"turbo": "^2.5.4"
-	},
-	"lint-staged": {
-		"**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue,astro,svelte,json}": ""
-	},
-	"packageManager": "npm@11.4.2"
+  "name": "berjamaah-app",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "prepare": "husky || true",
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "check-types": "turbo check-types",
+    "dev:native": "turbo -F native dev",
+    "dev:web": "turbo -F web dev",
+    "dev:server": "turbo -F server dev",
+    "db:push": "turbo -F server db:push",
+    "db:studio": "turbo -F server db:studio",
+    "db:generate": "turbo -F server db:generate",
+    "db:migrate": "turbo -F server db:migrate"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.2",
+    "prettier": "^3.6.2",
+    "turbo": "^2.5.4"
+  },
+  "lint-staged": {
+    "**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue,astro,svelte,json}": "prettier --write"
+  },
+  "packageManager": "npm@11.4.2"
 }
