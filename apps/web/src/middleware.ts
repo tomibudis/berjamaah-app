@@ -16,9 +16,9 @@ export async function middleware(req: NextRequest) {
   const sessionCookie = req.cookies.get('better-auth.session_token');
   // If no session cookie, redirect to signin
   if (!sessionCookie) {
-    const signinUrl = new URL('/signin', req.url);
-    signinUrl.searchParams.set('callbackUrl', req.url);
-    return NextResponse.redirect(signinUrl);
+    // const signinUrl = new URL('/signin', req.url);
+    // signinUrl.searchParams.set('callbackUrl', req.url);
+    // return NextResponse.redirect(signinUrl);
   }
 
   // For now, let the client-side handle role-based redirects
