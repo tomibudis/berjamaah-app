@@ -7,6 +7,11 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
   }),
+  session: {
+    expiresIn: 30 * 24 * 60 * 60, // 30 days
+    updateAge: 24 * 60 * 60, // 24 hours
+    cookiePrefix: 'better-auth',
+  },
   trustedOrigins: [
     process.env.CORS_ORIGIN || '',
     process.env.BETTER_AUTH_URL || '',
