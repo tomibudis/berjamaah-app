@@ -23,10 +23,17 @@ export const auth = betterAuth({
   advanced: {
     defaultCookieAttributes: {
       sameSite: 'none',
-      secure: true,
+      secure: process.env.NODE_ENV === 'production',
       httpOnly: true,
+      // Add domain and path for better Vercel compatibility
+      domain: process.env.NODE_ENV === 'production' ? undefined : 'localhost',
+      path: '/',
     },
+    // Add logging for debugging
+    logLevel: process.env.NODE_ENV === 'production' ? 'error' : 'info',
   },
+  // Add baseURL for better Vercel compatibility
+  baseURL: process.env.BETTER_AUTH_URL || process.env.CORS_ORIGIN,
   plugins: [
     admin({
       defaultRole: 'user',
