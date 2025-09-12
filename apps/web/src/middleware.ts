@@ -1,18 +1,23 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { getCookieCache } from 'better-auth/cookies';
 
 // Paths that don't need authentication
 const publicRoutes = ['/', '/signin', '/signup', '/forgot-password'];
 
 export async function middleware(req: NextRequest) {
-  const sessionCookie = await getCookieCache(req);
   const { pathname } = req.nextUrl;
 
   // Allow public routes
   if (publicRoutes.includes(pathname)) {
     return NextResponse.next();
   }
+
+  // Check for session cookie manually - this is more reliable in Vercel
+  // Better Auth uses different cookie names in different versions
+  const sessionCookie =
+    req.cookies.get('better-auth.session_token') ||
+    req.cookies.get('better-auth.session') ||
+    req.cookies.get('session');
 
   // If no session cookie, redirect to signin
   if (!sessionCookie) {
