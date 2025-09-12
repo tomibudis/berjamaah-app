@@ -13,7 +13,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  const sessionCookie = getSessionCookie(req);
+  const sessionCookie = await getSessionCookie(req);
 
   // If no session cookie, redirect to signin
   if (!sessionCookie) {
