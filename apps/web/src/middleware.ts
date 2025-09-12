@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { getSessionCookie } from 'better-auth/cookies';
 
 // Paths that don't need authentication
 const publicRoutes = ['/', '/signin', '/signup', '/forgot-password'];
@@ -13,8 +12,8 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  const sessionCookie = await getSessionCookie(req);
-
+  // Check for better-auth session cookie
+  const sessionCookie = req.cookies.get('better-auth.session_token');
   // If no session cookie, redirect to signin
   if (!sessionCookie) {
     const signinUrl = new URL('/signin', req.url);
