@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "npx prisma generate && next build",
-    "vercel-build": "npx prisma generate && npx prisma migrate dev && next build",
+    "vercel-build": "next build",
     "start": "next start",
     "postinstall": "npx prisma generate",
     "db:push": "prisma db push",
