@@ -1,70 +1,71 @@
 # Berjamaah App
 
-This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines Next.js, Next, TRPC, and more.
+A single-repository Next.js application for managing donations and programs.
 
 ## Features
 
-- **TypeScript** - For type safety and improved developer experience
-- **Next.js** - Full-stack React framework
-- **TailwindCSS** - Utility-first CSS for rapid UI development
-- **shadcn/ui** - Reusable UI components
-- **Next.js** - Full-stack React framework
-- **tRPC** - End-to-end type-safe APIs
-- **Node.js** - Runtime environment
-- **Prisma** - TypeScript-first ORM
-- **PostgreSQL** - Database engine
-- **Authentication** - Better-Auth
-- **Husky** - Git hooks for code quality
-- **Turborepo** - Optimized monorepo build system
+- User authentication with Better Auth
+- Admin and user role management
+- Donation management and verification
+- Program creation and management
+- TRPC for type-safe API calls
+- Prisma for database management
+- Responsive UI with Tailwind CSS
 
-## Getting Started
+## Setup
 
-First, install the dependencies:
-
+1. Install dependencies:
 ```bash
 npm install
 ```
-## Database Setup
 
-This project uses PostgreSQL with Prisma.
-
-1. Make sure you have a PostgreSQL database set up.
-2. Update your `apps/server/.env` file with your PostgreSQL connection details.
-
-3. Generate the Prisma client and push the schema:
+2. Set up environment variables:
 ```bash
-npm run db:push
+cp .env.example .env.local
 ```
 
+Update the following variables in `.env.local`:
+- `DATABASE_URL`: PostgreSQL database connection string
+- `BETTER_AUTH_SECRET`: Secret key for authentication
+- `BETTER_AUTH_URL`: Your application URL
+- `CORS_ORIGIN`: CORS origin URL
+- `GOOGLE_CLIENT_ID`: Google OAuth client ID
+- `GOOGLE_CLIENT_SECRET`: Google OAuth client secret
+- `NEXT_PUBLIC_SERVER_URL`: Public server URL
 
-Then, run the development server:
+3. Set up the database:
+```bash
+npm run db:push
+npm run db:seed
+```
 
+4. Run the development server:
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3001](http://localhost:3001) in your browser to see the web application.
-The API is running at [http://localhost:3000](http://localhost:3000).
-
-
-
-
-
-## Project Structure
-
-```
-berjamaah-app/
-├── apps/
-│   ├── web/         # Frontend application (Next.js)
-│   └── server/      # Backend API (Next, TRPC)
-```
-
 ## Available Scripts
 
-- `npm run dev`: Start all applications in development mode
-- `npm run build`: Build all applications
-- `npm run dev:web`: Start only the web application
-- `npm run dev:server`: Start only the server
-- `npm run check-types`: Check TypeScript types across all apps
-- `npm run db:push`: Push schema changes to database
-- `npm run db:studio`: Open database studio UI
+- `npm run dev`: Start development server
+- `npm run build`: Build for production
+- `npm run start`: Start production server
+- `npm run db:push`: Push database schema changes
+- `npm run db:studio`: Open Prisma Studio
+- `npm run db:generate`: Generate Prisma client
+- `npm run db:migrate`: Run database migrations
+- `npm run db:seed`: Seed the database
+- `npm run db:reset`: Reset and seed database
+- `npm run check-types`: Check TypeScript types
+
+## Deployment
+
+The application is configured for Vercel deployment. Make sure to set all required environment variables in your Vercel project settings.
+
+## Architecture
+
+- **Frontend**: Next.js 15 with App Router
+- **Backend**: Next.js API routes with TRPC
+- **Authentication**: Better Auth
+- **Database**: PostgreSQL with Prisma ORM
+- **Styling**: Tailwind CSS with shadcn/ui components
+- **State Management**: TanStack Query with TRPC

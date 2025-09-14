@@ -1,0 +1,18 @@
+{
+  "/api/test-db/route": "/api/test-db",
+  "/_not-found/page": "/_not-found",
+  "/trpc/[trpc]/route": "/trpc/[trpc]",
+  "/favicon.ico/route": "/favicon.ico",
+  "/(auth)/forgot-password/page": "/forgot-password",
+  "/(auth)/signup/page": "/signup",
+  "/(auth)/signin/page": "/signin",
+  "/page": "/",
+  "/status/page": "/status",
+  "/api/auth/[...all]/route": "/api/auth/[...all]",
+  "/(protected)/(user)/profile/page": "/profile",
+  "/(protected)/(user)/donate/page": "/donate",
+  "/(protected)/admin/home/page": "/admin/home",
+  "/(protected)/admin/profile/page": "/admin/profile",
+  "/(protected)/admin/program/add/page": "/admin/program/add",
+  "/(protected)/admin/program/page": "/admin/program"
+}

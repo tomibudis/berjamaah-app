@@ -44,8 +44,9 @@ model Program {
   updatedAt    DateTime @updatedAt @map("updated_at")
 
   // Relations
-  programPeriods ProgramPeriod[]
-  donations      Donation[]
+  programPeriods    ProgramPeriod[]
+  donations         Donation[]
+  programScheduleLogs ProgramScheduleLog[]
 
   @@map("programs")
 }
