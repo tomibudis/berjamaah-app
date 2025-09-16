@@ -1,0 +1,22 @@
+# Prisma generated files
+prisma/generated/
+
+# Node modules
+node_modules/
+
+# Build outputs
+.next/
+dist/
+build/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db

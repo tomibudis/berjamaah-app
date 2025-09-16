@@ -1,0 +1,20 @@
+# Prisma generated files
+prisma/generated/
+
+# Node modules
+node_modules/
+
+# Build outputs
+.next/
+dist/
+build/
+
+# Package files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Environment files
+.env
+.env.local
+.env.*.local
