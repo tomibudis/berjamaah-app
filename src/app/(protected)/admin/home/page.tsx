@@ -1,18 +1,18 @@
-'use client';
-import { authClient } from '@/lib/auth-client';
-import { useQuery } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+"use client";
+import { useSession } from "next-auth/react";
+import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
 import {
   Drawer,
   DrawerClose,
@@ -21,7 +21,7 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-} from '@/components/ui/drawer';
+} from "@/components/ui/drawer";
 import {
   Users,
   UserPlus,
@@ -31,43 +31,35 @@ import {
   UserCheck,
   UserX,
   Eye,
-} from 'lucide-react';
-import { formatCurrency } from '@/lib/currency-utils';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { trpcClient } from '@/utils/trpc';
-import { ProgramConfirmationDrawer } from '@/features/program/program-confirmation-drawer';
+} from "lucide-react";
+import { formatCurrency } from "@/lib/currency-utils";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { trpcClient } from "@/utils/trpc";
+import { ProgramConfirmationDrawer } from "@/features/program/program-confirmation-drawer";
 
 export default function AdminDashboard() {
   const router = useRouter();
-  const { data: session, isPending } = authClient.useSession();
+  const { data: session, status } = useSession();
   const [users, setUsers] = useState<any[]>([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   const [programs, setPrograms] = useState<any[]>([]);
   const [isLoadingPrograms, setIsLoadingPrograms] = useState(false);
   const [selectedProgramId, setSelectedProgramId] = useState<string | null>(
-    null
+    null,
   );
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   // Check if user is admin
-  const isAdmin = session?.user?.role === 'admin';
+  const isAdmin = session?.user?.role === "admin";
 
   const loadUsers = async () => {
     setIsLoadingUsers(true);
     try {
-      const { data, error } = await authClient.admin.listUsers({
-        query: {
-          limit: 50,
-          sortBy: 'createdAt',
-          sortDirection: 'desc',
-        },
-      });
-
-      if (data) {
-        setUsers(data.users || []);
-      }
+      // TODO: Implement user listing with tRPC
+      console.log("Loading users...");
+      setUsers([]);
     } catch (error) {
-      console.error('Error loading users:', error);
+      console.error("Error loading users:", error);
     } finally {
       setIsLoadingUsers(false);
     }
@@ -82,7 +74,7 @@ export default function AdminDashboard() {
       });
       setPrograms(data.programs || []);
     } catch (error) {
-      console.error('Error loading programs:', error);
+      console.error("Error loading programs:", error);
     } finally {
       setIsLoadingPrograms(false);
     }
@@ -94,7 +86,7 @@ export default function AdminDashboard() {
     isLoading: isLoadingDraftPrograms,
     refetch: refetchDraftPrograms,
   } = useQuery({
-    queryKey: ['draftPrograms'],
+    queryKey: ["draftPrograms"],
     queryFn: async () => {
       return await trpcClient.program.getDraftPrograms.query({
         limit: 50,
@@ -129,40 +121,35 @@ export default function AdminDashboard() {
 
   const handleBanUser = async (userId: string) => {
     try {
-      await authClient.admin.banUser({
-        userId,
-        banReason: 'Banned by admin',
-      });
+      // TODO: Implement user banning with tRPC
+      console.log("Banning user:", userId);
       loadUsers(); // Refresh the list
     } catch (error) {
-      console.error('Error banning user:', error);
+      console.error("Error banning user:", error);
     }
   };
 
   const handleUnbanUser = async (userId: string) => {
     try {
-      await authClient.admin.unbanUser({
-        userId,
-      });
+      // TODO: Implement user unbanning with tRPC
+      console.log("Unbanning user:", userId);
       loadUsers(); // Refresh the list
     } catch (error) {
-      console.error('Error unbanning user:', error);
+      console.error("Error unbanning user:", error);
     }
   };
 
-  const handleSetRole = async (userId: string, role: 'user' | 'admin') => {
+  const handleSetRole = async (userId: string, role: "user" | "admin") => {
     try {
-      await authClient.admin.setRole({
-        userId,
-        role,
-      });
+      // TODO: Implement role setting with tRPC
+      console.log("Setting role for user:", userId, "to", role);
       loadUsers(); // Refresh the list
     } catch (error) {
-      console.error('Error setting role:', error);
+      console.error("Error setting role:", error);
     }
   };
 
-  if (isPending) {
+  if (status === "loading") {
     return (
       <div className="bg-white dark:bg-gray-900">
         <div className="mx-auto max-w-sm px-4 py-6 sm:max-w-md md:max-w-lg lg:max-w-md xl:max-w-lg">
@@ -181,7 +168,7 @@ export default function AdminDashboard() {
   }
 
   if (!isAdmin) {
-    return router.replace('/'); // Will redirect
+    return router.replace("/"); // Will redirect
   }
 
   return (
@@ -232,7 +219,7 @@ export default function AdminDashboard() {
                     Pengguna admin
                   </p>
                   <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {users.filter(user => user.role === 'admin').length}
+                    {users.filter((user) => user.role === "admin").length}
                   </div>
                 </div>
               </CardContent>
@@ -265,7 +252,7 @@ export default function AdminDashboard() {
                   </p>
                   <div className="text-2xl font-bold text-gray-900 dark:text-white">
                     {isLoadingDraftPrograms
-                      ? '...'
+                      ? "..."
                       : draftProgramsData?.total || 0}
                   </div>
                 </div>
@@ -303,7 +290,7 @@ export default function AdminDashboard() {
                     className="ml-1 h-5 w-5 rounded-full p-0 text-xs"
                   >
                     {isLoadingDraftPrograms
-                      ? '...'
+                      ? "..."
                       : draftProgramsData?.total || 0}
                   </Badge>
                 </TabsTrigger>
@@ -314,33 +301,33 @@ export default function AdminDashboard() {
                   {/* Mock donor payment data */}
                   {[
                     {
-                      id: '1',
-                      donorName: 'Ahmad Fauzi',
-                      programTitle: 'Bantu Pendidikan Anak',
+                      id: "1",
+                      donorName: "Ahmad Fauzi",
+                      programTitle: "Bantu Pendidikan Anak",
                       amount: 500000,
-                      paymentMethod: 'Bank Transfer',
-                      paymentDate: '2024-01-15',
-                      status: 'pending',
+                      paymentMethod: "Bank Transfer",
+                      paymentDate: "2024-01-15",
+                      status: "pending",
                     },
                     {
-                      id: '2',
-                      donorName: 'Siti Nurhaliza',
-                      programTitle: 'Bantuan Makanan untuk Lansia',
+                      id: "2",
+                      donorName: "Siti Nurhaliza",
+                      programTitle: "Bantuan Makanan untuk Lansia",
                       amount: 250000,
-                      paymentMethod: 'E-Wallet',
-                      paymentDate: '2024-01-14',
-                      status: 'pending',
+                      paymentMethod: "E-Wallet",
+                      paymentDate: "2024-01-14",
+                      status: "pending",
                     },
                     {
-                      id: '3',
-                      donorName: 'Budi Santoso',
-                      programTitle: 'Renovasi Masjid',
+                      id: "3",
+                      donorName: "Budi Santoso",
+                      programTitle: "Renovasi Masjid",
                       amount: 1000000,
-                      paymentMethod: 'Bank Transfer',
-                      paymentDate: '2024-01-13',
-                      status: 'pending',
+                      paymentMethod: "Bank Transfer",
+                      paymentDate: "2024-01-13",
+                      status: "pending",
                     },
-                  ].map(payment => (
+                  ].map((payment) => (
                     <Card
                       key={payment.id}
                       className="border border-gray-200 dark:border-gray-700"
@@ -371,9 +358,9 @@ export default function AdminDashboard() {
                               </span>
                             </div>
                             <div className="text-sm text-gray-600 dark:text-gray-400">
-                              Tanggal:{' '}
+                              Tanggal:{" "}
                               {new Date(payment.paymentDate).toLocaleDateString(
-                                'id-ID'
+                                "id-ID",
                               )}
                             </div>
                           </div>
@@ -425,10 +412,10 @@ export default function AdminDashboard() {
                       const currentAmount = program.programPeriods.reduce(
                         (sum: number, period: any) =>
                           sum + Number(period.currentAmount),
-                        0
+                        0,
                       );
                       const progressPercentage = Math.round(
-                        (currentAmount / Number(program.targetAmount)) * 100
+                        (currentAmount / Number(program.targetAmount)) * 100,
                       );
 
                       return (
@@ -459,20 +446,20 @@ export default function AdminDashboard() {
                               <div className="space-y-2">
                                 <div className="flex justify-between text-sm">
                                   <span className="text-gray-600 dark:text-gray-400">
-                                    Target:{' '}
+                                    Target:{" "}
                                     {formatCurrency(
-                                      Number(program.targetAmount)
+                                      Number(program.targetAmount),
                                     )}
                                   </span>
                                   <span className="text-gray-600 dark:text-gray-400">
-                                    Kategori: {program.category || 'Tidak ada'}
+                                    Kategori: {program.category || "Tidak ada"}
                                   </span>
                                 </div>
                                 <div className="text-sm text-gray-600 dark:text-gray-400">
-                                  Dibuat:{' '}
+                                  Dibuat:{" "}
                                   {new Date(
-                                    program.createdAt
-                                  ).toLocaleDateString('id-ID')}
+                                    program.createdAt,
+                                  ).toLocaleDateString("id-ID")}
                                 </div>
 
                                 {/* Progress Bar */}
@@ -508,7 +495,7 @@ export default function AdminDashboard() {
                                 <Button
                                   size="sm"
                                   className="text-xs px-3 py-1 h-auto bg-green-500 hover:bg-green-600"
-                                  onClick={e => {
+                                  onClick={(e) => {
                                     e.stopPropagation();
                                     handleProgramSelect(program.id);
                                   }}

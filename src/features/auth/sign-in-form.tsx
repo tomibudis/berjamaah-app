@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
-import { PasswordInput } from '@/components/ui/password-input';
+import React from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { PasswordInput } from "@/components/ui/password-input";
 import {
   Form,
   FormControl,
@@ -15,26 +15,26 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { authClient } from '@/lib/auth-client';
-import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import GoogleSignInButton from './google-signin-button';
-import Loader from '@/components/shared/loader';
+} from "@/components/ui/form";
+import { signIn, useSession } from "next-auth/react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import GoogleSignInButton from "./google-signin-button";
+import Loader from "@/components/shared/loader";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 
 const signInSchema = z.object({
-  email: z.string().email({ message: 'Please enter a valid email address.' }),
+  email: z.string().email({ message: "Please enter a valid email address." }),
   password: z
     .string()
-    .min(6, { message: 'Password must be at least 6 characters.' }),
+    .min(6, { message: "Password must be at least 6 characters." }),
   rememberMe: z.boolean().optional(),
 });
 
@@ -42,38 +42,39 @@ export type SignInFormValues = z.infer<typeof signInSchema>;
 
 export default function SignInForm() {
   const router = useRouter();
-  const { isPending } = authClient.useSession();
+  const { data: session, status } = useSession();
 
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
-    defaultValues: { email: '', password: '', rememberMe: false },
-    mode: 'onBlur',
-    reValidateMode: 'onChange',
+    defaultValues: { email: "", password: "", rememberMe: false },
+    mode: "onBlur",
+    reValidateMode: "onChange",
   });
 
   const onSubmitForm = async (formValues: SignInFormValues) => {
-    await authClient.signIn.email(
-      {
-        email: formValues.email,
-        password: formValues.password,
-      },
-      {
-        onSuccess: async () => {
-          const session = await authClient.getSession();
-          const isAdminRole = session?.data?.user?.role === 'admin';
-          toast.success('Sign in successful');
+    const result = await signIn("credentials", {
+      email: formValues.email,
+      password: formValues.password,
+      redirect: false,
+    });
 
-          if (isAdminRole) {
-            return router.replace('/admin/home');
-          }
-          return router.replace('/');
-        },
-        onError: error => {
-          toast.error(error.error.message || error.error.statusText);
-        },
+    if (result?.error) {
+      toast.error("Invalid credentials");
+    } else if (result?.ok) {
+      toast.success("Sign in successful");
+
+      // Check if user is admin and redirect accordingly
+      if (session?.user?.role === "admin") {
+        router.replace("/admin/home");
+      } else {
+        router.replace("/");
       }
-    );
+    }
   };
+
+  if (status === "loading") {
+    return <Loader />;
+  }
 
   return (
     <Card className="w-full shadow-lg">
@@ -85,8 +86,7 @@ export default function SignInForm() {
       </CardHeader>
       <CardContent>
         {/* Google Sign In Button */}
-        {isPending && <Loader />}
-        {!isPending && <GoogleSignInButton />}
+        <GoogleSignInButton />
 
         {/* Divider */}
         <div className="relative my-6">
@@ -175,7 +175,7 @@ export default function SignInForm() {
               className="w-full"
               disabled={form.formState.isSubmitting}
             >
-              {form.formState.isSubmitting ? 'Signing In...' : 'Sign in'}
+              {form.formState.isSubmitting ? "Signing In..." : "Sign in"}
             </Button>
           </form>
         </Form>

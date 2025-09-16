@@ -1,22 +1,21 @@
-'use client';
+"use client";
 
-import { authClient } from '@/lib/auth-client';
-import { useQuery } from '@tanstack/react-query';
-import { trpc } from '@/utils/trpc';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
-import { User, Mail, Calendar, LogOut, Shield } from 'lucide-react';
-import { formatCurrency } from '@/lib/currency-utils';
+import { useSession, signOut } from "next-auth/react";
+import { useQuery } from "@tanstack/react-query";
+import { trpc } from "@/utils/trpc";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
+import { User, Mail, Calendar, LogOut, Shield } from "lucide-react";
+import { formatCurrency } from "@/lib/currency-utils";
 
 export default function ProfilePage() {
-  const { data: session, isPending } = authClient.useSession();
-  const { signOut } = authClient;
+  const { data: session, status } = useSession();
 
   const privateData = useQuery(trpc.privateData.queryOptions());
 
-  if (isPending) {
+  if (status === "loading") {
     return (
       <div className="bg-white dark:bg-gray-900">
         <div className="mx-auto max-w-sm px-4 py-6 sm:max-w-md md:max-w-lg lg:max-w-md xl:max-w-lg">
@@ -35,14 +34,14 @@ export default function ProfilePage() {
 
   // Mock user data - replace with actual API call
   const userStats = {
-    memberSince: '2024-01-15',
+    memberSince: "2024-01-15",
   };
 
   const handleSignOut = async () => {
     try {
       await signOut();
     } catch (error) {
-      console.error('Error signing out:', error);
+      console.error("Error signing out:", error);
     }
   };
 
@@ -59,14 +58,14 @@ export default function ProfilePage() {
                 </div>
                 <div className="flex-1">
                   <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                    {session?.user?.name || 'User'}
+                    {session?.user?.name || "User"}
                   </h2>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     {session?.user?.email}
                   </p>
                   <Badge variant="outline" className="mt-1 text-xs">
                     <Shield className="w-3 h-3 mr-1" />
-                    {session?.user?.role || 'user'}
+                    {session?.user?.role || "user"}
                   </Badge>
                 </div>
                 {/* <Button variant="outline" size="sm">
@@ -101,7 +100,7 @@ export default function ProfilePage() {
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     {new Date(userStats.memberSince).toLocaleDateString(
-                      'id-ID'
+                      "id-ID",
                     )}
                   </p>
                 </div>

@@ -1,10 +1,8 @@
-import type { NextRequest } from 'next/server';
-import { auth } from './auth';
+import { getServerSession } from "next-auth";
+import { authOptions } from "./auth";
 
-export async function createContext(req: NextRequest) {
-  const session = await auth.api.getSession({
-    headers: req.headers,
-  });
+export async function createContext() {
+  const session = await getServerSession(authOptions);
   return {
     session,
   };

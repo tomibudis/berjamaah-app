@@ -1,30 +1,30 @@
-'use client';
-import { useState } from 'react';
-import { authClient } from '@/lib/auth-client';
-import { useQuery } from '@tanstack/react-query';
-import { trpc } from '@/utils/trpc';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
-import { History, Plus } from 'lucide-react';
+"use client";
+import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { useQuery } from "@tanstack/react-query";
+import { trpc } from "@/utils/trpc";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
+import { History, Plus } from "lucide-react";
 import {
   DonationHistoryCard,
   type DonationHistoryItem,
-} from '@/features/donation/donation-history-card';
+} from "@/features/donation/donation-history-card";
 import {
   DonationDetailDrawer,
   type DonationDetail,
-} from '@/features/donation/donation-detail-drawer';
+} from "@/features/donation/donation-detail-drawer";
 
 export default function DonatePage() {
-  const { isPending } = authClient.useSession();
+  const { status } = useSession();
   const [selectedDonationId, setSelectedDonationId] = useState<string | null>(
-    null
+    null,
   );
 
   const donationsQuery = useQuery(
-    trpc.donation.getUserDonations.queryOptions()
+    trpc.donation.getUserDonations.queryOptions(),
   );
 
   const handleViewDetails = (donationId: string) => {
@@ -35,7 +35,7 @@ export default function DonatePage() {
     setSelectedDonationId(null);
   };
 
-  if (isPending) {
+  if (status === "loading") {
     return (
       <div className="bg-white dark:bg-gray-900">
         <div className="mx-auto max-w-sm px-4 py-6 sm:max-w-md md:max-w-lg lg:max-w-md xl:max-w-lg">
@@ -55,59 +55,59 @@ export default function DonatePage() {
   // Mock data for testing - remove when real data is available
   const mockDonations: DonationHistoryItem[] = [
     {
-      id: '1',
+      id: "1",
       amount: 500000,
-      status: 'confirmed',
-      donationReferenceNumber: 'REF001',
-      createdAt: '2024-01-20T10:00:00Z',
+      status: "confirmed",
+      donationReferenceNumber: "REF001",
+      createdAt: "2024-01-20T10:00:00Z",
       program: {
-        id: '1',
-        title: 'Bantu Pendidikan Anak',
-        category: 'Pendidikan',
+        id: "1",
+        title: "Bantu Pendidikan Anak",
+        category: "Pendidikan",
         bannerImage: null,
       },
       programPeriod: {
-        id: '1',
-        startDate: '2024-01-01',
-        endDate: '2024-12-31',
+        id: "1",
+        startDate: "2024-01-01",
+        endDate: "2024-12-31",
         cycleNumber: 1,
       },
     },
     {
-      id: '2',
+      id: "2",
       amount: 300000,
-      status: 'confirmed',
-      donationReferenceNumber: 'REF002',
-      createdAt: '2024-01-18T14:30:00Z',
+      status: "confirmed",
+      donationReferenceNumber: "REF002",
+      createdAt: "2024-01-18T14:30:00Z",
       program: {
-        id: '2',
-        title: 'Bantuan Makanan untuk Lansia',
-        category: 'Sosial',
+        id: "2",
+        title: "Bantuan Makanan untuk Lansia",
+        category: "Sosial",
         bannerImage: null,
       },
       programPeriod: {
-        id: '2',
-        startDate: '2024-01-01',
-        endDate: '2024-12-31',
+        id: "2",
+        startDate: "2024-01-01",
+        endDate: "2024-12-31",
         cycleNumber: 1,
       },
     },
     {
-      id: '3',
+      id: "3",
       amount: 1000000,
-      status: 'confirmed',
-      donationReferenceNumber: 'REF003',
-      createdAt: '2024-01-15T09:15:00Z',
+      status: "confirmed",
+      donationReferenceNumber: "REF003",
+      createdAt: "2024-01-15T09:15:00Z",
       program: {
-        id: '3',
-        title: 'Renovasi Masjid',
-        category: 'Infrastruktur',
+        id: "3",
+        title: "Renovasi Masjid",
+        category: "Infrastruktur",
         bannerImage: null,
       },
       programPeriod: {
-        id: '3',
-        startDate: '2024-01-01',
-        endDate: '2024-12-31',
+        id: "3",
+        startDate: "2024-01-01",
+        endDate: "2024-12-31",
         cycleNumber: 1,
       },
     },
@@ -115,180 +115,180 @@ export default function DonatePage() {
 
   // Mock detailed donation data for drawer
   const mockDonationDetails: Record<string, DonationDetail> = {
-    '1': {
-      id: '1',
-      donorName: 'Ahmad Budiman',
-      donorEmail: 'ahmad.budiman@email.com',
-      donorPhone: '+6281234567890',
+    "1": {
+      id: "1",
+      donorName: "Ahmad Budiman",
+      donorEmail: "ahmad.budiman@email.com",
+      donorPhone: "+6281234567890",
       amount: 500000,
-      status: 'confirmed',
-      donationReferenceNumber: 'REF001',
-      bankAccountSender: '1234567890',
-      bankAccountReceiver: '0987654321',
-      transferDate: '2024-01-20T10:00:00Z',
-      transferReference: 'TRF20240120001',
+      status: "confirmed",
+      donationReferenceNumber: "REF001",
+      bankAccountSender: "1234567890",
+      bankAccountReceiver: "0987654321",
+      transferDate: "2024-01-20T10:00:00Z",
+      transferReference: "TRF20240120001",
       adminNotes:
-        'Donasi telah diverifikasi dan dikonfirmasi. Terima kasih atas partisipasinya.',
+        "Donasi telah diverifikasi dan dikonfirmasi. Terima kasih atas partisipasinya.",
       verificationAttempts: 1,
-      verifiedAt: '2024-01-20T11:30:00Z',
-      createdAt: '2024-01-20T10:00:00Z',
+      verifiedAt: "2024-01-20T11:30:00Z",
+      createdAt: "2024-01-20T10:00:00Z",
       program: {
-        id: '1',
-        title: 'Bantu Pendidikan Anak',
+        id: "1",
+        title: "Bantu Pendidikan Anak",
         description:
-          'Program untuk membantu pendidikan anak-anak yang kurang mampu dengan menyediakan beasiswa, buku, dan perlengkapan sekolah.',
-        category: 'Pendidikan',
+          "Program untuk membantu pendidikan anak-anak yang kurang mampu dengan menyediakan beasiswa, buku, dan perlengkapan sekolah.",
+        category: "Pendidikan",
         bannerImage: null,
         targetAmount: 100000000,
       },
       programPeriod: {
-        id: '1',
-        startDate: '2024-01-01',
-        endDate: '2024-12-31',
+        id: "1",
+        startDate: "2024-01-01",
+        endDate: "2024-12-31",
         cycleNumber: 1,
         currentAmount: 75000000,
       },
       donationProofs: [
         {
-          id: '1',
+          id: "1",
           imagePath:
-            'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop',
-          imageName: 'bukti_transfer_001.jpg',
+            "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop",
+          imageName: "bukti_transfer_001.jpg",
           fileSize: 245760,
-          uploadedAt: '2024-01-20T10:05:00Z',
+          uploadedAt: "2024-01-20T10:05:00Z",
           isPrimary: true,
         },
         {
-          id: '2',
+          id: "2",
           imagePath:
-            'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop',
-          imageName: 'screenshot_transfer_001.png',
+            "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop",
+          imageName: "screenshot_transfer_001.png",
           fileSize: 189440,
-          uploadedAt: '2024-01-20T10:06:00Z',
+          uploadedAt: "2024-01-20T10:06:00Z",
           isPrimary: false,
         },
       ],
       verifiedByAdmin: {
-        id: 'admin1',
-        name: 'Siti Nurhaliza',
-        email: 'siti.nurhaliza@berjamaah.org',
+        id: "admin1",
+        name: "Siti Nurhaliza",
+        email: "siti.nurhaliza@berjamaah.org",
       },
     },
-    '2': {
-      id: '2',
-      donorName: 'Ahmad Budiman',
-      donorEmail: 'ahmad.budiman@email.com',
-      donorPhone: '+6281234567890',
+    "2": {
+      id: "2",
+      donorName: "Ahmad Budiman",
+      donorEmail: "ahmad.budiman@email.com",
+      donorPhone: "+6281234567890",
       amount: 300000,
-      status: 'confirmed',
-      donationReferenceNumber: 'REF002',
-      bankAccountSender: '1234567890',
-      bankAccountReceiver: '0987654321',
-      transferDate: '2024-01-18T14:30:00Z',
-      transferReference: 'TRF20240118002',
+      status: "confirmed",
+      donationReferenceNumber: "REF002",
+      bankAccountSender: "1234567890",
+      bankAccountReceiver: "0987654321",
+      transferDate: "2024-01-18T14:30:00Z",
+      transferReference: "TRF20240118002",
       adminNotes: null,
       verificationAttempts: 1,
-      verifiedAt: '2024-01-18T15:45:00Z',
-      createdAt: '2024-01-18T14:30:00Z',
+      verifiedAt: "2024-01-18T15:45:00Z",
+      createdAt: "2024-01-18T14:30:00Z",
       program: {
-        id: '2',
-        title: 'Bantuan Makanan untuk Lansia',
+        id: "2",
+        title: "Bantuan Makanan untuk Lansia",
         description:
-          'Program pemberian bantuan makanan bergizi untuk lansia yang membutuhkan di berbagai panti jompo dan komunitas.',
-        category: 'Sosial',
+          "Program pemberian bantuan makanan bergizi untuk lansia yang membutuhkan di berbagai panti jompo dan komunitas.",
+        category: "Sosial",
         bannerImage: null,
         targetAmount: 50000000,
       },
       programPeriod: {
-        id: '2',
-        startDate: '2024-01-01',
-        endDate: '2024-12-31',
+        id: "2",
+        startDate: "2024-01-01",
+        endDate: "2024-12-31",
         cycleNumber: 1,
         currentAmount: 32000000,
       },
       donationProofs: [
         {
-          id: '3',
+          id: "3",
           imagePath:
-            'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop',
-          imageName: 'bukti_transfer_002.jpg',
+            "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop",
+          imageName: "bukti_transfer_002.jpg",
           fileSize: 198720,
-          uploadedAt: '2024-01-18T14:35:00Z',
+          uploadedAt: "2024-01-18T14:35:00Z",
           isPrimary: true,
         },
       ],
       verifiedByAdmin: {
-        id: 'admin2',
-        name: 'Budi Santoso',
-        email: 'budi.santoso@berjamaah.org',
+        id: "admin2",
+        name: "Budi Santoso",
+        email: "budi.santoso@berjamaah.org",
       },
     },
-    '3': {
-      id: '3',
-      donorName: 'Ahmad Budiman',
-      donorEmail: 'ahmad.budiman@email.com',
-      donorPhone: '+6281234567890',
+    "3": {
+      id: "3",
+      donorName: "Ahmad Budiman",
+      donorEmail: "ahmad.budiman@email.com",
+      donorPhone: "+6281234567890",
       amount: 1000000,
-      status: 'confirmed',
-      donationReferenceNumber: 'REF003',
-      bankAccountSender: '1234567890',
-      bankAccountReceiver: '0987654321',
-      transferDate: '2024-01-15T09:15:00Z',
-      transferReference: 'TRF20240115003',
+      status: "confirmed",
+      donationReferenceNumber: "REF003",
+      bankAccountSender: "1234567890",
+      bankAccountReceiver: "0987654321",
+      transferDate: "2024-01-15T09:15:00Z",
+      transferReference: "TRF20240115003",
       adminNotes:
-        'Donasi besar untuk renovasi masjid. Proses verifikasi membutuhkan waktu lebih lama karena nominal yang besar.',
+        "Donasi besar untuk renovasi masjid. Proses verifikasi membutuhkan waktu lebih lama karena nominal yang besar.",
       verificationAttempts: 2,
-      verifiedAt: '2024-01-15T16:20:00Z',
-      createdAt: '2024-01-15T09:15:00Z',
+      verifiedAt: "2024-01-15T16:20:00Z",
+      createdAt: "2024-01-15T09:15:00Z",
       program: {
-        id: '3',
-        title: 'Renovasi Masjid',
+        id: "3",
+        title: "Renovasi Masjid",
         description:
-          'Program renovasi dan perbaikan masjid-masjid yang membutuhkan perbaikan infrastruktur, penambahan fasilitas, dan pemeliharaan.',
-        category: 'Infrastruktur',
+          "Program renovasi dan perbaikan masjid-masjid yang membutuhkan perbaikan infrastruktur, penambahan fasilitas, dan pemeliharaan.",
+        category: "Infrastruktur",
         bannerImage: null,
         targetAmount: 200000000,
       },
       programPeriod: {
-        id: '3',
-        startDate: '2024-01-01',
-        endDate: '2024-12-31',
+        id: "3",
+        startDate: "2024-01-01",
+        endDate: "2024-12-31",
         cycleNumber: 1,
         currentAmount: 150000000,
       },
       donationProofs: [
         {
-          id: '4',
+          id: "4",
           imagePath:
-            'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop',
-          imageName: 'bukti_transfer_003.jpg',
+            "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop",
+          imageName: "bukti_transfer_003.jpg",
           fileSize: 312480,
-          uploadedAt: '2024-01-15T09:20:00Z',
+          uploadedAt: "2024-01-15T09:20:00Z",
           isPrimary: true,
         },
         {
-          id: '5',
+          id: "5",
           imagePath:
-            'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop',
-          imageName: 'screenshot_mbanking_003.png',
+            "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop",
+          imageName: "screenshot_mbanking_003.png",
           fileSize: 156240,
-          uploadedAt: '2024-01-15T09:22:00Z',
+          uploadedAt: "2024-01-15T09:22:00Z",
           isPrimary: false,
         },
         {
-          id: '6',
+          id: "6",
           imagePath:
-            'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop',
-          imageName: 'receipt_transfer_003.jpg',
+            "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop",
+          imageName: "receipt_transfer_003.jpg",
           fileSize: 278960,
-          uploadedAt: '2024-01-15T09:25:00Z',
+          uploadedAt: "2024-01-15T09:25:00Z",
           isPrimary: false,
         },
       ],
       verifiedByAdmin: {
-        id: 'admin1',
-        name: 'Siti Nurhaliza',
-        email: 'siti.nurhaliza@berjamaah.org',
+        id: "admin1",
+        name: "Siti Nurhaliza",
+        email: "siti.nurhaliza@berjamaah.org",
       },
     },
   };

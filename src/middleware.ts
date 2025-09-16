@@ -1,55 +1,76 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { withAuth } from "next-auth/middleware";
+import { NextResponse } from "next/server";
 
-// Paths that don't need authentication
-const publicRoutes = ['/', '/signin', '/signup', '/forgot-password', '/status'];
+export default withAuth(
+  function middleware(req) {
+    const { pathname } = req.nextUrl;
+    const token = req.nextauth.token;
 
-export async function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl;
+    // Handle preflight OPTIONS requests
+    if (req.method === "OPTIONS") {
+      return new NextResponse(null, {
+        status: 200,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+          "Access-Control-Allow-Headers":
+            "Content-Type, Authorization, X-Requested-With",
+          "Access-Control-Allow-Credentials": "true",
+          "Access-Control-Max-Age": "86400",
+        },
+      });
+    }
 
-  // Handle preflight OPTIONS requests
-  if (req.method === 'OPTIONS') {
-    return new NextResponse(null, {
-      status: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
-        'Access-Control-Allow-Credentials': 'true',
-        'Access-Control-Max-Age': '86400',
-      },
-    });
-  }
+    // Add CORS headers to all responses
+    const res = NextResponse.next();
+    res.headers.set("Access-Control-Allow-Origin", "*");
+    res.headers.set("Access-Control-Allow-Credentials", "true");
+    res.headers.set(
+      "Access-Control-Allow-Methods",
+      "GET, POST, PUT, DELETE, OPTIONS",
+    );
+    res.headers.set(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization, X-Requested-With",
+    );
 
-  // Add CORS headers to all responses
-  const res = NextResponse.next();
-  res.headers.set('Access-Control-Allow-Origin', '*');
-  res.headers.set('Access-Control-Allow-Credentials', 'true');
-  res.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    // Check if user is trying to access admin routes
+    if (pathname.startsWith("/admin") && token?.role !== "admin") {
+      return NextResponse.redirect(new URL("/signin", req.url));
+    }
 
-  // Skip authentication for public routes and API routes
-  if (publicRoutes.includes(pathname) || pathname.startsWith('/api/') || pathname.startsWith('/_next/') || pathname.startsWith('/favicon')) {
     return res;
-  }
+  },
+  {
+    callbacks: {
+      authorized: ({ token, req }) => {
+        const { pathname } = req.nextUrl;
 
-  // Check for session cookie manually - this is more reliable in Vercel
-  const sessionCookie =
-    req.cookies.get('better-auth.session_token') ||
-    req.cookies.get('better-auth.session') ||
-    req.cookies.get('session');
+        // Public routes that don't require authentication
+        const publicRoutes = [
+          "/",
+          "/signin",
+          "/signup",
+          "/forgot-password",
+          "/status",
+        ];
 
-  // If no session cookie, redirect to signin
-  if (!sessionCookie) {
-    const signinUrl = new URL('/signin', req.url);
-    signinUrl.searchParams.set('callbackUrl', req.url);
-    return NextResponse.redirect(signinUrl);
-  }
+        if (
+          publicRoutes.includes(pathname) ||
+          pathname.startsWith("/api/") ||
+          pathname.startsWith("/_next/") ||
+          pathname.startsWith("/favicon")
+        ) {
+          return true;
+        }
 
-  return res;
-}
+        // All other routes require authentication
+        return !!token;
+      },
+    },
+  },
+);
 
-// Only run middleware on routes we care about
 export const config = {
-  matcher: ['/((?!_next|.*\\..*).*)'],
+  matcher: ["/((?!_next|.*\\..*).*)"],
 };

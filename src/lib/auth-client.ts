@@ -1,8 +1,3 @@
-import { createAuthClient } from 'better-auth/react';
-import { adminClient } from 'better-auth/client/plugins';
-import { nextCookies } from 'better-auth/next-js';
+import { getSession, signIn, signOut, useSession } from "next-auth/react";
 
-export const authClient = createAuthClient({
-  baseURL: process.env.NEXT_PUBLIC_SERVER_URL,
-  plugins: [adminClient(), nextCookies()],
-});
+export { getSession, signIn, signOut, useSession };

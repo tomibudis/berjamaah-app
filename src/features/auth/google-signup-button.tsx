@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { GoogleIcon } from '@/components/ui/google-icon';
-import { authClient } from '@/lib/auth-client';
-import { toast } from 'sonner';
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { GoogleIcon } from "@/components/ui/google-icon";
+import { signIn } from "next-auth/react";
+import { toast } from "sonner";
 
 export default function GoogleSignUpButton() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -12,13 +12,11 @@ export default function GoogleSignUpButton() {
   const handleGoogleSignUp = async () => {
     setIsGoogleLoading(true);
     try {
-      await authClient.signIn.social({
-        provider: 'google',
-        callbackURL: process.env.NEXT_PUBLIC_FRONTEND_URL,
-      });
+      await signIn("google", { callbackUrl: "/" });
     } catch (error) {
+      toast.error("Failed to sign up with Google");
+    } finally {
       setIsGoogleLoading(false);
-      toast.error('Failed to sign up with Google');
     }
   };
 

@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
-import { PasswordInput } from '@/components/ui/password-input';
+import React from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { PasswordInput } from "@/components/ui/password-input";
 import {
   Form,
   FormControl,
@@ -15,82 +15,107 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { authClient } from '@/lib/auth-client';
-import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
-import GoogleSignUpButton from './google-signup-button';
-import Loader from '@/components/shared/loader';
+} from "@/components/ui/form";
+import { signIn } from "next-auth/react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import GoogleSignUpButton from "./google-signup-button";
+import Loader from "@/components/shared/loader";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 
 const signUpSchema = z
   .object({
     fullName: z
       .string()
-      .min(2, { message: 'Full name must be at least 2 characters.' }),
-    email: z.string().email({ message: 'Please enter a valid email address.' }),
+      .min(2, { message: "Full name must be at least 2 characters." }),
+    email: z.string().email({ message: "Please enter a valid email address." }),
     phone: z.string().optional(),
     password: z
       .string()
-      .min(8, { message: 'Password must be at least 8 characters.' })
+      .min(8, { message: "Password must be at least 8 characters." })
       .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, {
         message:
-          'Password must contain at least one uppercase letter, one lowercase letter, and one number.',
+          "Password must contain at least one uppercase letter, one lowercase letter, and one number.",
       }),
     confirmPassword: z.string(),
-    acceptTerms: z.boolean().refine(val => val === true, {
-      message: 'You must accept the terms and conditions.',
+    acceptTerms: z.boolean().refine((val) => val === true, {
+      message: "You must accept the terms and conditions.",
     }),
   })
-  .refine(data => data.password === data.confirmPassword, {
+  .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
-    path: ['confirmPassword'],
+    path: ["confirmPassword"],
   });
 
 export type SignUpFormValues = z.infer<typeof signUpSchema>;
 
 export default function SignUpForm() {
   const router = useRouter();
-  const { isPending } = authClient.useSession();
 
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
-      fullName: '',
-      email: '',
-      phone: '',
-      password: '',
-      confirmPassword: '',
+      fullName: "",
+      email: "",
+      phone: "",
+      password: "",
+      confirmPassword: "",
       acceptTerms: false,
     },
-    mode: 'onBlur',
-    reValidateMode: 'onChange',
+    mode: "onBlur",
+    reValidateMode: "onChange",
   });
 
   const onSubmitForm = async (formValues: SignUpFormValues) => {
-    await authClient.signUp.email(
-      {
+    try {
+      // Register user
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formValues.fullName,
+          email: formValues.email,
+          password: formValues.password,
+          phone: formValues.phone,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Registration failed");
+      }
+
+      // Auto sign in after successful registration
+      const signInResult = await signIn("credentials", {
         email: formValues.email,
         password: formValues.password,
-        name: formValues.fullName,
-      },
-      {
-        onSuccess: () => {
-          router.push('/');
-          toast.success('Account created successfully! Welcome to Berjamaah!');
-        },
-        onError: error => {
-          toast.error(error.error.message || error.error.statusText);
-        },
+        redirect: false,
+      });
+
+      if (signInResult?.ok) {
+        toast.success("Account created successfully! Welcome to Berjamaah!");
+        router.push("/");
+      } else {
+        toast.error(
+          "Account created but sign in failed. Please sign in manually.",
+        );
+        router.push("/signin");
       }
-    );
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Registration failed",
+      );
+    }
   };
 
   return (
@@ -103,8 +128,7 @@ export default function SignUpForm() {
       </CardHeader>
       <CardContent>
         {/* Google Sign Up Button */}
-        {isPending && <Loader />}
-        {!isPending && <GoogleSignUpButton />}
+        <GoogleSignUpButton />
 
         {/* Divider */}
         <div className="relative my-6">
@@ -225,24 +249,24 @@ export default function SignUpForm() {
                       htmlFor="accept-terms"
                       className="text-sm leading-relaxed font-normal cursor-pointer"
                     >
-                      I agree to the{' '}
+                      I agree to the{" "}
                       <Button
                         type="button"
                         variant="link"
                         className="p-0 h-auto text-sm underline"
                         onClick={() =>
-                          toast.info('Terms and conditions will be implemented')
+                          toast.info("Terms and conditions will be implemented")
                         }
                       >
                         Terms and Conditions
-                      </Button>{' '}
-                      and{' '}
+                      </Button>{" "}
+                      and{" "}
                       <Button
                         type="button"
                         variant="link"
                         className="p-0 h-auto text-sm underline"
                         onClick={() =>
-                          toast.info('Privacy policy will be implemented')
+                          toast.info("Privacy policy will be implemented")
                         }
                       >
                         Privacy Policy
@@ -260,8 +284,8 @@ export default function SignUpForm() {
               disabled={form.formState.isSubmitting}
             >
               {form.formState.isSubmitting
-                ? 'Creating Account...'
-                : 'Create Account'}
+                ? "Creating Account..."
+                : "Create Account"}
             </Button>
           </form>
         </Form>

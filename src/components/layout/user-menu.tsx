@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   DropdownMenu,
@@ -8,13 +8,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   DropdownMenuCheckboxItem,
-} from '@/components/ui/dropdown-menu';
-import { authClient } from '@/lib/auth-client';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useRouter, usePathname } from 'next/navigation';
-import { useTheme } from 'next-themes';
-import Link from 'next/link';
+} from "@/components/ui/dropdown-menu";
+import { useSession, signOut } from "next-auth/react";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useRouter, usePathname } from "next/navigation";
+import { useTheme } from "next-themes";
+import Link from "next/link";
 import {
   User,
   LogOut,
@@ -25,13 +25,13 @@ import {
   Settings,
   Shield,
   Home,
-} from 'lucide-react';
-import { useState, useEffect } from 'react';
+} from "lucide-react";
+import { useState, useEffect } from "react";
 
 export default function UserMenu() {
   const router = useRouter();
   const pathname = usePathname();
-  const { data: session, isPending } = authClient.useSession();
+  const { data: session, status } = useSession();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -40,13 +40,13 @@ export default function UserMenu() {
     setMounted(true);
   }, []);
 
-  if (isPending) {
+  if (status === "loading") {
     return <Skeleton className="h-9 w-9 rounded-full" />;
   }
 
   if (!session) {
     // Hide the Sign In button when on the signin page
-    if (pathname === '/signin') {
+    if (pathname === "/signin") {
       return null;
     }
 
@@ -58,13 +58,7 @@ export default function UserMenu() {
   }
 
   const handleSignOut = () => {
-    authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          router.push('/');
-        },
-      },
-    });
+    signOut({ callbackUrl: "/" });
   };
 
   return (
@@ -87,7 +81,7 @@ export default function UserMenu() {
             <User className="w-4 h-4 text-white" />
           </div>
           <div className="flex flex-col">
-            <span className="font-medium">{session.user.name || 'User'}</span>
+            <span className="font-medium">{session.user.name || "User"}</span>
             <span className="text-xs text-muted-foreground">
               {session.user.email}
             </span>
@@ -102,24 +96,24 @@ export default function UserMenu() {
         {mounted && (
           <>
             <DropdownMenuCheckboxItem
-              checked={theme === 'light'}
-              onCheckedChange={() => setTheme('light')}
+              checked={theme === "light"}
+              onCheckedChange={() => setTheme("light")}
               className="flex items-center gap-2"
             >
               <Sun className="w-4 h-4" />
               Terang
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
-              checked={theme === 'dark'}
-              onCheckedChange={() => setTheme('dark')}
+              checked={theme === "dark"}
+              onCheckedChange={() => setTheme("dark")}
               className="flex items-center gap-2"
             >
               <Moon className="w-4 h-4" />
               Gelap
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
-              checked={theme === 'system'}
-              onCheckedChange={() => setTheme('system')}
+              checked={theme === "system"}
+              onCheckedChange={() => setTheme("system")}
               className="flex items-center gap-2"
             >
               <Monitor className="w-4 h-4" />
@@ -131,13 +125,13 @@ export default function UserMenu() {
         <DropdownMenuSeparator />
 
         {/* Admin Dashboard Link */}
-        {session.user.role === 'admin' && (
+        {session.user.role === "admin" && (
           <>
             <DropdownMenuItem
               asChild
               className="flex items-center gap-2 cursor-pointer"
             >
-              <Link href={'/admin/home' as any}>
+              <Link href={"/admin/home" as any}>
                 <Shield className="w-4 h-4" />
                 Admin Dashboard
               </Link>
@@ -147,7 +141,7 @@ export default function UserMenu() {
               asChild
               className="flex items-center gap-2 cursor-pointer"
             >
-              <Link href={'/' as any}>
+              <Link href={"/" as any}>
                 <Home className="w-4 h-4" />
                 Back to Homepage
               </Link>
