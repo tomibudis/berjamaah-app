@@ -27,10 +27,13 @@ export const auth = betterAuth({
   },
   advanced: {
     defaultCookieAttributes: {
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      httpOnly: true,
-      path: '/',
+      name: "better-auth",
+      // ✅ Secure cookies only in production (Vercel forces HTTPS)
+      secure: process.env.NODE_ENV === "production",
+      // ✅ Use lax since API + frontend share the same domain
+      sameSite: "lax",
+      // ✅ No need to force a domain, Vercel handles it
+      domain: undefined,
     },
   },
   plugins: [
