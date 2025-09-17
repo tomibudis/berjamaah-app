@@ -15,16 +15,19 @@ A single-repository Next.js application for managing donations and programs.
 ## Setup
 
 1. Install dependencies:
+
 ```bash
 npm install
 ```
 
 2. Set up environment variables:
+
 ```bash
 cp .env.example .env.local
 ```
 
 Update the following variables in `.env.local`:
+
 - `DATABASE_URL`: PostgreSQL database connection string
 - `BETTER_AUTH_SECRET`: Secret key for authentication
 - `BETTER_AUTH_URL`: Your application URL
@@ -34,12 +37,14 @@ Update the following variables in `.env.local`:
 - `NEXT_PUBLIC_SERVER_URL`: Public server URL
 
 3. Set up the database:
+
 ```bash
 npm run db:push
 npm run db:seed
 ```
 
 4. Run the development server:
+
 ```bash
 npm run dev
 ```

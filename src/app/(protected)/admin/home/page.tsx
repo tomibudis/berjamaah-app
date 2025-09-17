@@ -1,12 +1,12 @@
-"use client";
-import { useSession } from "next-auth/react";
-import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
+'use client';
+import { useSession } from 'next-auth/react';
+import { useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
 import {
   Drawer,
   DrawerClose,
@@ -15,12 +15,12 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-} from "@/components/ui/drawer";
-import { Shield, Eye } from "lucide-react";
-import { formatCurrency } from "@/lib/currency-utils";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { trpcClient } from "@/utils/trpc";
-import { ProgramConfirmationDrawer } from "@/features/program/program-confirmation-drawer";
+} from '@/components/ui/drawer';
+import { Shield, Eye } from 'lucide-react';
+import { formatCurrency } from '@/lib/currency-utils';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { trpcClient } from '@/utils/trpc';
+import { ProgramConfirmationDrawer } from '@/features/program/program-confirmation-drawer';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -32,21 +32,21 @@ export default function AdminDashboard() {
   const [programs, setPrograms] = useState<any[]>([]);
   const [, setIsLoadingPrograms] = useState(false);
   const [selectedProgramId, setSelectedProgramId] = useState<string | null>(
-    null,
+    null
   );
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   // Check if user is admin
-  const isAdmin = session?.user?.role === "admin";
+  const isAdmin = session?.user?.role === 'admin';
 
   const loadUsers = async () => {
     setIsLoadingUsers(true);
     try {
       // TODO: Implement user listing with tRPC
-      console.log("Loading users...");
+      console.log('Loading users...');
       setUsers([]);
     } catch (error) {
-      console.error("Error loading users:", error);
+      console.error('Error loading users:', error);
     } finally {
       setIsLoadingUsers(false);
     }
@@ -61,7 +61,7 @@ export default function AdminDashboard() {
       });
       setPrograms(data.programs || []);
     } catch (error) {
-      console.error("Error loading programs:", error);
+      console.error('Error loading programs:', error);
     } finally {
       setIsLoadingPrograms(false);
     }
@@ -73,7 +73,7 @@ export default function AdminDashboard() {
     isLoading: isLoadingDraftPrograms,
     refetch: refetchDraftPrograms,
   } = useQuery({
-    queryKey: ["draftPrograms"],
+    queryKey: ['draftPrograms'],
     queryFn: async () => {
       return await trpcClient.program.getDraftPrograms.query({
         limit: 50,
@@ -106,18 +106,18 @@ export default function AdminDashboard() {
     loadPrograms();
   };
 
-  if (status === "loading") {
+  if (status === 'loading') {
     return (
-      <div className="bg-white dark:bg-gray-900">
-        <div className="mx-auto max-w-sm px-4 py-6 sm:max-w-md md:max-w-lg lg:max-w-md xl:max-w-lg">
-          <div className="space-y-6">
-            <Skeleton className="h-6 w-3/4" />
-            <div className="grid grid-cols-1 gap-4">
+      <div className='bg-white dark:bg-gray-900'>
+        <div className='mx-auto max-w-sm px-4 py-6 sm:max-w-md md:max-w-lg lg:max-w-md xl:max-w-lg'>
+          <div className='space-y-6'>
+            <Skeleton className='h-6 w-3/4' />
+            <div className='grid grid-cols-1 gap-4'>
               {[...Array(4)].map((_, i) => (
-                <Skeleton key={i} className="h-24 w-full" />
+                <Skeleton key={i} className='h-24 w-full' />
               ))}
             </div>
-            <Skeleton className="h-64 w-full" />
+            <Skeleton className='h-64 w-full' />
           </div>
         </div>
       </div>
@@ -125,91 +125,91 @@ export default function AdminDashboard() {
   }
 
   if (!isAdmin) {
-    return router.replace("/"); // Will redirect
+    return router.replace('/'); // Will redirect
   }
 
   return (
-    <div className="bg-white dark:bg-gray-900">
-      <div className="mx-auto max-w-sm px-4 py-6 sm:max-w-md md:max-w-lg lg:max-w-md xl:max-w-lg">
-        <div className="space-y-6">
+    <div className='bg-white dark:bg-gray-900'>
+      <div className='mx-auto max-w-sm px-4 py-6 sm:max-w-md md:max-w-lg lg:max-w-md xl:max-w-lg'>
+        <div className='space-y-6'>
           {/* Header */}
-          <div className="flex items-center justify-between">
+          <div className='flex items-center justify-between'>
             <div>
-              <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <h1 className='text-lg font-semibold text-gray-900 dark:text-white'>
                 Dashboard Admin
               </h1>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className='text-sm text-gray-600 dark:text-gray-400'>
                 Kelola pengguna dan pengaturan sistem
               </p>
             </div>
-            <Badge variant="outline" className="flex items-center gap-2">
-              <Shield className="w-4 h-4" />
+            <Badge variant='outline' className='flex items-center gap-2'>
+              <Shield className='w-4 h-4' />
               Admin
             </Badge>
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-2 gap-4">
-            <Card className="border border-gray-200 dark:border-gray-700 shadow-sm py-2">
-              <CardContent className="p-4">
-                <div className="text-center">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">
+          <div className='grid grid-cols-2 gap-4'>
+            <Card className='border border-gray-200 dark:border-gray-700 shadow-sm py-2'>
+              <CardContent className='p-4'>
+                <div className='text-center'>
+                  <p className='text-sm font-medium text-gray-900 dark:text-white mb-1'>
                     Total Pengguna
                   </p>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+                  <p className='text-xs text-gray-600 dark:text-gray-400 mb-2'>
                     Pengguna terdaftar
                   </p>
-                  <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <div className='text-2xl font-bold text-gray-900 dark:text-white'>
                     {users.length}
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border border-gray-200 dark:border-gray-700 shadow-sm py-2">
-              <CardContent className="p-4">
-                <div className="text-center">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">
+            <Card className='border border-gray-200 dark:border-gray-700 shadow-sm py-2'>
+              <CardContent className='p-4'>
+                <div className='text-center'>
+                  <p className='text-sm font-medium text-gray-900 dark:text-white mb-1'>
                     Total Admin
                   </p>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+                  <p className='text-xs text-gray-600 dark:text-gray-400 mb-2'>
                     Pengguna admin
                   </p>
-                  <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {users.filter((user) => user.role === "admin").length}
+                  <div className='text-2xl font-bold text-gray-900 dark:text-white'>
+                    {users.filter(user => user.role === 'admin').length}
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border border-gray-200 dark:border-gray-700 shadow-sm py-2">
-              <CardContent className="p-4">
-                <div className="text-center">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">
+            <Card className='border border-gray-200 dark:border-gray-700 shadow-sm py-2'>
+              <CardContent className='p-4'>
+                <div className='text-center'>
+                  <p className='text-sm font-medium text-gray-900 dark:text-white mb-1'>
                     Total Program
                   </p>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+                  <p className='text-xs text-gray-600 dark:text-gray-400 mb-2'>
                     Program aktif
                   </p>
-                  <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <div className='text-2xl font-bold text-gray-900 dark:text-white'>
                     {programs.length}
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border border-gray-200 dark:border-gray-700 shadow-sm py-2">
-              <CardContent className="p-4">
-                <div className="text-center">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">
+            <Card className='border border-gray-200 dark:border-gray-700 shadow-sm py-2'>
+              <CardContent className='p-4'>
+                <div className='text-center'>
+                  <p className='text-sm font-medium text-gray-900 dark:text-white mb-1'>
                     Program Butuh Dikonfirmasi
                   </p>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+                  <p className='text-xs text-gray-600 dark:text-gray-400 mb-2'>
                     Menunggu persetujuan
                   </p>
-                  <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <div className='text-2xl font-bold text-gray-900 dark:text-white'>
                     {isLoadingDraftPrograms
-                      ? "..."
+                      ? '...'
                       : draftProgramsData?.total || 0}
                   </div>
                 </div>
@@ -219,129 +219,129 @@ export default function AdminDashboard() {
 
           {/* Confirmation Management */}
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            <h2 className='text-lg font-semibold text-gray-900 dark:text-white mb-2'>
               Manajemen Konfirmasi
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            <p className='text-sm text-gray-600 dark:text-gray-400 mb-4'>
               Kelola konfirmasi dana dan program yang memerlukan persetujuan
             </p>
 
-            <Tabs defaultValue="dana" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="dana" className="flex items-center gap-2">
+            <Tabs defaultValue='dana' className='w-full'>
+              <TabsList className='grid w-full grid-cols-2'>
+                <TabsTrigger value='dana' className='flex items-center gap-2'>
                   Konfirmasi Dana
                   <Badge
-                    variant="secondary"
-                    className="ml-1 h-5 w-5 rounded-full p-0 text-xs"
+                    variant='secondary'
+                    className='ml-1 h-5 w-5 rounded-full p-0 text-xs'
                   >
                     3
                   </Badge>
                 </TabsTrigger>
                 <TabsTrigger
-                  value="program"
-                  className="flex items-center gap-2"
+                  value='program'
+                  className='flex items-center gap-2'
                 >
                   Konfirmasi Program
                   <Badge
-                    variant="secondary"
-                    className="ml-1 h-5 w-5 rounded-full p-0 text-xs"
+                    variant='secondary'
+                    className='ml-1 h-5 w-5 rounded-full p-0 text-xs'
                   >
                     {isLoadingDraftPrograms
-                      ? "..."
+                      ? '...'
                       : draftProgramsData?.total || 0}
                   </Badge>
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="dana" className="mt-4">
-                <div className="space-y-3">
+              <TabsContent value='dana' className='mt-4'>
+                <div className='space-y-3'>
                   {/* Mock donor payment data */}
                   {[
                     {
-                      id: "1",
-                      donorName: "Ahmad Fauzi",
-                      programTitle: "Bantu Pendidikan Anak",
+                      id: '1',
+                      donorName: 'Ahmad Fauzi',
+                      programTitle: 'Bantu Pendidikan Anak',
                       amount: 500000,
-                      paymentMethod: "Bank Transfer",
-                      paymentDate: "2024-01-15",
-                      status: "pending",
+                      paymentMethod: 'Bank Transfer',
+                      paymentDate: '2024-01-15',
+                      status: 'pending',
                     },
                     {
-                      id: "2",
-                      donorName: "Siti Nurhaliza",
-                      programTitle: "Bantuan Makanan untuk Lansia",
+                      id: '2',
+                      donorName: 'Siti Nurhaliza',
+                      programTitle: 'Bantuan Makanan untuk Lansia',
                       amount: 250000,
-                      paymentMethod: "E-Wallet",
-                      paymentDate: "2024-01-14",
-                      status: "pending",
+                      paymentMethod: 'E-Wallet',
+                      paymentDate: '2024-01-14',
+                      status: 'pending',
                     },
                     {
-                      id: "3",
-                      donorName: "Budi Santoso",
-                      programTitle: "Renovasi Masjid",
+                      id: '3',
+                      donorName: 'Budi Santoso',
+                      programTitle: 'Renovasi Masjid',
                       amount: 1000000,
-                      paymentMethod: "Bank Transfer",
-                      paymentDate: "2024-01-13",
-                      status: "pending",
+                      paymentMethod: 'Bank Transfer',
+                      paymentDate: '2024-01-13',
+                      status: 'pending',
                     },
-                  ].map((payment) => (
+                  ].map(payment => (
                     <Card
                       key={payment.id}
-                      className="border border-gray-200 dark:border-gray-700"
+                      className='border border-gray-200 dark:border-gray-700'
                     >
-                      <CardContent className="p-4">
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-between">
+                      <CardContent className='p-4'>
+                        <div className='space-y-3'>
+                          <div className='flex items-center justify-between'>
                             <div>
-                              <h3 className="font-semibold text-gray-900 dark:text-white text-base">
+                              <h3 className='font-semibold text-gray-900 dark:text-white text-base'>
                                 {payment.donorName}
                               </h3>
-                              <p className="text-sm text-gray-600 dark:text-gray-400">
+                              <p className='text-sm text-gray-600 dark:text-gray-400'>
                                 Program: {payment.programTitle}
                               </p>
                             </div>
-                            <Badge variant="outline" className="text-xs">
+                            <Badge variant='outline' className='text-xs'>
                               {payment.status}
                             </Badge>
                           </div>
 
-                          <div className="space-y-2">
-                            <div className="flex justify-between text-sm">
-                              <span className="text-gray-600 dark:text-gray-400">
+                          <div className='space-y-2'>
+                            <div className='flex justify-between text-sm'>
+                              <span className='text-gray-600 dark:text-gray-400'>
                                 Jumlah: {formatCurrency(payment.amount)}
                               </span>
-                              <span className="text-gray-600 dark:text-gray-400">
+                              <span className='text-gray-600 dark:text-gray-400'>
                                 Metode: {payment.paymentMethod}
                               </span>
                             </div>
-                            <div className="text-sm text-gray-600 dark:text-gray-400">
-                              Tanggal:{" "}
+                            <div className='text-sm text-gray-600 dark:text-gray-400'>
+                              Tanggal:{' '}
                               {new Date(payment.paymentDate).toLocaleDateString(
-                                "id-ID",
+                                'id-ID'
                               )}
                             </div>
                           </div>
 
-                          <div className="flex gap-2">
+                          <div className='flex gap-2'>
                             <Button
-                              size="sm"
-                              className="text-xs px-3 py-1 h-auto bg-green-500 hover:bg-green-600"
+                              size='sm'
+                              className='text-xs px-3 py-1 h-auto bg-green-500 hover:bg-green-600'
                             >
                               Konfirmasi
                             </Button>
                             <Button
-                              size="sm"
-                              variant="outline"
-                              className="text-xs px-3 py-1 h-auto"
+                              size='sm'
+                              variant='outline'
+                              className='text-xs px-3 py-1 h-auto'
                             >
                               Tolak
                             </Button>
                             <Button
-                              size="sm"
-                              variant="outline"
-                              className="text-xs px-3 py-1 h-auto"
+                              size='sm'
+                              variant='outline'
+                              className='text-xs px-3 py-1 h-auto'
                             >
-                              <Eye className="w-3 h-3 mr-1" />
+                              <Eye className='w-3 h-3 mr-1' />
                               Detail
                             </Button>
                           </div>
@@ -352,15 +352,15 @@ export default function AdminDashboard() {
                 </div>
               </TabsContent>
 
-              <TabsContent value="program" className="mt-4">
-                <div className="space-y-3">
+              <TabsContent value='program' className='mt-4'>
+                <div className='space-y-3'>
                   {isLoadingDraftPrograms ? (
-                    <div className="flex justify-center py-8">
-                      <Skeleton className="h-4 w-32" />
+                    <div className='flex justify-center py-8'>
+                      <Skeleton className='h-4 w-32' />
                     </div>
                   ) : draftProgramsData?.programs?.length === 0 ? (
-                    <div className="text-center py-8">
-                      <p className="text-gray-500">
+                    <div className='text-center py-8'>
+                      <p className='text-gray-500'>
                         Tidak ada program yang menunggu persetujuan
                       </p>
                     </div>
@@ -369,75 +369,75 @@ export default function AdminDashboard() {
                       const currentAmount = program.programPeriods.reduce(
                         (sum: number, period: any) =>
                           sum + Number(period.currentAmount),
-                        0,
+                        0
                       );
                       const progressPercentage = Math.round(
-                        (currentAmount / Number(program.targetAmount)) * 100,
+                        (currentAmount / Number(program.targetAmount)) * 100
                       );
 
                       return (
                         <Card
                           key={program.id}
-                          className="py-0 border border-gray-200 dark:border-gray-700 cursor-pointer hover:shadow-md transition-shadow"
+                          className='py-0 border border-gray-200 dark:border-gray-700 cursor-pointer hover:shadow-md transition-shadow'
                           onClick={() => handleProgramSelect(program.id)}
                         >
-                          <CardContent className="p-4">
-                            <div className="space-y-3">
-                              <div className="flex items-center justify-between">
-                                <div className="flex-1">
-                                  <h3 className="font-semibold text-gray-900 dark:text-white text-base">
+                          <CardContent className='p-4'>
+                            <div className='space-y-3'>
+                              <div className='flex items-center justify-between'>
+                                <div className='flex-1'>
+                                  <h3 className='font-semibold text-gray-900 dark:text-white text-base'>
                                     {program.title}
                                   </h3>
-                                  <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                                  <p className='text-sm text-gray-600 dark:text-gray-400 line-clamp-2'>
                                     {program.description}
                                   </p>
                                 </div>
                                 <Badge
-                                  variant="outline"
-                                  className="text-xs ml-2"
+                                  variant='outline'
+                                  className='text-xs ml-2'
                                 >
                                   {program.status}
                                 </Badge>
                               </div>
 
-                              <div className="space-y-2">
-                                <div className="flex justify-between text-sm">
-                                  <span className="text-gray-600 dark:text-gray-400">
-                                    Target:{" "}
+                              <div className='space-y-2'>
+                                <div className='flex justify-between text-sm'>
+                                  <span className='text-gray-600 dark:text-gray-400'>
+                                    Target:{' '}
                                     {formatCurrency(
-                                      Number(program.targetAmount),
+                                      Number(program.targetAmount)
                                     )}
                                   </span>
-                                  <span className="text-gray-600 dark:text-gray-400">
-                                    Kategori: {program.category || "Tidak ada"}
+                                  <span className='text-gray-600 dark:text-gray-400'>
+                                    Kategori: {program.category || 'Tidak ada'}
                                   </span>
                                 </div>
-                                <div className="text-sm text-gray-600 dark:text-gray-400">
-                                  Dibuat:{" "}
+                                <div className='text-sm text-gray-600 dark:text-gray-400'>
+                                  Dibuat:{' '}
                                   {new Date(
-                                    program.createdAt,
-                                  ).toLocaleDateString("id-ID")}
+                                    program.createdAt
+                                  ).toLocaleDateString('id-ID')}
                                 </div>
 
                                 {/* Progress Bar */}
                                 <div>
-                                  <div className="flex justify-between text-xs mb-1">
-                                    <span className="text-gray-600 dark:text-gray-400">
+                                  <div className='flex justify-between text-xs mb-1'>
+                                    <span className='text-gray-600 dark:text-gray-400'>
                                       Progress
                                     </span>
-                                    <span className="text-gray-900 dark:text-white font-medium">
+                                    <span className='text-gray-900 dark:text-white font-medium'>
                                       {progressPercentage}%
                                     </span>
                                   </div>
-                                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                                  <div className='w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5'>
                                     <div
-                                      className="bg-green-600 h-1.5 rounded-full transition-all duration-300"
+                                      className='bg-green-600 h-1.5 rounded-full transition-all duration-300'
                                       style={{
                                         width: `${progressPercentage}%`,
                                       }}
                                     ></div>
                                   </div>
-                                  <div className="flex justify-between text-xs text-gray-600 dark:text-gray-400 mt-1">
+                                  <div className='flex justify-between text-xs text-gray-600 dark:text-gray-400 mt-1'>
                                     <span>
                                       Terkumpul: {formatCurrency(currentAmount)}
                                     </span>
@@ -448,16 +448,16 @@ export default function AdminDashboard() {
                                 </div>
                               </div>
 
-                              <div className="flex gap-2">
+                              <div className='flex gap-2'>
                                 <Button
-                                  size="sm"
-                                  className="text-xs px-3 py-1 h-auto bg-green-500 hover:bg-green-600"
-                                  onClick={(e) => {
+                                  size='sm'
+                                  className='text-xs px-3 py-1 h-auto bg-green-500 hover:bg-green-600'
+                                  onClick={e => {
                                     e.stopPropagation();
                                     handleProgramSelect(program.id);
                                   }}
                                 >
-                                  <Eye className="w-3 h-3 mr-1" />
+                                  <Eye className='w-3 h-3 mr-1' />
                                   Review
                                 </Button>
                               </div>
@@ -478,14 +478,14 @@ export default function AdminDashboard() {
       {selectedProgramId && (
         <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
           <DrawerContent>
-            <div className="mx-auto w-full max-w-md h-[80vh] flex flex-col overflow-y-auto">
-              <DrawerHeader className="flex-shrink-0">
+            <div className='mx-auto w-full max-w-md h-[80vh] flex flex-col overflow-y-auto'>
+              <DrawerHeader className='flex-shrink-0'>
                 <DrawerTitle>Review Program</DrawerTitle>
                 <DrawerDescription>
                   Tinjau detail program sebelum menyetujui atau menolak
                 </DrawerDescription>
               </DrawerHeader>
-              <div className="flex-1 px-4 pb-4">
+              <div className='flex-1 px-4 pb-4'>
                 <ProgramConfirmationDrawer
                   programId={selectedProgramId}
                   isOpen={isDrawerOpen}
@@ -493,9 +493,9 @@ export default function AdminDashboard() {
                   onApprovalChange={handleApprovalChange}
                 />
               </div>
-              <DrawerFooter className="flex-shrink-0">
+              <DrawerFooter className='flex-shrink-0'>
                 <DrawerClose asChild>
-                  <Button variant="outline">Tutup</Button>
+                  <Button variant='outline'>Tutup</Button>
                 </DrawerClose>
               </DrawerFooter>
             </div>

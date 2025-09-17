@@ -1,5 +1,5 @@
-import { withAuth } from "next-auth/middleware";
-import { NextResponse } from "next/server";
+import { withAuth } from 'next-auth/middleware';
+import { NextResponse } from 'next/server';
 
 export default withAuth(
   function middleware(req) {
@@ -10,8 +10,8 @@ export default withAuth(
     const res = NextResponse.next();
 
     // Check if user is trying to access admin routes
-    if (pathname.startsWith("/admin") && token?.role !== "admin") {
-      return NextResponse.redirect(new URL("/signin", req.url));
+    if (pathname.startsWith('/admin') && token?.role !== 'admin') {
+      return NextResponse.redirect(new URL('/signin', req.url));
     }
 
     return res;
@@ -23,17 +23,17 @@ export default withAuth(
 
         // Public routes that don't require authentication
         const publicRoutes = [
-          "/signin",
-          "/signup",
-          "/forgot-password",
-          "/status",
+          '/signin',
+          '/signup',
+          '/forgot-password',
+          '/status',
         ];
 
         if (
           publicRoutes.includes(pathname) ||
-          pathname.startsWith("/api/") ||
-          pathname.startsWith("/_next/") ||
-          pathname.startsWith("/favicon")
+          pathname.startsWith('/api/') ||
+          pathname.startsWith('/_next/') ||
+          pathname.startsWith('/favicon')
         ) {
           return true;
         }
@@ -42,9 +42,9 @@ export default withAuth(
         return !!token;
       },
     },
-  },
+  }
 );
 
 export const config = {
-  matcher: ["/((?!_next|.*\\..*).*)"],
+  matcher: ['/((?!_next|.*\\..*).*)'],
 };

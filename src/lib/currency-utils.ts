@@ -1,6 +1,6 @@
 export function formatCurrency(amount: number | string): string {
   const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
-  
+
   if (isNaN(numAmount)) {
     return 'Rp 0';
   }
@@ -15,7 +15,7 @@ export function formatCurrency(amount: number | string): string {
 
 export function formatCurrencyWithDecimals(amount: number | string): string {
   const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
-  
+
   if (isNaN(numAmount)) {
     return 'Rp 0,00';
   }
@@ -34,4 +34,3 @@ export function parseCurrency(currencyString: string): number {
   const parsed = parseFloat(cleanString);
   return isNaN(parsed) ? 0 : parsed;
 }
-

@@ -132,6 +132,7 @@ SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
 ```
 
 **To get the Supabase keys**:
+
 1. Go to Settings > API
 2. Copy the "Project URL" and "anon public" key
 3. Copy the "service_role" key (keep this secret!)
@@ -228,16 +229,17 @@ Vercel provides excellent support for Next.js applications and is the easiest de
 
 3. **Environment Variables**:
    Add all server environment variables in Vercel dashboard:
+
    ```
    # Supabase Database
    DATABASE_URL=postgresql://postgres:[YOUR-PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres
    DIRECT_URL=postgresql://postgres:[YOUR-PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres
-   
+
    # Supabase Project (Optional)
    NEXT_PUBLIC_SUPABASE_URL=https://[PROJECT-REF].supabase.co
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
    SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-   
+
    # Authentication
    BETTER_AUTH_SECRET=...
    BETTER_AUTH_URL=https://your-server.vercel.app
@@ -265,6 +267,7 @@ Vercel provides excellent support for Next.js applications and is the easiest de
    - **Output Directory**: `.next`
 
 3. **Environment Variables**:
+
    ```
    NEXT_PUBLIC_SERVER_URL=https://your-server.vercel.app
    NEXT_PUBLIC_CLIENT_URL=https://your-frontend.vercel.app
@@ -419,19 +422,19 @@ services:
       # Supabase Database Configuration
       DATABASE_URL: postgresql://postgres:[YOUR-PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres
       DIRECT_URL: postgresql://postgres:[YOUR-PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres
-      
+
       # Supabase Project Details (Optional)
       NEXT_PUBLIC_SUPABASE_URL: https://[PROJECT-REF].supabase.co
       NEXT_PUBLIC_SUPABASE_ANON_KEY: your-anon-key
       SUPABASE_SERVICE_ROLE_KEY: your-service-role-key
-      
+
       # Authentication
       BETTER_AUTH_SECRET: your-secret-key-here
       BETTER_AUTH_URL: http://localhost:3000
       CORS_ORIGIN: http://localhost:3001
       NEXT_PUBLIC_SERVER_URL: http://localhost:3000
     ports:
-      - "3000:3000"
+      - '3000:3000'
 
   web:
     build:
@@ -441,7 +444,7 @@ services:
       NEXT_PUBLIC_SERVER_URL: http://localhost:3000
       NEXT_PUBLIC_CLIENT_URL: http://localhost:3001
     ports:
-      - "3001:3001"
+      - '3001:3001'
     depends_on:
       - server
 ```
@@ -537,8 +540,8 @@ module.exports = {
       args: 'start',
       env: {
         NODE_ENV: 'production',
-        PORT: 3000
-      }
+        PORT: 3000,
+      },
     },
     {
       name: 'berjamaah-web',
@@ -547,10 +550,10 @@ module.exports = {
       args: 'start',
       env: {
         NODE_ENV: 'production',
-        PORT: 3001
-      }
-    }
-  ]
+        PORT: 3001,
+      },
+    },
+  ],
 };
 ```
 
@@ -682,7 +685,7 @@ If you need to create an admin user manually:
 psql -h your-host -U your-user -d your-database
 
 # Insert admin user (replace with your details)
-INSERT INTO users (id, email, password, role, full_name, created_at, updated_at) 
+INSERT INTO users (id, email, password, role, full_name, created_at, updated_at)
 VALUES ('admin-id', 'admin@example.com', 'hashed-password', 'admin', 'Admin User', NOW(), NOW());
 ```
 
@@ -691,6 +694,7 @@ VALUES ('admin-id', 'admin@example.com', 'hashed-password', 'admin', 'Admin User
 ### 1. Health Checks
 
 Set up monitoring for:
+
 - Database connectivity
 - API response times
 - Authentication service
@@ -717,6 +721,7 @@ npm run db:generate  # Regenerate Prisma client after updates
 ```
 
 **Supabase Dashboard Monitoring**:
+
 - Go to your Supabase project dashboard
 - Monitor "Database" section for:
   - Active connections
@@ -754,6 +759,7 @@ pm2 restart all  # For manual deployment
 **Symptoms**: Application fails to start, database connection timeouts
 
 **Solutions**:
+
 - Verify `DATABASE_URL` format matches Supabase connection string
 - Check if your Supabase project is active (not paused)
 - Ensure you're using the correct project reference and password
@@ -769,6 +775,7 @@ pm2 restart all  # For manual deployment
 **Symptoms**: Frontend cannot communicate with backend
 
 **Solutions**:
+
 - Verify `CORS_ORIGIN` matches frontend URL exactly
 - Check `BETTER_AUTH_URL` configuration
 - Ensure both applications are using HTTPS in production
@@ -778,6 +785,7 @@ pm2 restart all  # For manual deployment
 **Symptoms**: Login/logout not working, session errors
 
 **Solutions**:
+
 - Verify `BETTER_AUTH_SECRET` is set and consistent
 - Check Google OAuth configuration
 - Ensure redirect URIs are correct
@@ -788,6 +796,7 @@ pm2 restart all  # For manual deployment
 **Symptoms**: Deployment fails during build process
 
 **Solutions**:
+
 - Check Node.js version compatibility
 - Verify all environment variables are set
 - Check for TypeScript errors: `npm run check-types`
@@ -798,6 +807,7 @@ pm2 restart all  # For manual deployment
 **Symptoms**: Database queries fail, permission denied errors
 
 **Solutions**:
+
 - Check if RLS is enabled on your tables in Supabase dashboard
 - Disable RLS for tables that don't need it (if using Better-Auth)
 - Go to Supabase Dashboard > Authentication > Policies
@@ -811,6 +821,7 @@ pm2 restart all  # For manual deployment
 **Symptoms**: Slow response times, high memory usage
 
 **Solutions**:
+
 - Monitor database query performance in Supabase dashboard
 - Check for N+1 queries in Prisma
 - Optimize images and static assets

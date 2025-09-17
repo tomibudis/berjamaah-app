@@ -73,30 +73,30 @@ export function ProgramFilterDrawer({
   };
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       <Form {...form}>
-        <form className="space-y-4" onSubmit={form.handleSubmit(handleApply)}>
+        <form className='space-y-4' onSubmit={form.handleSubmit(handleApply)}>
           {/* Status Filter */}
           <FormField
             control={form.control}
-            name="status"
+            name='status'
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium text-gray-900 dark:text-white">
+                <FormLabel className='text-sm font-medium text-gray-900 dark:text-white'>
                   Status
                 </FormLabel>
                 <FormControl>
                   <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Pilih status" />
+                      <SelectValue placeholder='Pilih status' />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Semua Status</SelectItem>
-                      <SelectItem value="active">Aktif</SelectItem>
-                      <SelectItem value="ended">Selesai</SelectItem>
-                      <SelectItem value="paused">Dijeda</SelectItem>
-                      <SelectItem value="draft">Draft</SelectItem>
-                      <SelectItem value="pending">Menunggu</SelectItem>
+                      <SelectItem value='all'>Semua Status</SelectItem>
+                      <SelectItem value='active'>Aktif</SelectItem>
+                      <SelectItem value='ended'>Selesai</SelectItem>
+                      <SelectItem value='paused'>Dijeda</SelectItem>
+                      <SelectItem value='draft'>Draft</SelectItem>
+                      <SelectItem value='pending'>Menunggu</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>
@@ -108,26 +108,26 @@ export function ProgramFilterDrawer({
           {/* Category Filter */}
           <FormField
             control={form.control}
-            name="category"
+            name='category'
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium text-gray-900 dark:text-white">
+                <FormLabel className='text-sm font-medium text-gray-900 dark:text-white'>
                   Kategori
                 </FormLabel>
                 <FormControl>
                   <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Pilih kategori" />
+                      <SelectValue placeholder='Pilih kategori' />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Semua Kategori</SelectItem>
-                      <SelectItem value="Pendidikan">Pendidikan</SelectItem>
-                      <SelectItem value="Infrastruktur">
+                      <SelectItem value='all'>Semua Kategori</SelectItem>
+                      <SelectItem value='Pendidikan'>Pendidikan</SelectItem>
+                      <SelectItem value='Infrastruktur'>
                         Infrastruktur
                       </SelectItem>
-                      <SelectItem value="Bencana">Bencana</SelectItem>
-                      <SelectItem value="Kesehatan">Kesehatan</SelectItem>
-                      <SelectItem value="Sosial">Sosial</SelectItem>
+                      <SelectItem value='Bencana'>Bencana</SelectItem>
+                      <SelectItem value='Kesehatan'>Kesehatan</SelectItem>
+                      <SelectItem value='Sosial'>Sosial</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>
@@ -136,18 +136,18 @@ export function ProgramFilterDrawer({
             )}
           />
 
-          <div className="flex gap-2 pt-4">
+          <div className='flex gap-2 pt-4'>
             <Button
-              type="submit"
-              className="flex-1 bg-green-600 hover:bg-green-700"
+              type='submit'
+              className='flex-1 bg-green-600 hover:bg-green-700'
             >
               Terapkan Filter
             </Button>
             <Button
-              type="button"
+              type='button'
               onClick={handleReset}
-              variant="outline"
-              className="flex-1"
+              variant='outline'
+              className='flex-1'
             >
               Reset
             </Button>

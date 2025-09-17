@@ -6,8 +6,8 @@ export default function UserLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="">
-      <div className="pb-14">{children}</div>
+    <div className=''>
+      <div className='pb-14'>{children}</div>
       <BottomNavigationUser />
     </div>
   );

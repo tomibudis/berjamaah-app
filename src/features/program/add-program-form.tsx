@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import React from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Form,
   FormControl,
@@ -13,55 +13,55 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import Loader from "@/components/shared/loader";
-import { trpcClient, queryClient } from "@/utils/trpc";
-import { ChevronLeft, CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { Calendar } from "@/components/ui/calendar";
+} from '@/components/ui/form';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
+import Loader from '@/components/shared/loader';
+import { trpcClient, queryClient } from '@/utils/trpc';
+import { ChevronLeft, CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import { Calendar } from '@/components/ui/calendar';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from '@/components/ui/popover';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { cn } from "@/lib/utils";
-import { formatCalendarDate, formatInputDate } from "@/utils/dateFormat";
+} from '@/components/ui/select';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { cn } from '@/lib/utils';
+import { formatCalendarDate, formatInputDate } from '@/utils/dateFormat';
 
 const addProgramSchema = z
   .object({
     title: z
       .string()
-      .min(1, { message: "Judul program harus diisi." })
-      .min(3, { message: "Judul program minimal 3 karakter." })
-      .max(100, { message: "Judul program maksimal 100 karakter." }),
+      .min(1, { message: 'Judul program harus diisi.' })
+      .min(3, { message: 'Judul program minimal 3 karakter.' })
+      .max(100, { message: 'Judul program maksimal 100 karakter.' }),
     description: z
       .string()
-      .min(1, { message: "Deskripsi program harus diisi." })
-      .min(10, { message: "Deskripsi program minimal 10 karakter." })
-      .max(500, { message: "Deskripsi program maksimal 500 karakter." }),
+      .min(1, { message: 'Deskripsi program harus diisi.' })
+      .min(10, { message: 'Deskripsi program minimal 10 karakter.' })
+      .max(500, { message: 'Deskripsi program maksimal 500 karakter.' }),
     targetAmount: z
       .string()
-      .min(1, { message: "Target dana harus diisi." })
-      .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
-        message: "Target dana harus berupa angka yang valid dan lebih dari 0.",
+      .min(1, { message: 'Target dana harus diisi.' })
+      .refine(val => !isNaN(Number(val)) && Number(val) > 0, {
+        message: 'Target dana harus berupa angka yang valid dan lebih dari 0.',
       }),
     category: z
       .string()
-      .min(1, { message: "Kategori program harus diisi." })
-      .min(2, { message: "Kategori program minimal 2 karakter." })
-      .max(50, { message: "Kategori program maksimal 50 karakter." }),
-    programType: z.enum(["one_time", "multiple", "selected_date"], {
-      message: "Tipe program harus dipilih.",
+      .min(1, { message: 'Kategori program harus diisi.' })
+      .min(2, { message: 'Kategori program minimal 2 karakter.' })
+      .max(50, { message: 'Kategori program maksimal 50 karakter.' }),
+    programType: z.enum(['one_time', 'multiple', 'selected_date'], {
+      message: 'Tipe program harus dipilih.',
     }),
     // One-time program fields
     startDate: z.string().optional(),
@@ -81,44 +81,44 @@ const addProgramSchema = z
           date: z.string(),
           startTime: z.string(),
           endTime: z.string(),
-        }),
+        })
       )
       .optional(),
   })
   .refine(
-    (data) => {
-      if (data.programType === "one_time") {
-        return data.startDate && data.startDate.trim() !== "";
+    data => {
+      if (data.programType === 'one_time') {
+        return data.startDate && data.startDate.trim() !== '';
       }
       return true;
     },
     {
-      message: "Tanggal mulai harus diisi untuk program sekali jalan.",
-      path: ["startDate"],
-    },
+      message: 'Tanggal mulai harus diisi untuk program sekali jalan.',
+      path: ['startDate'],
+    }
   )
   .refine(
-    (data) => {
-      if (data.programType === "one_time") {
-        return data.endDate && data.endDate.trim() !== "";
+    data => {
+      if (data.programType === 'one_time') {
+        return data.endDate && data.endDate.trim() !== '';
       }
       return true;
     },
     {
-      message: "Tanggal selesai harus diisi untuk program sekali jalan.",
-      path: ["endDate"],
-    },
+      message: 'Tanggal selesai harus diisi untuk program sekali jalan.',
+      path: ['endDate'],
+    }
   )
   .refine(
-    (data) => {
-      if (data.programType === "one_time" && data.startDate && data.endDate) {
+    data => {
+      if (data.programType === 'one_time' && data.startDate && data.endDate) {
         const startDate = new Date(data.startDate);
         const endDate = new Date(data.endDate);
 
         // If dates are the same, check if end time is after start time
         if (startDate.getTime() === endDate.getTime()) {
-          const startTime = data.startTime || "00:00";
-          const endTime = data.endTime || "23:59";
+          const startTime = data.startTime || '00:00';
+          const endTime = data.endTime || '23:59';
           return endTime > startTime;
         }
 
@@ -129,14 +129,14 @@ const addProgramSchema = z
     },
     {
       message:
-        "Tanggal selesai harus setelah tanggal mulai, atau waktu selesai harus setelah waktu mulai jika tanggal sama.",
-      path: ["endDate"],
-    },
+        'Tanggal selesai harus setelah tanggal mulai, atau waktu selesai harus setelah waktu mulai jika tanggal sama.',
+      path: ['endDate'],
+    }
   )
   .refine(
-    (data) => {
+    data => {
       if (
-        data.programType === "one_time" &&
+        data.programType === 'one_time' &&
         data.startDate &&
         data.endDate &&
         data.startTime &&
@@ -154,28 +154,28 @@ const addProgramSchema = z
     },
     {
       message:
-        "Waktu selesai harus setelah waktu mulai untuk tanggal yang sama.",
-      path: ["endTime"],
-    },
+        'Waktu selesai harus setelah waktu mulai untuk tanggal yang sama.',
+      path: ['endTime'],
+    }
   )
   .refine(
-    (data) => {
-      if (data.programType === "selected_date") {
+    data => {
+      if (data.programType === 'selected_date') {
         return data.selectedDateTimes && data.selectedDateTimes.length > 0;
       }
       return true;
     },
     {
       message:
-        "Minimal satu tanggal dan waktu harus dipilih untuk program tanggal terpilih.",
-      path: ["selectedDateTimes"],
-    },
+        'Minimal satu tanggal dan waktu harus dipilih untuk program tanggal terpilih.',
+      path: ['selectedDateTimes'],
+    }
   )
   .refine(
-    (data) => {
-      if (data.programType === "selected_date" && data.selectedDateTimes) {
+    data => {
+      if (data.programType === 'selected_date' && data.selectedDateTimes) {
         // Check that all selected date times have valid time ranges
-        return data.selectedDateTimes.every((dateTime) => {
+        return data.selectedDateTimes.every(dateTime => {
           if (dateTime.startTime === dateTime.endTime) {
             return false; // Start and end time cannot be the same
           }
@@ -186,50 +186,50 @@ const addProgramSchema = z
     },
     {
       message:
-        "Waktu selesai harus berbeda dari waktu mulai untuk setiap tanggal.",
-      path: ["selectedDateTimes"],
-    },
+        'Waktu selesai harus berbeda dari waktu mulai untuk setiap tanggal.',
+      path: ['selectedDateTimes'],
+    }
   );
 
 export type AddProgramFormValues = z.infer<typeof addProgramSchema>;
 
-const DEFAULT_START_TIME = "00:00";
-const DEFAULT_END_TIME = "23:59";
+const DEFAULT_START_TIME = '00:00';
+const DEFAULT_END_TIME = '23:59';
 
 export default function AddProgramForm() {
   const router = useRouter();
-  const [newCategory, setNewCategory] = React.useState("");
+  const [newCategory, setNewCategory] = React.useState('');
   const [showNewCategoryInput, setShowNewCategoryInput] = React.useState(false);
-  const [newStartDate, setNewStartDate] = React.useState("");
-  const [newEndDate, setNewEndDate] = React.useState("");
+  const [newStartDate, setNewStartDate] = React.useState('');
+  const [newEndDate, setNewEndDate] = React.useState('');
   const [newStartTime, setNewStartTime] = React.useState(DEFAULT_START_TIME);
   const [newEndTime, setNewEndTime] = React.useState(DEFAULT_END_TIME);
 
   const form = useForm<AddProgramFormValues>({
     resolver: zodResolver(addProgramSchema),
     defaultValues: {
-      title: "",
-      description: "",
-      targetAmount: "",
-      category: "",
-      programType: "one_time",
-      startDate: "",
+      title: '',
+      description: '',
+      targetAmount: '',
+      category: '',
+      programType: 'one_time',
+      startDate: '',
       startTime: DEFAULT_START_TIME,
-      endDate: "",
+      endDate: '',
       endTime: DEFAULT_END_TIME,
-      recurringFrequency: "",
-      recurringDay: "",
-      recurringDurationDays: "",
-      totalCycles: "",
+      recurringFrequency: '',
+      recurringDay: '',
+      recurringDurationDays: '',
+      totalCycles: '',
       selectedDates: [],
       selectedDateTimes: [],
     },
-    mode: "onChange",
-    reValidateMode: "onChange",
+    mode: 'onChange',
+    reValidateMode: 'onChange',
   });
 
-  const programType = form.watch("programType");
-  const description = form.watch("description");
+  const programType = form.watch('programType');
+  const description = form.watch('description');
 
   const onSubmitForm = async (formValues: AddProgramFormValues) => {
     try {
@@ -241,53 +241,53 @@ export default function AddProgramForm() {
       };
 
       // Use the appropriate tRPC function based on program type
-      if (formValues.programType === "one_time") {
+      if (formValues.programType === 'one_time') {
         if (!formValues.startDate || !formValues.endDate) {
           throw new Error(
-            "Start date and end date are required for one-time programs",
+            'Start date and end date are required for one-time programs'
           );
         }
 
         await trpcClient.program.createOneTime.mutate({
           ...baseProgramData,
           startDate: new Date(
-            `${formValues.startDate}T${formValues.startTime || "00:00"}`,
+            `${formValues.startDate}T${formValues.startTime || '00:00'}`
           ),
           endDate: new Date(
-            `${formValues.endDate}T${formValues.endTime || "23:59"}`,
+            `${formValues.endDate}T${formValues.endTime || '23:59'}`
           ),
         });
-      } else if (formValues.programType === "multiple") {
+      } else if (formValues.programType === 'multiple') {
         if (
           !formValues.recurringFrequency ||
           !formValues.recurringDay ||
           !formValues.recurringDurationDays
         ) {
           throw new Error(
-            "Recurring settings are required for multiple programs",
+            'Recurring settings are required for multiple programs'
           );
         }
 
         await trpcClient.program.createRecurring.mutate({
           ...baseProgramData,
           recurringFrequency: formValues.recurringFrequency as
-            | "weekly"
-            | "monthly"
-            | "quarterly"
-            | "yearly",
+            | 'weekly'
+            | 'monthly'
+            | 'quarterly'
+            | 'yearly',
           recurringDay: Number(formValues.recurringDay),
           recurringDurationDays: Number(formValues.recurringDurationDays),
           totalCycles: formValues.totalCycles
             ? Number(formValues.totalCycles)
             : undefined,
         });
-      } else if (formValues.programType === "selected_date") {
+      } else if (formValues.programType === 'selected_date') {
         if (
           !formValues.selectedDateTimes ||
           formValues.selectedDateTimes.length === 0
         ) {
           throw new Error(
-            "At least one date and time must be selected for selected date programs",
+            'At least one date and time must be selected for selected date programs'
           );
         }
 
@@ -296,87 +296,87 @@ export default function AddProgramForm() {
           selectedDateTimes: formValues.selectedDateTimes,
         });
       } else {
-        throw new Error("Invalid program type");
+        throw new Error('Invalid program type');
       }
 
       // Invalidate program queries to refresh the list
       await queryClient.invalidateQueries({
-        queryKey: ["program", "getAll"],
+        queryKey: ['program', 'getAll'],
       });
 
-      toast.success("Program berhasil ditambahkan!");
-      router.push("/admin/program");
+      toast.success('Program berhasil ditambahkan!');
+      router.push('/admin/program');
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.error("Error adding program:", error);
+      console.error('Error adding program:', error);
       toast.error(
-        error.message || "Gagal menambahkan program. Silakan coba lagi.",
+        error.message || 'Gagal menambahkan program. Silakan coba lagi.'
       );
     }
   };
 
   const handleCategoryChange = (value: string) => {
-    if (value === "new") {
+    if (value === 'new') {
       setShowNewCategoryInput(true);
-      form.setValue("category", "");
+      form.setValue('category', '');
     } else {
       setShowNewCategoryInput(false);
-      form.setValue("category", value);
+      form.setValue('category', value);
       // Clear any validation errors when a valid category is selected
-      form.clearErrors("category");
+      form.clearErrors('category');
     }
   };
 
   const handleNewCategorySubmit = () => {
     if (newCategory.trim()) {
-      form.setValue("category", newCategory.trim());
+      form.setValue('category', newCategory.trim());
       // Clear any validation errors when a valid category is set
-      form.clearErrors("category");
-      setNewCategory("");
+      form.clearErrors('category');
+      setNewCategory('');
       setShowNewCategoryInput(false);
     }
   };
 
   const formatCurrency = (value: string) => {
     // Remove non-numeric characters
-    const numericValue = value.replace(/\D/g, "");
+    const numericValue = value.replace(/\D/g, '');
 
-    if (!numericValue) return "";
+    if (!numericValue) return '';
 
     // Format as currency
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
       minimumFractionDigits: 0,
     }).format(Number(numericValue));
   };
 
   const handleAmountChange = (
     value: string,
-    onChange: (value: string) => void,
+    onChange: (value: string) => void
   ) => {
-    const numericValue = value.replace(/\D/g, "");
+    const numericValue = value.replace(/\D/g, '');
     onChange(numericValue);
   };
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       {/* Header with Back Button */}
-      <div className="flex items-center gap-3">
+      <div className='flex items-center gap-3'>
         <Button
-          type="button"
-          variant="ghost"
-          size="sm"
+          type='button'
+          variant='ghost'
+          size='sm'
           onClick={() => router.back()}
-          className="p-2"
+          className='p-2'
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className='h-4 w-4' />
         </Button>
         <div>
-          <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <h1 className='text-lg font-semibold text-gray-900 dark:text-white'>
             Tambah Program Baru
           </h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p className='text-sm text-gray-600 dark:text-gray-400'>
             Buat program donasi baru untuk membantu sesama
           </p>
         </div>
@@ -385,26 +385,26 @@ export default function AddProgramForm() {
       {form.formState.isSubmitting && <Loader />}
 
       <Form {...form}>
-        <form className="space-y-8" onSubmit={form.handleSubmit(onSubmitForm)}>
+        <form className='space-y-8' onSubmit={form.handleSubmit(onSubmitForm)}>
           {/* Section 1: Informasi Program */}
-          <div className="space-y-6">
-            <div className="flex items-center gap-3">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <div className='space-y-6'>
+            <div className='flex items-center gap-3'>
+              <h2 className='text-lg font-semibold text-gray-900 dark:text-white'>
                 Informasi Program
               </h2>
             </div>
 
-            <div className="space-y-6">
+            <div className='space-y-6'>
               <FormField
                 control={form.control}
-                name="title"
+                name='title'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Judul Program</FormLabel>
                     <FormControl>
                       <Input
-                        type="text"
-                        placeholder="Masukkan judul program"
+                        type='text'
+                        placeholder='Masukkan judul program'
                         {...field}
                       />
                     </FormControl>
@@ -415,18 +415,18 @@ export default function AddProgramForm() {
 
               <FormField
                 control={form.control}
-                name="description"
+                name='description'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Deskripsi Program</FormLabel>
                     <FormControl>
                       <textarea
-                        className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                        placeholder="Masukkan deskripsi lengkap program"
+                        className='flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
+                        placeholder='Masukkan deskripsi lengkap program'
                         {...field}
                       />
                     </FormControl>
-                    <div className="flex justify-between text-xs text-muted-foreground">
+                    <div className='flex justify-between text-xs text-muted-foreground'>
                       <FormMessage />
                       <span>{description?.length || 0}/500 karakter</span>
                     </div>
@@ -436,29 +436,29 @@ export default function AddProgramForm() {
 
               <FormField
                 control={form.control}
-                name="targetAmount"
+                name='targetAmount'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Target Dana</FormLabel>
                     <FormControl>
-                      <div className="relative">
-                        <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm text-muted-foreground">
+                      <div className='relative'>
+                        <div className='absolute left-3 top-1/2 transform -translate-y-1/2 text-sm text-muted-foreground'>
                           Rp
                         </div>
                         <Input
-                          type="text"
-                          placeholder="Masukkan target dana"
+                          type='text'
+                          placeholder='Masukkan target dana'
                           value={field.value}
-                          onChange={(e) =>
+                          onChange={e =>
                             handleAmountChange(e.target.value, field.onChange)
                           }
-                          className="pl-10"
+                          className='pl-10'
                         />
                       </div>
                     </FormControl>
                     <FormMessage />
                     {field.value && (
-                      <p className="text-sm text-muted-foreground">
+                      <p className='text-sm text-muted-foreground'>
                         {formatCurrency(field.value)}
                       </p>
                     )}
@@ -468,7 +468,7 @@ export default function AddProgramForm() {
 
               <FormField
                 control={form.control}
-                name="category"
+                name='category'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Kategori Program</FormLabel>
@@ -479,54 +479,54 @@ export default function AddProgramForm() {
                           onValueChange={handleCategoryChange}
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="Pilih kategori" />
+                            <SelectValue placeholder='Pilih kategori' />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="Pendidikan">
+                            <SelectItem value='Pendidikan'>
                               Pendidikan
                             </SelectItem>
-                            <SelectItem value="Kesehatan">Kesehatan</SelectItem>
-                            <SelectItem value="Infrastruktur">
+                            <SelectItem value='Kesehatan'>Kesehatan</SelectItem>
+                            <SelectItem value='Infrastruktur'>
                               Infrastruktur
                             </SelectItem>
-                            <SelectItem value="Bencana">Bencana</SelectItem>
-                            <SelectItem value="Sosial">Sosial</SelectItem>
-                            <SelectItem value="Religi">Religi</SelectItem>
-                            <SelectItem value="Lainnya">Lainnya</SelectItem>
-                            <SelectItem value="new">
+                            <SelectItem value='Bencana'>Bencana</SelectItem>
+                            <SelectItem value='Sosial'>Sosial</SelectItem>
+                            <SelectItem value='Religi'>Religi</SelectItem>
+                            <SelectItem value='Lainnya'>Lainnya</SelectItem>
+                            <SelectItem value='new'>
                               + Tambah kategori baru
                             </SelectItem>
                           </SelectContent>
                         </Select>
                       ) : (
-                        <div className="flex gap-2">
+                        <div className='flex gap-2'>
                           <Input
-                            type="text"
-                            placeholder="Masukkan kategori baru"
+                            type='text'
+                            placeholder='Masukkan kategori baru'
                             value={newCategory}
-                            onChange={(e) => setNewCategory(e.target.value)}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") {
+                            onChange={e => setNewCategory(e.target.value)}
+                            onKeyDown={e => {
+                              if (e.key === 'Enter') {
                                 e.preventDefault();
                                 handleNewCategorySubmit();
                               }
                             }}
                           />
                           <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
+                            type='button'
+                            variant='outline'
+                            size='sm'
                             onClick={handleNewCategorySubmit}
                           >
                             Simpan
                           </Button>
                           <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
+                            type='button'
+                            variant='ghost'
+                            size='sm'
                             onClick={() => {
                               setShowNewCategoryInput(false);
-                              setNewCategory("");
+                              setNewCategory('');
                             }}
                           >
                             Batal
@@ -542,39 +542,39 @@ export default function AddProgramForm() {
           </div>
 
           {/* Section Separator */}
-          <div className="border-t border-gray-200 dark:border-gray-700"></div>
+          <div className='border-t border-gray-200 dark:border-gray-700'></div>
 
           {/* Section 2: Program Penayangan */}
-          <div className="space-y-6">
-            <div className="flex items-center gap-3">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <div className='space-y-6'>
+            <div className='flex items-center gap-3'>
+              <h2 className='text-lg font-semibold text-gray-900 dark:text-white'>
                 Program Penayangan
               </h2>
             </div>
 
-            <div className="space-y-6">
+            <div className='space-y-6'>
               <FormField
                 control={form.control}
-                name="programType"
+                name='programType'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Tipe Program</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value}
-                        onValueChange={(value) => {
+                        onValueChange={value => {
                           field.onChange(value);
                           // Clear any validation errors when a valid program type is selected
-                          form.clearErrors("programType");
+                          form.clearErrors('programType');
                         }}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Pilih tipe program" />
+                          <SelectValue placeholder='Pilih tipe program' />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="one_time">Sekali Jalan</SelectItem>
-                          <SelectItem value="multiple">Berulang</SelectItem>
-                          <SelectItem value="selected_date">
+                          <SelectItem value='one_time'>Sekali Jalan</SelectItem>
+                          <SelectItem value='multiple'>Berulang</SelectItem>
+                          <SelectItem value='selected_date'>
                             Tanggal Terpilih
                           </SelectItem>
                         </SelectContent>
@@ -586,18 +586,18 @@ export default function AddProgramForm() {
               />
 
               {/* One-time program fields */}
-              {programType === "one_time" && (
-                <div className="space-y-4">
-                  <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+              {programType === 'one_time' && (
+                <div className='space-y-4'>
+                  <h3 className='text-sm font-medium text-gray-900 dark:text-white'>
                     Periode Program
                   </h3>
-                  <div className="space-y-4">
+                  <div className='space-y-4'>
                     {/* Start Date and Time */}
-                    <div className="flex flex-col sm:flex-row gap-4">
-                      <div className="flex-1">
+                    <div className='flex flex-col sm:flex-row gap-4'>
+                      <div className='flex-1'>
                         <FormField
                           control={form.control}
-                          name="startDate"
+                          name='startDate'
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Tanggal Mulai</FormLabel>
@@ -605,47 +605,47 @@ export default function AddProgramForm() {
                                 <PopoverTrigger asChild>
                                   <FormControl>
                                     <Button
-                                      variant="outline"
-                                      size="lg"
+                                      variant='outline'
+                                      size='lg'
                                       className={cn(
-                                        "w-full pl-3 text-left font-normal text-sm",
-                                        !field.value && "text-muted-foreground",
+                                        'w-full pl-3 text-left font-normal text-sm',
+                                        !field.value && 'text-muted-foreground'
                                       )}
                                     >
                                       {field.value ? (
                                         format(
                                           new Date(field.value),
-                                          "MMM dd, yyyy",
+                                          'MMM dd, yyyy'
                                         )
                                       ) : (
                                         <span>Pilih tanggal</span>
                                       )}
-                                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                      <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
                                     </Button>
                                   </FormControl>
                                 </PopoverTrigger>
                                 <PopoverContent
-                                  className="w-auto p-0"
-                                  align="start"
+                                  className='w-auto p-0'
+                                  align='start'
                                 >
                                   <Calendar
-                                    mode="single"
+                                    mode='single'
                                     selected={
                                       field.value
                                         ? new Date(field.value)
                                         : undefined
                                     }
-                                    onSelect={(date) => {
+                                    onSelect={date => {
                                       field.onChange(
                                         date
-                                          ? date.toISOString().split("T")[0]
-                                          : "",
+                                          ? date.toISOString().split('T')[0]
+                                          : ''
                                       );
                                       // Clear validation errors when date is selected
-                                      form.clearErrors("startDate");
+                                      form.clearErrors('startDate');
                                     }}
-                                    disabled={(date) => date < new Date()}
-                                    captionLayout="dropdown"
+                                    disabled={date => date < new Date()}
+                                    captionLayout='dropdown'
                                   />
                                 </PopoverContent>
                               </Popover>
@@ -654,18 +654,18 @@ export default function AddProgramForm() {
                           )}
                         />
                       </div>
-                      <div className="flex-1">
+                      <div className='flex-1'>
                         <FormField
                           control={form.control}
-                          name="startTime"
+                          name='startTime'
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Waktu Mulai</FormLabel>
                               <FormControl>
                                 <Input
-                                  type="time"
+                                  type='time'
                                   {...field}
-                                  className="h-10 bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                                  className='h-10 bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
                                 />
                               </FormControl>
                               <FormMessage />
@@ -676,11 +676,11 @@ export default function AddProgramForm() {
                     </div>
 
                     {/* End Date and Time */}
-                    <div className="flex flex-col sm:flex-row gap-4">
-                      <div className="flex-1">
+                    <div className='flex flex-col sm:flex-row gap-4'>
+                      <div className='flex-1'>
                         <FormField
                           control={form.control}
-                          name="endDate"
+                          name='endDate'
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Tanggal Selesai</FormLabel>
@@ -688,48 +688,48 @@ export default function AddProgramForm() {
                                 <PopoverTrigger asChild>
                                   <FormControl>
                                     <Button
-                                      variant="outline"
-                                      size="lg"
+                                      variant='outline'
+                                      size='lg'
                                       className={cn(
-                                        "w-full pl-3 text-left font-normal text-sm",
-                                        !field.value && "text-muted-foreground",
+                                        'w-full pl-3 text-left font-normal text-sm',
+                                        !field.value && 'text-muted-foreground'
                                       )}
                                     >
                                       {field.value ? (
                                         format(
                                           new Date(field.value),
-                                          "MMM dd, yyyy",
+                                          'MMM dd, yyyy'
                                         )
                                       ) : (
                                         <span>Pilih tanggal</span>
                                       )}
-                                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                      <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
                                     </Button>
                                   </FormControl>
                                 </PopoverTrigger>
                                 <PopoverContent
-                                  className="w-auto p-0"
-                                  align="start"
+                                  className='w-auto p-0'
+                                  align='start'
                                 >
                                   <Calendar
-                                    mode="single"
+                                    mode='single'
                                     selected={
                                       field.value
                                         ? new Date(field.value)
                                         : undefined
                                     }
-                                    onSelect={(date) => {
+                                    onSelect={date => {
                                       field.onChange(
                                         date
-                                          ? date.toISOString().split("T")[0]
-                                          : "",
+                                          ? date.toISOString().split('T')[0]
+                                          : ''
                                       );
                                       // Clear validation errors when date is selected
-                                      form.clearErrors("endDate");
+                                      form.clearErrors('endDate');
                                     }}
-                                    disabled={(date) => {
+                                    disabled={date => {
                                       const startDate =
-                                        form.getValues("startDate");
+                                        form.getValues('startDate');
                                       return (
                                         date < new Date() ||
                                         (startDate
@@ -737,7 +737,7 @@ export default function AddProgramForm() {
                                           : false)
                                       );
                                     }}
-                                    captionLayout="dropdown"
+                                    captionLayout='dropdown'
                                   />
                                 </PopoverContent>
                               </Popover>
@@ -746,18 +746,18 @@ export default function AddProgramForm() {
                           )}
                         />
                       </div>
-                      <div className="flex-1">
+                      <div className='flex-1'>
                         <FormField
                           control={form.control}
-                          name="endTime"
+                          name='endTime'
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Waktu Selesai</FormLabel>
                               <FormControl>
                                 <Input
-                                  type="time"
+                                  type='time'
                                   {...field}
-                                  className="h-10 bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                                  className='h-10 bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
                                 />
                               </FormControl>
                               <FormMessage />
@@ -771,22 +771,22 @@ export default function AddProgramForm() {
               )}
 
               {/* Multiple/recurring program fields */}
-              {programType === "multiple" && (
-                <div className="space-y-4">
-                  <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+              {programType === 'multiple' && (
+                <div className='space-y-4'>
+                  <h3 className='text-sm font-medium text-gray-900 dark:text-white'>
                     Pengaturan Program Berulang
                   </h3>
 
-                  <Alert variant="info">
+                  <Alert variant='info'>
                     <AlertDescription>
-                      <div className="space-y-2">
+                      <div className='space-y-2'>
                         <p>
                           Program berulang akan dimulai dan berakhir pada pukul
                           00.00 WIB setiap hari yang ditentukan.
                         </p>
-                        <div className="text-sm">
-                          <p className="font-medium">Contoh pengaturan:</p>
-                          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                        <div className='text-sm'>
+                          <p className='font-medium'>Contoh pengaturan:</p>
+                          <ul className='list-disc list-inside space-y-1 text-muted-foreground'>
                             <li>
                               Frekuensi: Mingguan, Hari: 1 (Senin), Durasi: 3
                               hari
@@ -806,7 +806,7 @@ export default function AddProgramForm() {
 
                   <FormField
                     control={form.control}
-                    name="recurringFrequency"
+                    name='recurringFrequency'
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Frekuensi Berulang</FormLabel>
@@ -816,15 +816,15 @@ export default function AddProgramForm() {
                             onValueChange={field.onChange}
                           >
                             <SelectTrigger>
-                              <SelectValue placeholder="Pilih frekuensi" />
+                              <SelectValue placeholder='Pilih frekuensi' />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="weekly">Mingguan</SelectItem>
-                              <SelectItem value="monthly">Bulanan</SelectItem>
-                              <SelectItem value="quarterly">
+                              <SelectItem value='weekly'>Mingguan</SelectItem>
+                              <SelectItem value='monthly'>Bulanan</SelectItem>
+                              <SelectItem value='quarterly'>
                                 Triwulanan
                               </SelectItem>
-                              <SelectItem value="yearly">Tahunan</SelectItem>
+                              <SelectItem value='yearly'>Tahunan</SelectItem>
                             </SelectContent>
                           </Select>
                         </FormControl>
@@ -835,16 +835,16 @@ export default function AddProgramForm() {
 
                   <FormField
                     control={form.control}
-                    name="recurringDay"
+                    name='recurringDay'
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Hari Berulang</FormLabel>
                         <FormControl>
                           <Input
-                            type="number"
-                            placeholder="Hari dalam minggu (1-7) atau bulan (1-31)"
-                            min="1"
-                            max="31"
+                            type='number'
+                            placeholder='Hari dalam minggu (1-7) atau bulan (1-31)'
+                            min='1'
+                            max='31'
                             {...field}
                           />
                         </FormControl>
@@ -855,15 +855,15 @@ export default function AddProgramForm() {
 
                   <FormField
                     control={form.control}
-                    name="recurringDurationDays"
+                    name='recurringDurationDays'
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Durasi Setiap Aktivasi (Hari)</FormLabel>
                         <FormControl>
                           <Input
-                            type="number"
-                            placeholder="Berapa hari program aktif setiap kali"
-                            min="1"
+                            type='number'
+                            placeholder='Berapa hari program aktif setiap kali'
+                            min='1'
                             {...field}
                           />
                         </FormControl>
@@ -874,15 +874,15 @@ export default function AddProgramForm() {
 
                   <FormField
                     control={form.control}
-                    name="totalCycles"
+                    name='totalCycles'
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Total Siklus (Opsional)</FormLabel>
                         <FormControl>
                           <Input
-                            type="number"
-                            placeholder="Kosongkan untuk berulang tanpa batas"
-                            min="1"
+                            type='number'
+                            placeholder='Kosongkan untuk berulang tanpa batas'
+                            min='1'
                             {...field}
                           />
                         </FormControl>
@@ -894,37 +894,37 @@ export default function AddProgramForm() {
               )}
 
               {/* Selected date program fields */}
-              {programType === "selected_date" && (
-                <div className="space-y-4">
-                  <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+              {programType === 'selected_date' && (
+                <div className='space-y-4'>
+                  <h3 className='text-sm font-medium text-gray-900 dark:text-white'>
                     Pilih Tanggal Program
                   </h3>
 
                   <FormField
                     control={form.control}
-                    name="selectedDateTimes"
+                    name='selectedDateTimes'
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Tanggal dan Waktu Program</FormLabel>
                         <FormControl>
-                          <div className="space-y-3">
-                            <div className="space-y-4">
+                          <div className='space-y-3'>
+                            <div className='space-y-4'>
                               {/* Start Date and Time */}
-                              <div className="flex flex-col sm:flex-row gap-4">
-                                <div className="flex-1">
-                                  <div className="space-y-2">
-                                    <label className="text-sm font-medium">
+                              <div className='flex flex-col sm:flex-row gap-4'>
+                                <div className='flex-1'>
+                                  <div className='space-y-2'>
+                                    <label className='text-sm font-medium'>
                                       Tanggal Mulai
                                     </label>
                                     <Popover>
                                       <PopoverTrigger asChild>
                                         <Button
-                                          variant="outline"
-                                          size="lg"
+                                          variant='outline'
+                                          size='lg'
                                           className={cn(
-                                            "w-full pl-3 text-left font-normal text-sm",
+                                            'w-full pl-3 text-left font-normal text-sm',
                                             !newStartDate &&
-                                              "text-muted-foreground",
+                                              'text-muted-foreground'
                                           )}
                                         >
                                           {newStartDate ? (
@@ -932,66 +932,66 @@ export default function AddProgramForm() {
                                           ) : (
                                             <span>Pilih tanggal</span>
                                           )}
-                                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                          <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
                                         </Button>
                                       </PopoverTrigger>
                                       <PopoverContent
-                                        className="w-auto p-0"
-                                        align="start"
+                                        className='w-auto p-0'
+                                        align='start'
                                       >
                                         <Calendar
-                                          mode="single"
+                                          mode='single'
                                           selected={
                                             newStartDate
                                               ? new Date(newStartDate)
                                               : undefined
                                           }
-                                          onSelect={(date) => {
+                                          onSelect={date => {
                                             setNewStartDate(
-                                              date ? formatInputDate(date) : "",
+                                              date ? formatInputDate(date) : ''
                                             );
                                           }}
-                                          disabled={(date) => date < new Date()}
-                                          captionLayout="dropdown"
+                                          disabled={date => date < new Date()}
+                                          captionLayout='dropdown'
                                         />
                                       </PopoverContent>
                                     </Popover>
                                   </div>
                                 </div>
-                                <div className="flex-1">
-                                  <div className="space-y-2">
-                                    <label className="text-sm font-medium">
+                                <div className='flex-1'>
+                                  <div className='space-y-2'>
+                                    <label className='text-sm font-medium'>
                                       Waktu Mulai
                                     </label>
                                     <Input
-                                      type="time"
-                                      placeholder="Waktu mulai"
+                                      type='time'
+                                      placeholder='Waktu mulai'
                                       value={newStartTime}
-                                      onChange={(e) =>
+                                      onChange={e =>
                                         setNewStartTime(e.target.value)
                                       }
-                                      className="h-10 bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                                      className='h-10 bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
                                     />
                                   </div>
                                 </div>
                               </div>
 
                               {/* End Date and Time */}
-                              <div className="flex flex-col sm:flex-row gap-4">
-                                <div className="flex-1">
-                                  <div className="space-y-2">
-                                    <label className="text-sm font-medium">
+                              <div className='flex flex-col sm:flex-row gap-4'>
+                                <div className='flex-1'>
+                                  <div className='space-y-2'>
+                                    <label className='text-sm font-medium'>
                                       Tanggal Selesai
                                     </label>
                                     <Popover>
                                       <PopoverTrigger asChild>
                                         <Button
-                                          variant="outline"
-                                          size="lg"
+                                          variant='outline'
+                                          size='lg'
                                           className={cn(
-                                            "w-full pl-3 text-left font-normal text-sm",
+                                            'w-full pl-3 text-left font-normal text-sm',
                                             !newEndDate &&
-                                              "text-muted-foreground",
+                                              'text-muted-foreground'
                                           )}
                                         >
                                           {newEndDate ? (
@@ -999,26 +999,26 @@ export default function AddProgramForm() {
                                           ) : (
                                             <span>Pilih tanggal</span>
                                           )}
-                                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                          <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
                                         </Button>
                                       </PopoverTrigger>
                                       <PopoverContent
-                                        className="w-auto p-0"
-                                        align="start"
+                                        className='w-auto p-0'
+                                        align='start'
                                       >
                                         <Calendar
-                                          mode="single"
+                                          mode='single'
                                           selected={
                                             newEndDate
                                               ? new Date(newEndDate)
                                               : undefined
                                           }
-                                          onSelect={(date) => {
+                                          onSelect={date => {
                                             setNewEndDate(
-                                              date ? formatInputDate(date) : "",
+                                              date ? formatInputDate(date) : ''
                                             );
                                           }}
-                                          disabled={(date) => {
+                                          disabled={date => {
                                             return (
                                               date < new Date() ||
                                               (newStartDate
@@ -1026,36 +1026,36 @@ export default function AddProgramForm() {
                                                 : false)
                                             );
                                           }}
-                                          captionLayout="dropdown"
+                                          captionLayout='dropdown'
                                         />
                                       </PopoverContent>
                                     </Popover>
                                   </div>
                                 </div>
-                                <div className="flex-1">
-                                  <div className="space-y-2">
-                                    <label className="text-sm font-medium">
+                                <div className='flex-1'>
+                                  <div className='space-y-2'>
+                                    <label className='text-sm font-medium'>
                                       Waktu Selesai
                                     </label>
                                     <Input
-                                      type="time"
-                                      placeholder="Waktu selesai"
+                                      type='time'
+                                      placeholder='Waktu selesai'
                                       value={newEndTime}
-                                      onChange={(e) =>
+                                      onChange={e =>
                                         setNewEndTime(e.target.value)
                                       }
-                                      className="h-10 bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                                      className='h-10 bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
                                     />
                                   </div>
                                 </div>
                               </div>
 
                               {/* Add Button */}
-                              <div className="flex justify-start">
+                              <div className='flex justify-start'>
                                 <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="sm"
+                                  type='button'
+                                  variant='outline'
+                                  size='sm'
                                   onClick={() => {
                                     if (
                                       newStartDate &&
@@ -1069,7 +1069,7 @@ export default function AddProgramForm() {
                                         newEndTime <= newStartTime
                                       ) {
                                         toast.error(
-                                          "Waktu selesai harus setelah waktu mulai untuk tanggal yang sama",
+                                          'Waktu selesai harus setelah waktu mulai untuk tanggal yang sama'
                                         );
                                         return;
                                       }
@@ -1082,10 +1082,10 @@ export default function AddProgramForm() {
 
                                       // Check if this exact combination already exists
                                       const exists = field.value?.some(
-                                        (item) =>
+                                        item =>
                                           item.date === newStartDate &&
                                           item.startTime === newStartTime &&
-                                          item.endTime === newEndTime,
+                                          item.endTime === newEndTime
                                       );
 
                                       if (!exists) {
@@ -1093,8 +1093,8 @@ export default function AddProgramForm() {
                                           ...(field.value || []),
                                           newDateTime,
                                         ]);
-                                        setNewStartDate("");
-                                        setNewEndDate("");
+                                        setNewStartDate('');
+                                        setNewEndDate('');
                                         setNewStartTime(DEFAULT_START_TIME);
                                         setNewEndTime(DEFAULT_END_TIME);
                                       }
@@ -1106,10 +1106,10 @@ export default function AddProgramForm() {
                                     !newStartTime ||
                                     !newEndTime ||
                                     field.value?.some(
-                                      (item) =>
+                                      item =>
                                         item.date === newStartDate &&
                                         item.startTime === newStartTime &&
-                                        item.endTime === newEndTime,
+                                        item.endTime === newEndTime
                                     )
                                   }
                                 >
@@ -1119,31 +1119,31 @@ export default function AddProgramForm() {
                             </div>
 
                             {field.value && field.value.length > 0 && (
-                              <div className="space-y-2">
-                                <p className="text-sm text-muted-foreground">
+                              <div className='space-y-2'>
+                                <p className='text-sm text-muted-foreground'>
                                   Tanggal dan waktu yang dipilih:
                                 </p>
-                                <div className="flex flex-wrap gap-2">
+                                <div className='flex flex-wrap gap-2'>
                                   {field.value.map((dateTime, index) => (
                                     <div
                                       key={index}
-                                      className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-md text-sm"
+                                      className='flex items-center gap-2 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-md text-sm'
                                     >
                                       <span>
-                                        {formatCalendarDate(dateTime.date)}{" "}
-                                        {dateTime.startTime} -{" "}
+                                        {formatCalendarDate(dateTime.date)}{' '}
+                                        {dateTime.startTime} -{' '}
                                         {dateTime.endTime}
                                       </span>
                                       <button
-                                        type="button"
+                                        type='button'
                                         onClick={() => {
                                           const newDateTimes =
                                             field.value?.filter(
-                                              (_, i) => i !== index,
+                                              (_, i) => i !== index
                                             ) || [];
                                           field.onChange(newDateTimes);
                                         }}
-                                        className="text-red-500 hover:text-red-700 text-lg font-bold leading-none"
+                                        className='text-red-500 hover:text-red-700 text-lg font-bold leading-none'
                                       >
                                         ×
                                       </button>
@@ -1164,11 +1164,11 @@ export default function AddProgramForm() {
           </div>
 
           <Button
-            type="submit"
-            className="w-full bg-green-600 hover:bg-green-700"
+            type='submit'
+            className='w-full bg-green-600 hover:bg-green-700'
             disabled={form.formState.isSubmitting}
           >
-            {form.formState.isSubmitting ? "Menyimpan..." : "Simpan Program"}
+            {form.formState.isSubmitting ? 'Menyimpan...' : 'Simpan Program'}
           </Button>
         </form>
       </Form>

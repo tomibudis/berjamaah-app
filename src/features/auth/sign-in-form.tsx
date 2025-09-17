@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import React from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { PasswordInput } from "@/components/ui/password-input";
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
+import { PasswordInput } from '@/components/ui/password-input';
 import {
   Form,
   FormControl,
@@ -15,25 +15,25 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { signIn, useSession } from "next-auth/react";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import Loader from "@/components/shared/loader";
+} from '@/components/ui/form';
+import { signIn, useSession } from 'next-auth/react';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import Loader from '@/components/shared/loader';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 
 const signInSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address." }),
+  email: z.string().email({ message: 'Please enter a valid email address.' }),
   password: z
     .string()
-    .min(6, { message: "Password must be at least 6 characters." }),
+    .min(6, { message: 'Password must be at least 6 characters.' }),
   rememberMe: z.boolean().optional(),
 });
 
@@ -45,40 +45,40 @@ export default function SignInForm() {
 
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
-    defaultValues: { email: "", password: "", rememberMe: false },
-    mode: "onBlur",
-    reValidateMode: "onChange",
+    defaultValues: { email: '', password: '', rememberMe: false },
+    mode: 'onBlur',
+    reValidateMode: 'onChange',
   });
 
   const onSubmitForm = async (formValues: SignInFormValues) => {
-    const result = await signIn("credentials", {
+    const result = await signIn('credentials', {
       email: formValues.email,
       password: formValues.password,
       redirect: false,
     });
 
     if (result?.error) {
-      toast.error("Invalid credentials");
+      toast.error('Invalid credentials');
     } else if (result?.ok) {
-      toast.success("Sign in successful");
+      toast.success('Sign in successful');
 
       // Check if user is admin and redirect accordingly
-      if (session?.user?.role === "admin") {
-        router.replace("/admin/home");
+      if (session?.user?.role === 'admin') {
+        router.replace('/admin/home');
       } else {
-        router.replace("/");
+        router.replace('/');
       }
     }
   };
 
-  if (status === "loading") {
+  if (status === 'loading') {
     return <Loader />;
   }
 
   return (
-    <Card className="w-full shadow-lg">
-      <CardHeader className="text-center">
-        <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
+    <Card className='w-full shadow-lg'>
+      <CardHeader className='text-center'>
+        <CardTitle className='text-2xl font-bold'>Welcome Back</CardTitle>
         <CardDescription>
           Sign in to your Berjamaah donor account
         </CardDescription>
@@ -86,19 +86,19 @@ export default function SignInForm() {
       <CardContent>
         <Form {...form}>
           <form
-            className="space-y-6"
+            className='space-y-6'
             onSubmit={form.handleSubmit(onSubmitForm)}
           >
             <FormField
               control={form.control}
-              name="email"
+              name='email'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input
-                      type="email"
-                      placeholder="Enter your email"
+                      type='email'
+                      placeholder='Enter your email'
                       {...field}
                     />
                   </FormControl>
@@ -109,12 +109,12 @@ export default function SignInForm() {
 
             <FormField
               control={form.control}
-              name="password"
+              name='password'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <PasswordInput placeholder="••••••••" {...field} />
+                    <PasswordInput placeholder='••••••••' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -123,28 +123,28 @@ export default function SignInForm() {
 
             <FormField
               control={form.control}
-              name="rememberMe"
+              name='rememberMe'
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
+                  <div className='flex items-center justify-between'>
+                    <div className='flex items-center space-x-2'>
                       <FormControl>
                         <Checkbox
-                          id="remember-me"
+                          id='remember-me'
                           checked={field.value}
                           onCheckedChange={field.onChange}
                         />
                       </FormControl>
                       <FormLabel
-                        htmlFor="remember-me"
-                        className="text-sm text-gray-600 font-normal cursor-pointer"
+                        htmlFor='remember-me'
+                        className='text-sm text-gray-600 font-normal cursor-pointer'
                       >
                         Remember for 30 days
                       </FormLabel>
                     </div>
                     <Link
-                      href="/forgot-password"
-                      className="text-sm text-green-600 hover:text-green-500 font-medium"
+                      href='/forgot-password'
+                      className='text-sm text-green-600 hover:text-green-500 font-medium'
                     >
                       Forgot password
                     </Link>
@@ -155,11 +155,11 @@ export default function SignInForm() {
             />
 
             <Button
-              type="submit"
-              className="w-full"
+              type='submit'
+              className='w-full'
               disabled={form.formState.isSubmitting}
             >
-              {form.formState.isSubmitting ? "Signing In..." : "Sign in"}
+              {form.formState.isSubmitting ? 'Signing In...' : 'Sign in'}
             </Button>
           </form>
         </Form>

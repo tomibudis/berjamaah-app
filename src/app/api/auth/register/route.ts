@@ -1,14 +1,14 @@
-import { NextRequest, NextResponse } from "next/server";
-import { hash } from "bcryptjs";
-import { PrismaClient } from "@prisma/client";
+import { NextRequest, NextResponse } from 'next/server';
+import { hash } from 'bcryptjs';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
-import { z } from "zod";
+import { z } from 'zod';
 
 const registerSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
   phone: z.string().optional(),
 });
 
@@ -24,8 +24,8 @@ export async function POST(request: NextRequest) {
 
     if (existingUser) {
       return NextResponse.json(
-        { error: "User with this email already exists" },
-        { status: 400 },
+        { error: 'User with this email already exists' },
+        { status: 400 }
       );
     }
 
@@ -39,26 +39,26 @@ export async function POST(request: NextRequest) {
         email,
         password: hashedPassword,
         phone,
-        role: "user",
+        role: 'user',
       },
     });
 
     return NextResponse.json(
-      { message: "User created successfully", userId: user.id },
-      { status: 201 },
+      { message: 'User created successfully', userId: user.id },
+      { status: 201 }
     );
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: "Validation error", details: error.issues },
-        { status: 400 },
+        { error: 'Validation error', details: error.issues },
+        { status: 400 }
       );
     }
 
-    console.error("Registration error:", error);
+    console.error('Registration error:', error);
     return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
+      { error: 'Internal server error' },
+      { status: 500 }
     );
   }
 }

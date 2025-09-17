@@ -48,15 +48,12 @@ This document outlines the requirements for the Berjamaah App Donor Interface - 
 - **Feature**: View Active Programs
 - **Description**: Main page displaying all active donation programs
 - **Requirements**:
-
   - **Active Program Detection**:
-
     - System checks for programs with status = "Active"
     - Real-time status updates
     - Automatic filtering of inactive programs
 
   - **Program Display**:
-
     - Card-based layout optimized for mobile
     - Program title, description, and banner image (optional)
     - Progress bar showing donation progress (current/target amount)
@@ -65,7 +62,6 @@ This document outlines the requirements for the Berjamaah App Donor Interface - 
     - Program category/type indicator
 
   - **Empty State Handling**:
-
     - Display message "Belum ada program aktif" when no active programs
     - Friendly illustration or icon
     - Option to refresh or check back later
@@ -83,9 +79,7 @@ This document outlines the requirements for the Berjamaah App Donor Interface - 
 - **Feature**: Detailed Program Information
 - **Description**: Comprehensive view of selected program details
 - **Requirements**:
-
   - **Program Information**:
-
     - Full program description with rich text formatting
     - Target amount and current progress
     - Program duration (start date to end date)
@@ -94,7 +88,6 @@ This document outlines the requirements for the Berjamaah App Donor Interface - 
     - Program organizer information
 
   - **Progress Visualization**:
-
     - Visual progress bar with percentage
     - Amount raised vs target amount
     - Number of donors contributed
@@ -102,7 +95,6 @@ This document outlines the requirements for the Berjamaah App Donor Interface - 
     - Recent donation activity
 
   - **Program Statistics**:
-
     - Recent donations list (anonymous)
     - Average donation amount
     - Donation frequency

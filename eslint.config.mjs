@@ -5,7 +5,13 @@ import tseslint from 'typescript-eslint';
 import { globalIgnores } from 'eslint/config';
 
 export default tseslint.config([
-  globalIgnores(["**/node_modules/", "**/.next/", "prisma/generated/", "**/*.config.js", "dist"]),
+  globalIgnores([
+    '**/node_modules/',
+    '**/.next/',
+    'prisma/generated/',
+    '**/*.config.js',
+    'dist',
+  ]),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
@@ -18,9 +24,9 @@ export default tseslint.config([
       globals: globals.browser,
     },
     rules: {
-        "@typescript-eslint/no-unused-vars": "error",
-        "@typescript-eslint/no-explicit-any": "warn",
-        "prefer-const": "warn",
+      '@typescript-eslint/no-unused-vars': 'error',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      'prefer-const': 'warn',
     },
   },
 ]);

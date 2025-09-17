@@ -77,14 +77,14 @@ export function ProgramCard({ program, onDonationSubmit }: ProgramCardProps) {
 
   return (
     <>
-      <Card className="border border-gray-200 dark:border-gray-700 shadow-sm py-0">
-        <CardContent className="p-4">
-          <div className="space-y-4">
+      <Card className='border border-gray-200 dark:border-gray-700 shadow-sm py-0'>
+        <CardContent className='p-4'>
+          <div className='space-y-4'>
             {/* Program Header */}
-            <div className="flex items-start justify-between mb-2">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <h3 className="font-semibold text-gray-900 dark:text-white text-base">
+            <div className='flex items-start justify-between mb-2'>
+              <div className='flex-1'>
+                <div className='flex items-center gap-2 mb-2'>
+                  <h3 className='font-semibold text-gray-900 dark:text-white text-base'>
                     {program.title}
                   </h3>
                   <Badge
@@ -94,7 +94,7 @@ export function ProgramCard({ program, onDonationSubmit }: ProgramCardProps) {
                   </Badge>
                 </div>
                 <Badge
-                  variant="outline"
+                  variant='outline'
                   className={`text-xs ${getCategoryColor(program.category)}`}
                 >
                   {program.category}
@@ -103,29 +103,29 @@ export function ProgramCard({ program, onDonationSubmit }: ProgramCardProps) {
             </div>
 
             {/* Program Description */}
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className='text-sm text-gray-600 dark:text-gray-400'>
               {program.description}
             </p>
 
             {/* Program Stats */}
-            <div className="grid grid-cols-2 gap-2">
-              <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
-                <Target className="w-4 h-4" />
+            <div className='grid grid-cols-2 gap-2'>
+              <div className='flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400'>
+                <Target className='w-4 h-4' />
                 <span>Target Rp {program.target.toLocaleString('id-ID')}</span>
               </div>
-              <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
-                <Users className="w-4 h-4" />
+              <div className='flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400'>
+                <Users className='w-4 h-4' />
                 <span>{program.donorCount} donatur</span>
               </div>
-              <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
-                <Calendar className="w-4 h-4" />
+              <div className='flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400'>
+                <Calendar className='w-4 h-4' />
                 <span>
                   Selesai{' '}
                   {new Date(program.endDate).toLocaleDateString('id-ID')}
                 </span>
               </div>
-              <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
-                <Clock className="w-4 h-4" />
+              <div className='flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400'>
+                <Clock className='w-4 h-4' />
                 <span>
                   {daysLeft > 0 ? `${daysLeft} hari lagi` : 'Berakhir'}
                 </span>
@@ -133,21 +133,21 @@ export function ProgramCard({ program, onDonationSubmit }: ProgramCardProps) {
             </div>
 
             {/* Progress Bar */}
-            <div className="space-y-2">
-              <Progress value={program.progress} className="h-2" />
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600 dark:text-gray-400">
+            <div className='space-y-2'>
+              <Progress value={program.progress} className='h-2' />
+              <div className='flex justify-between text-sm'>
+                <span className='text-gray-600 dark:text-gray-400'>
                   Terkumpul Rp {program.collected.toLocaleString('id-ID')}
                 </span>
-                <span className="font-medium text-gray-900 dark:text-white">
+                <span className='font-medium text-gray-900 dark:text-white'>
                   {program.progress}%
                 </span>
               </div>
             </div>
 
             {/* Donate Button */}
-            <Button onClick={handleDonate} className="w-full">
-              <HandCoins className="w-4 h-4 mr-2" />
+            <Button onClick={handleDonate} className='w-full'>
+              <HandCoins className='w-4 h-4 mr-2' />
               Donasi
             </Button>
           </div>

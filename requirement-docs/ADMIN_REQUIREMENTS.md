@@ -68,9 +68,7 @@ This document outlines the requirements for the Berjamaah App Admin Panel - a mo
 - **Feature**: Individual Donation Details with Manual Verification
 - **Description**: Detailed view of specific donation with bank transfer proof for manual verification
 - **Requirements**:
-
   - **Donor Information Section**:
-
     - Donor name, contact, email
     - Donation amount and intended program
     - Donation date and time
@@ -78,7 +76,6 @@ This document outlines the requirements for the Berjamaah App Admin Panel - a mo
     - Donation reference number
 
   - **Payment Proof Section**:
-
     - Uploaded bank transfer receipt/screenshot
     - Image viewer with zoom functionality
     - Multiple image support (if donor uploaded multiple proofs)
@@ -88,7 +85,6 @@ This document outlines the requirements for the Berjamaah App Admin Panel - a mo
     - Download original image option
 
   - **Bank Transfer Details**:
-
     - Transfer amount verification
     - Bank account verification (sender/receiver)
     - Transfer date and time verification
@@ -107,9 +103,7 @@ This document outlines the requirements for the Berjamaah App Admin Panel - a mo
 - **Feature**: Admin Manual Verification Workflow
 - **Description**: Step-by-step manual verification process for bank transfers
 - **Requirements**:
-
   - **Verification Checklist**:
-
     - ✅ Amount matches donation amount
     - ✅ Bank account details verified
     - ✅ Transfer date is valid
@@ -117,7 +111,6 @@ This document outlines the requirements for the Berjamaah App Admin Panel - a mo
     - ✅ Image quality is clear and readable
 
   - **Verification Actions**:
-
     - **Approve**: Mark donation as verified and confirmed
     - **Request More Info**: Send message to donor for additional proof
     - **Reject**: Mark as rejected with reason
@@ -134,15 +127,12 @@ This document outlines the requirements for the Berjamaah App Admin Panel - a mo
 - **Feature**: Confirm Verified Donations
 - **Description**: Admin approval workflow for manually verified donations
 - **Requirements**:
-
   - **Pre-verification Check**:
-
     - Ensure all verification steps are completed
     - Verify bank transfer proof is clear and matches
     - Confirm amount and account details
 
   - **Confirmation Actions**:
-
     - One-click confirmation button (only after verification)
     - Confirmation dialog with verification summary
     - Automatic status update to "Confirmed"
@@ -160,9 +150,7 @@ This document outlines the requirements for the Berjamaah App Admin Panel - a mo
 - **Feature**: Reject Invalid Donations
 - **Description**: Admin rejection workflow for donations that fail manual verification
 - **Requirements**:
-
   - **Rejection Reasons** (Predefined options):
-
     - Amount doesn't match transfer
     - Bank account details don't match
     - Transfer proof is unclear/invalid
@@ -171,7 +159,6 @@ This document outlines the requirements for the Berjamaah App Admin Panel - a mo
     - Other (custom reason)
 
   - **Rejection Process**:
-
     - Select rejection reason from dropdown
     - Add custom notes/explanation
     - Upload rejection evidence (if needed)
@@ -189,16 +176,13 @@ This document outlines the requirements for the Berjamaah App Admin Panel - a mo
 - **Feature**: Image Upload and Management System
 - **Description**: Handle bank transfer proof images uploaded by donors
 - **Requirements**:
-
   - **Image Upload Support**:
-
     - Accept common formats (JPG, PNG, PDF)
     - Maximum file size: 5MB per image
     - Multiple image upload per donation
     - Image compression for storage optimization
 
   - **Image Viewing**:
-
     - Full-screen image viewer
     - Zoom and pan functionality
     - Image rotation support
@@ -313,23 +297,19 @@ This document outlines the requirements for the Berjamaah App Admin Panel - a mo
 - **Feature**: Manage Recurring Programs
 - **Description**: Handle programs that activate periodically (e.g., first week of each month)
 - **Requirements**:
-
   - **Automatic Activation**:
-
     - System automatically activates programs based on schedule
     - Background job to check and activate scheduled programs
     - Notification to admin when program activates
     - Automatic creation of new program_periods entries
 
   - **Manual Override**:
-
     - Admin can manually activate/deactivate periodic programs
     - Skip next activation cycle option
     - Modify schedule for future activations
     - Emergency deactivation during active period
 
   - **Schedule Management**:
-
     - View upcoming activation schedule
     - Edit recurring schedule (frequency, duration, end date)
     - Pause/resume periodic activations
@@ -520,14 +500,12 @@ admin_activity_logs (
 ### 4.4 Periodic Program System
 
 - **Background Job System**:
-
   - Cron job or scheduled task to check for program activations
   - Daily check for programs scheduled to activate
   - Automatic program activation based on schedule
   - Error handling and retry mechanisms for failed activations
 
 - **Schedule Calculation**:
-
   - Calculate next activation date based on frequency
   - Handle edge cases (month-end, leap years, etc.)
   - Support for different time zones
@@ -542,14 +520,12 @@ admin_activity_logs (
 ### 4.5 Security Considerations
 
 - **Data Protection**:
-
   - Secure file storage for bank transfer proofs
   - Access control for sensitive financial data
   - Audit trails for all admin actions
   - Data encryption for sensitive information
 
 - **Admin Security**:
-
   - Strong password requirements
   - Session timeout management
   - Role-based access control

@@ -1,9 +1,9 @@
-import { useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 export function useQueryParam<T>(
   paramKey: string,
-  defaultValue?: T,
+  defaultValue?: T
 ): [T, (value: T) => void] {
   const searchParams = useSearchParams();
   const getParam = () => {
@@ -14,15 +14,15 @@ export function useQueryParam<T>(
 
   const queryParamSetter = (value: T) => {
     const params = new URLSearchParams(searchParams.toString());
-    if (value === undefined || value === null || value === "") {
+    if (value === undefined || value === null || value === '') {
       params.delete(paramKey);
     } else {
       params.set(paramKey, String(value));
     }
 
     const newSearch = params.toString();
-    const newUrl = `${window.location.pathname}${newSearch ? `?${newSearch}` : ""}`;
-    window.history.replaceState({}, "", newUrl);
+    const newUrl = `${window.location.pathname}${newSearch ? `?${newSearch}` : ''}`;
+    window.history.replaceState({}, '', newUrl);
   };
 
   useEffect(() => {
@@ -40,7 +40,7 @@ type QueryParams<T> = {
 };
 
 export function useQueryParams<T extends Record<string, unknown>>(
-  defaults: QueryParams<T>,
+  defaults: QueryParams<T>
 ) {
   const searchParams = useSearchParams();
   // Extract only relevant query params based on the provided default object
@@ -58,7 +58,7 @@ export function useQueryParams<T extends Record<string, unknown>>(
   const querySetter = (newValues: Partial<T>) => {
     const params = new URLSearchParams(searchParams.toString());
     Object.entries(newValues).forEach(([key, value]) => {
-      if (value === undefined || value === null || value === "") {
+      if (value === undefined || value === null || value === '') {
         params.delete(key);
       } else {
         params.set(key, String(value));
@@ -66,14 +66,14 @@ export function useQueryParams<T extends Record<string, unknown>>(
     });
 
     const newSearch = params.toString();
-    const newUrl = `${window.location.pathname}${newSearch ? `?${newSearch}` : ""}`;
-    window.history.replaceState({}, "", newUrl);
+    const newUrl = `${window.location.pathname}${newSearch ? `?${newSearch}` : ''}`;
+    window.history.replaceState({}, '', newUrl);
   };
 
   // Initialize missing defaults in the URL
   useEffect(() => {
     const missingDefaults: Partial<T> = {};
-    Object.keys(defaults).forEach((key) => {
+    Object.keys(defaults).forEach(key => {
       if (searchParams.get(key) === null && defaults[key] !== undefined) {
         missingDefaults[key as keyof T] = defaults[key as keyof T];
       }

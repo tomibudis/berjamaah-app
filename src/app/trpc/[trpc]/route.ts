@@ -1,11 +1,11 @@
-import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
-import { appRouter } from "@/routers";
-import { createContext } from "@/lib/context";
-import { NextRequest } from "next/server";
+import { fetchRequestHandler } from '@trpc/server/adapters/fetch';
+import { appRouter } from '@/routers';
+import { createContext } from '@/lib/context';
+import { NextRequest } from 'next/server';
 
 function handler(req: NextRequest) {
   return fetchRequestHandler({
-    endpoint: "/trpc",
+    endpoint: '/trpc',
     req,
     router: appRouter,
     createContext: () => createContext(),

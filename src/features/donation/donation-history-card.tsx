@@ -77,21 +77,21 @@ export function DonationHistoryCard({
       }`}
       onClick={() => onViewDetails?.(donation.id)}
     >
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between">
+      <CardContent className='p-4'>
+        <div className='flex items-center justify-between'>
           {/* Left side - Title and Date */}
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-gray-900 dark:text-white text-sm leading-tight">
+          <div className='flex-1 min-w-0'>
+            <h3 className='font-semibold text-gray-900 dark:text-white text-sm leading-tight'>
               {donation.program.title}
             </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p className='text-sm text-gray-600 dark:text-gray-400 mt-1'>
               {formatDate(donation.createdAt)}
             </p>
           </div>
 
           {/* Right side - Amount and Status */}
-          <div className="flex flex-col items-end space-y-1">
-            <span className="font-semibold text-green-600 dark:text-green-500 text-sm">
+          <div className='flex flex-col items-end space-y-1'>
+            <span className='font-semibold text-green-600 dark:text-green-500 text-sm'>
               {formatCurrency(donation.amount)}
             </span>
             <Badge

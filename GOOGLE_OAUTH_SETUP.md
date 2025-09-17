@@ -67,13 +67,11 @@ The Google OAuth integration has been implemented with the following changes:
 ### Common Issues
 
 1. **"Invalid redirect URI" error**
-
    - Ensure the redirect URI in Google Console matches your application URL
    - Check that the callback URL is exactly: `http://localhost:3000/api/auth/callback/google`
    - Note: The callback URL should point to your server (port 3000), not your frontend (port 3001)
 
 2. **"Client ID not found" error**
-
    - Verify that `GOOGLE_CLIENT_ID` is set in your environment variables
    - Restart your development server after adding environment variables
 

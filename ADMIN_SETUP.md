@@ -17,7 +17,7 @@ This document explains how to set up and test the admin functionality in the Ber
    - Statistics overview
    - Real-time user data
 
-4. **Role-based Redirects**: 
+4. **Role-based Redirects**:
    - Admin users are automatically redirected to `/admin` when accessing `/dashboard`
    - Non-admin users are redirected to `/dashboard` when accessing `/admin`
    - Admin link appears in user menu for admin users
@@ -38,6 +38,7 @@ npx prisma generate
 You can create admin users in several ways:
 
 #### Option A: Using the Prisma seeder (Recommended)
+
 ```bash
 cd apps/server
 npm run db:seed
@@ -46,27 +47,31 @@ npm run db:seed
 **Note**: The seeder automatically loads environment variables from the `.env` file.
 
 This will create:
+
 - Admin user: `admin@berjamaah.com` / `admin123`
 - Sample user: `user@berjamaah.com` / `user123`
 
 #### Option B: Reset and seed the entire database
+
 ```bash
 cd apps/server
 npm run db:reset
 ```
 
 #### Option C: Using Better Auth Admin API
+
 Once you have at least one user, you can promote them to admin using the admin API:
 
 ```typescript
 // In your application or via API call
 await authClient.admin.setRole({
-  userId: "user-id-here",
-  role: "admin"
+  userId: 'user-id-here',
+  role: 'admin',
 });
 ```
 
 #### Option D: Direct database update
+
 ```sql
 UPDATE "user" SET role = 'admin' WHERE email = 'your-email@example.com';
 ```
@@ -74,6 +79,7 @@ UPDATE "user" SET role = 'admin' WHERE email = 'your-email@example.com';
 ### 3. Test the Implementation
 
 1. **Start the applications**:
+
    ```bash
    # Terminal 1 - Server
    cd apps/server
@@ -99,12 +105,14 @@ UPDATE "user" SET role = 'admin' WHERE email = 'your-email@example.com';
 ## Admin Dashboard Features
 
 ### User Management
+
 - **List Users**: View all registered users with pagination
 - **Ban/Unban**: Temporarily or permanently ban users
 - **Role Management**: Promote users to admin or demote admins
 - **User Statistics**: See total users, active users, banned users, and admin count
 
 ### Security Features
+
 - **Role-based Access**: Only admin users can access admin routes
 - **Session Management**: Better Auth handles session validation
 - **Automatic Redirects**: Users are redirected based on their role
@@ -129,7 +137,7 @@ The admin plugin is configured in `apps/server/src/lib/auth.ts`:
 admin({
   defaultRole: 'user',
   adminRoles: ['admin'],
-})
+});
 ```
 
 ## Troubleshooting
@@ -143,11 +151,13 @@ admin({
 ### Debug Steps
 
 1. Check user role in database:
+
    ```sql
    SELECT id, name, email, role, banned FROM "user" WHERE email = 'your-email@example.com';
    ```
 
 2. Check session data:
+
    ```typescript
    const session = await authClient.getSession();
    console.log(session?.user?.role);
