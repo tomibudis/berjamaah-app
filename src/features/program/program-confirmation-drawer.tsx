@@ -1,16 +1,14 @@
-'use client';
+"use client";
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { trpcClient } from '@/utils/trpc';
-import Loader from '@/components/shared/loader';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { useState } from 'react';
-import { toast } from 'sonner';
-import { CheckCircle, XCircle, Eye } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { trpcClient } from "@/utils/trpc";
+import Loader from "@/components/shared/loader";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
+import { toast } from "sonner";
+import { CheckCircle, XCircle } from "lucide-react";
 
 interface Program {
   id: string;
@@ -18,8 +16,8 @@ interface Program {
   description: string;
   targetAmount: string;
   category: string | null;
-  status: 'draft' | 'pending' | 'active' | 'paused' | 'ended' | 'rejected';
-  programType: 'one_time' | 'multiple' | 'selected_date';
+  status: "draft" | "pending" | "active" | "paused" | "ended" | "rejected";
+  programType: "one_time" | "multiple" | "selected_date";
   contact?: string | null;
   details?: string | null;
   bannerImage?: string | null;
@@ -60,7 +58,7 @@ export function ProgramConfirmationDrawer({
   onClose,
   onApprovalChange,
 }: ProgramConfirmationDrawerProps) {
-  const [rejectionReason, setRejectionReason] = useState('');
+  const [rejectionReason, setRejectionReason] = useState("");
   const [isRejecting, setIsRejecting] = useState(false);
   const queryClient = useQueryClient();
 
@@ -69,7 +67,7 @@ export function ProgramConfirmationDrawer({
     isLoading,
     error,
   } = useQuery({
-    queryKey: ['program', programId],
+    queryKey: ["program", programId],
     queryFn: async () => {
       return await trpcClient.program.getById.query({ id: programId });
     },
@@ -81,14 +79,15 @@ export function ProgramConfirmationDrawer({
       return await trpcClient.program.approveProgram.mutate({ id });
     },
     onSuccess: () => {
-      toast.success('Program berhasil disetujui');
-      queryClient.invalidateQueries({ queryKey: ['programs'] });
-      queryClient.invalidateQueries({ queryKey: ['draftPrograms'] });
+      toast.success("Program berhasil disetujui");
+      queryClient.invalidateQueries({ queryKey: ["programs"] });
+      queryClient.invalidateQueries({ queryKey: ["draftPrograms"] });
       onApprovalChange?.();
       onClose();
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
-      toast.error(error.message || 'Gagal menyetujui program');
+      toast.error(error.message || "Gagal menyetujui program");
     },
   });
 
@@ -97,70 +96,71 @@ export function ProgramConfirmationDrawer({
       return await trpcClient.program.rejectProgram.mutate({ id, reason });
     },
     onSuccess: () => {
-      toast.success('Program berhasil ditolak');
-      queryClient.invalidateQueries({ queryKey: ['programs'] });
-      queryClient.invalidateQueries({ queryKey: ['draftPrograms'] });
+      toast.success("Program berhasil ditolak");
+      queryClient.invalidateQueries({ queryKey: ["programs"] });
+      queryClient.invalidateQueries({ queryKey: ["draftPrograms"] });
       onApprovalChange?.();
       onClose();
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
-      toast.error(error.message || 'Gagal menolak program');
+      toast.error(error.message || "Gagal menolak program");
     },
   });
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
       minimumFractionDigits: 0,
     }).format(amount);
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('id-ID', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+    return new Date(dateString).toLocaleDateString("id-ID", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-      case 'ended':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-      case 'paused':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
-      case 'draft':
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
-      case 'pending':
-        return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
-      case 'rejected':
-        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+      case "active":
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+      case "ended":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
+      case "paused":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
+      case "draft":
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
+      case "pending":
+        return "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200";
+      case "rejected":
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
     }
   };
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'active':
-        return 'Aktif';
-      case 'ended':
-        return 'Selesai';
-      case 'paused':
-        return 'Dijeda';
-      case 'draft':
-        return 'Menunggu Persetujuan';
-      case 'pending':
-        return 'Menunggu Aktivasi';
-      case 'rejected':
-        return 'Ditolak';
+      case "active":
+        return "Aktif";
+      case "ended":
+        return "Selesai";
+      case "paused":
+        return "Dijeda";
+      case "draft":
+        return "Menunggu Persetujuan";
+      case "pending":
+        return "Menunggu Aktivasi";
+      case "rejected":
+        return "Ditolak";
       default:
-        return 'Tidak Diketahui';
+        return "Tidak Diketahui";
     }
   };
 
@@ -185,7 +185,7 @@ export function ProgramConfirmationDrawer({
 
   const handleCancelReject = () => {
     setIsRejecting(false);
-    setRejectionReason('');
+    setRejectionReason("");
   };
 
   if (!isOpen) return null;
@@ -216,15 +216,15 @@ export function ProgramConfirmationDrawer({
 
   // Calculate current amount from all periods
   const currentAmount = program.programPeriods.reduce(
-    (sum: number, period: Program['programPeriods'][0]) =>
+    (sum: number, period: Program["programPeriods"][0]) =>
       sum + Number(period.currentAmount),
-    0
+    0,
   );
 
   // Get the latest period for date information
   const latestPeriod = program.programPeriods[0];
 
-  const isDraft = program.status === 'draft';
+  const isDraft = program.status === "draft";
 
   return (
     <div className="space-y-6">
@@ -290,7 +290,7 @@ export function ProgramConfirmationDrawer({
               Kategori
             </h4>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              {program.category || 'Tidak ada'}
+              {program.category || "Tidak ada"}
             </p>
           </div>
           <div>
@@ -298,9 +298,9 @@ export function ProgramConfirmationDrawer({
               Tipe Program
             </h4>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              {program.programType === 'one_time' && 'Sekali Jalan'}
-              {program.programType === 'multiple' && 'Berulang'}
-              {program.programType === 'selected_date' && 'Tanggal Terpilih'}
+              {program.programType === "one_time" && "Sekali Jalan"}
+              {program.programType === "multiple" && "Berulang"}
+              {program.programType === "selected_date" && "Tanggal Terpilih"}
             </p>
           </div>
           <div>
@@ -399,7 +399,7 @@ export function ProgramConfirmationDrawer({
           </h3>
           <div className="space-y-3">
             {program.programPeriods.map(
-              (period: Program['programPeriods'][0], index: number) => (
+              (period: Program["programPeriods"][0], index: number) => (
                 <div
                   key={period.id}
                   className="border-l-2 border-green-500 pl-4"
@@ -413,11 +413,11 @@ export function ProgramConfirmationDrawer({
                     </span>
                   </div>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {formatDate(period.startDate)} -{' '}
+                    {formatDate(period.startDate)} -{" "}
                     {formatDate(period.endDate)}
                   </p>
                 </div>
-              )
+              ),
             )}
           </div>
         </div>
@@ -434,7 +434,7 @@ export function ProgramConfirmationDrawer({
                 className="flex-1 bg-green-600 hover:bg-green-700 text-white"
               >
                 <CheckCircle className="w-4 h-4 mr-2" />
-                {approveMutation.isPending ? 'Menyetujui...' : 'Setujui'}
+                {approveMutation.isPending ? "Menyetujui..." : "Setujui"}
               </Button>
               <Button
                 onClick={handleRejectClick}
@@ -458,7 +458,7 @@ export function ProgramConfirmationDrawer({
                 <Textarea
                   id="rejection-reason"
                   value={rejectionReason}
-                  onChange={e => setRejectionReason(e.target.value)}
+                  onChange={(e) => setRejectionReason(e.target.value)}
                   placeholder="Masukkan alasan penolakan program..."
                   className="mt-1"
                   rows={3}
@@ -471,7 +471,7 @@ export function ProgramConfirmationDrawer({
                   className="flex-1 bg-red-600 hover:bg-red-700 text-white"
                 >
                   <XCircle className="w-4 h-4 mr-2" />
-                  {rejectMutation.isPending ? 'Menolak...' : 'Tolak Program'}
+                  {rejectMutation.isPending ? "Menolak..." : "Tolak Program"}
                 </Button>
                 <Button
                   onClick={handleCancelReject}

@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Drawer,
   DrawerClose,
@@ -12,10 +12,9 @@ import {
   DrawerDescription,
   DrawerHeader,
   DrawerTitle,
-} from '@/components/ui/drawer';
-import { formatCurrency } from '@/lib/currency-utils';
+} from "@/components/ui/drawer";
+import { formatCurrency } from "@/lib/currency-utils";
 import {
-  Calendar,
   CheckCircle,
   Clock,
   XCircle,
@@ -27,9 +26,7 @@ import {
   Building2,
   FileText,
   Image as ImageIcon,
-  Download,
-  Eye,
-} from 'lucide-react';
+} from "lucide-react";
 
 export interface DonationDetail {
   id: string;
@@ -37,7 +34,7 @@ export interface DonationDetail {
   donorEmail: string;
   donorPhone: string | null;
   amount: number;
-  status: 'pending_verification' | 'verified' | 'confirmed' | 'rejected';
+  status: "pending_verification" | "verified" | "confirmed" | "rejected";
   donationReferenceNumber: string;
   bankAccountSender: string | null;
   bankAccountReceiver: string | null;
@@ -94,26 +91,26 @@ export function DonationDetailDrawer({
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'verified':
-      case 'confirmed':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-      case 'pending_verification':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
-      case 'rejected':
-        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
+      case "verified":
+      case "confirmed":
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
+      case "pending_verification":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
+      case "rejected":
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300";
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'verified':
-      case 'confirmed':
+      case "verified":
+      case "confirmed":
         return <CheckCircle className="w-5 h-5" />;
-      case 'pending_verification':
+      case "pending_verification":
         return <Clock className="w-5 h-5" />;
-      case 'rejected':
+      case "rejected":
         return <XCircle className="w-5 h-5" />;
       default:
         return <AlertCircle className="w-5 h-5" />;
@@ -122,39 +119,40 @@ export function DonationDetailDrawer({
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'verified':
-        return 'Terverifikasi';
-      case 'confirmed':
-        return 'Dikonfirmasi';
-      case 'pending_verification':
-        return 'Menunggu Verifikasi';
-      case 'rejected':
-        return 'Ditolak';
+      case "verified":
+        return "Terverifikasi";
+      case "confirmed":
+        return "Dikonfirmasi";
+      case "pending_verification":
+        return "Menunggu Verifikasi";
+      case "rejected":
+        return "Ditolak";
       default:
         return status;
     }
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('id-ID', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+    return new Date(dateString).toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
   const progressPercentage = Math.round(
-    (donation.programPeriod.currentAmount / donation.program.targetAmount) * 100
+    (donation.programPeriod.currentAmount / donation.program.targetAmount) *
+      100,
   );
 
   return (
@@ -402,7 +400,7 @@ export function DonationDetailDrawer({
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 gap-3">
-                  {donation.donationProofs.map(proof => (
+                  {donation.donationProofs.map((proof) => (
                     <div key={proof.id} className="space-y-2">
                       <div className="relative">
                         <img

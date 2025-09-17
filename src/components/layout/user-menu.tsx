@@ -12,7 +12,7 @@ import {
 import { useSession, signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import {
@@ -22,14 +22,12 @@ import {
   Moon,
   Monitor,
   ChevronDown,
-  Settings,
   Shield,
   Home,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export default function UserMenu() {
-  const router = useRouter();
   const pathname = usePathname();
   const { data: session, status } = useSession();
   const { theme, setTheme } = useTheme();
@@ -131,7 +129,7 @@ export default function UserMenu() {
               asChild
               className="flex items-center gap-2 cursor-pointer"
             >
-              <Link href={"/admin/home" as any}>
+              <Link href="/admin/home">
                 <Shield className="w-4 h-4" />
                 Admin Dashboard
               </Link>
@@ -141,7 +139,7 @@ export default function UserMenu() {
               asChild
               className="flex items-center gap-2 cursor-pointer"
             >
-              <Link href={"/" as any}>
+              <Link href="/">
                 <Home className="w-4 h-4" />
                 Back to Homepage
               </Link>

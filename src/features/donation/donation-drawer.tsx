@@ -1,21 +1,20 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
-import { Card, CardContent } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
+import { Card, CardContent } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Drawer,
   DrawerClose,
   DrawerContent,
   DrawerDescription,
-  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-} from '@/components/ui/drawer';
+} from "@/components/ui/drawer";
 import {
   Target,
   Calendar,
@@ -29,7 +28,7 @@ import {
   Copy,
   Info,
   Building2,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface Program {
   id: string;
@@ -49,7 +48,7 @@ interface DonationDrawerProps {
   onSubmit: (programId: string, amount: string) => void;
 }
 
-type WizardStep = 'amount' | 'payment' | 'upload' | 'success';
+type WizardStep = "amount" | "payment" | "upload" | "success";
 
 export function DonationDrawer({
   program,
@@ -57,13 +56,13 @@ export function DonationDrawer({
   onClose,
   onSubmit,
 }: DonationDrawerProps) {
-  const [donationAmount, setDonationAmount] = useState('');
-  const [currentStep, setCurrentStep] = useState<WizardStep>('amount');
+  const [donationAmount, setDonationAmount] = useState("");
+  const [currentStep, setCurrentStep] = useState<WizardStep>("amount");
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
-    useState<string>('');
-  const [selectedBank, setSelectedBank] = useState<string>('');
+    useState<string>("");
+  const [selectedBank, setSelectedBank] = useState<string>("");
   const [selectedDigitalWallet, setSelectedDigitalWallet] =
-    useState<string>('');
+    useState<string>("");
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
   const handleAmountSelect = (amount: number) => {
@@ -72,18 +71,18 @@ export function DonationDrawer({
 
   const handleAmountSubmit = () => {
     if (!donationAmount || !program) return;
-    setCurrentStep('payment');
+    setCurrentStep("payment");
   };
 
   const handlePaymentSubmit = () => {
     if (!selectedPaymentMethod) return;
 
     // Validate specific payment method selections
-    if (selectedPaymentMethod === 'bank_transfer' && !selectedBank) return;
-    if (selectedPaymentMethod === 'digital_wallet' && !selectedDigitalWallet)
+    if (selectedPaymentMethod === "bank_transfer" && !selectedBank) return;
+    if (selectedPaymentMethod === "digital_wallet" && !selectedDigitalWallet)
       return;
 
-    setCurrentStep('upload');
+    setCurrentStep("upload");
   };
 
   const handleUploadSubmit = () => {
@@ -91,33 +90,33 @@ export function DonationDrawer({
 
     // TODO: Implement actual donation submission with payment method and files
     onSubmit(program.id, donationAmount);
-    setCurrentStep('success');
+    setCurrentStep("success");
   };
 
   const handleClose = () => {
     // Reset all state
-    setDonationAmount('');
-    setCurrentStep('amount');
-    setSelectedPaymentMethod('');
+    setDonationAmount("");
+    setCurrentStep("amount");
+    setSelectedPaymentMethod("");
     setUploadedFiles([]);
     onClose();
   };
 
   const handleBack = () => {
-    if (currentStep === 'payment') {
-      setCurrentStep('amount');
-    } else if (currentStep === 'upload') {
-      setCurrentStep('payment');
+    if (currentStep === "payment") {
+      setCurrentStep("amount");
+    } else if (currentStep === "upload") {
+      setCurrentStep("payment");
     }
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
-    setUploadedFiles(prev => [...prev, ...files]);
+    setUploadedFiles((prev) => [...prev, ...files]);
   };
 
   const removeFile = (index: number) => {
-    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+    setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const copyToClipboard = (text: string) => {
@@ -126,47 +125,47 @@ export function DonationDrawer({
   };
 
   const getSelectedPaymentMethod = () => {
-    return paymentMethods.find(method => method.id === selectedPaymentMethod);
+    return paymentMethods.find((method) => method.id === selectedPaymentMethod);
   };
 
   const paymentMethods = [
     {
-      id: 'bank_transfer',
-      name: 'Bank Transfer',
-      description: 'Transfer ke rekening bank',
+      id: "bank_transfer",
+      name: "Bank Transfer",
+      description: "Transfer ke rekening bank",
       icon: CreditCard,
       banks: [
-        { name: 'BCA', account: '1234567890', holder: 'Yayasan Berjamaah' },
-        { name: 'Mandiri', account: '0987654321', holder: 'Yayasan Berjamaah' },
-        { name: 'BNI', account: '1122334455', holder: 'Yayasan Berjamaah' },
-        { name: 'BRI', account: '5544332211', holder: 'Yayasan Berjamaah' },
+        { name: "BCA", account: "1234567890", holder: "Yayasan Berjamaah" },
+        { name: "Mandiri", account: "0987654321", holder: "Yayasan Berjamaah" },
+        { name: "BNI", account: "1122334455", holder: "Yayasan Berjamaah" },
+        { name: "BRI", account: "5544332211", holder: "Yayasan Berjamaah" },
       ],
     },
     {
-      id: 'digital_wallet',
-      name: 'Dompet Digital',
-      description: 'GoPay, OVO, DANA, LinkAja',
+      id: "digital_wallet",
+      name: "Dompet Digital",
+      description: "GoPay, OVO, DANA, LinkAja",
       icon: Smartphone,
       wallets: [
-        { name: 'GoPay', number: '081234567890' },
-        { name: 'OVO', number: '081234567890' },
-        { name: 'DANA', number: '081234567890' },
-        { name: 'LinkAja', number: '081234567890' },
+        { name: "GoPay", number: "081234567890" },
+        { name: "OVO", number: "081234567890" },
+        { name: "DANA", number: "081234567890" },
+        { name: "LinkAja", number: "081234567890" },
       ],
     },
     {
-      id: 'qris',
-      name: 'QRIS',
-      description: 'Scan QR Code untuk pembayaran',
+      id: "qris",
+      name: "QRIS",
+      description: "Scan QR Code untuk pembayaran",
       icon: QrCode,
       qrCode:
-        'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=berjamaah-donation-qr',
+        "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=berjamaah-donation-qr",
     },
   ];
 
   if (!program) return null;
 
-  const enableBackButton = ['amount', 'success'].includes(currentStep);
+  const enableBackButton = ["amount", "success"].includes(currentStep);
   return (
     <Drawer open={isOpen} onOpenChange={handleClose}>
       <DrawerContent>
@@ -185,12 +184,12 @@ export function DonationDrawer({
               )}
               <div>
                 <DrawerTitle className="text-lg font-semibold">
-                  {currentStep === 'amount' && program.title}
-                  {currentStep === 'payment' && 'Pilih Metode Pembayaran'}
-                  {currentStep === 'upload' && 'Upload Bukti Transaksi'}
-                  {currentStep === 'success' && 'Donasi Berhasil!'}
+                  {currentStep === "amount" && program.title}
+                  {currentStep === "payment" && "Pilih Metode Pembayaran"}
+                  {currentStep === "upload" && "Upload Bukti Transaksi"}
+                  {currentStep === "success" && "Donasi Berhasil!"}
                 </DrawerTitle>
-                {currentStep === 'amount' && (
+                {currentStep === "amount" && (
                   <DrawerDescription className="mt-1">
                     {program.description}
                   </DrawerDescription>
@@ -202,14 +201,14 @@ export function DonationDrawer({
 
         <div className="px-4 pb-4 space-y-6 overflow-auto">
           {/* Step 1: Amount Selection */}
-          {currentStep === 'amount' && (
+          {currentStep === "amount" && (
             <>
               {/* Program Details */}
               <div className="space-y-3">
                 <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                   <Target className="w-4 h-4" />
                   <span>
-                    Target Rp {program.target.toLocaleString('id-ID')}
+                    Target Rp {program.target.toLocaleString("id-ID")}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
@@ -222,7 +221,7 @@ export function DonationDrawer({
                   <Progress value={program.progress} className="h-2" />
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600 dark:text-gray-400">
-                      Terkumpul Rp {program.collected.toLocaleString('id-ID')}
+                      Terkumpul Rp {program.collected.toLocaleString("id-ID")}
                     </span>
                     <span className="font-medium text-gray-900 dark:text-white">
                       {program.progress}%
@@ -242,7 +241,7 @@ export function DonationDrawer({
                     type="number"
                     placeholder="Masukkan jumlah donasi"
                     value={donationAmount}
-                    onChange={e => setDonationAmount(e.target.value)}
+                    onChange={(e) => setDonationAmount(e.target.value)}
                     className="mt-2"
                   />
                 </div>
@@ -253,13 +252,13 @@ export function DonationDrawer({
                     Pilih Jumlah Cepat
                   </Label>
                   <div className="grid grid-cols-4 gap-2 mt-2">
-                    {[25, 50, 75, 100, 125, 150, 175, 200].map(amount => (
+                    {[25, 50, 75, 100, 125, 150, 175, 200].map((amount) => (
                       <Button
                         key={amount}
                         variant={
                           donationAmount === amount.toString()
-                            ? 'default'
-                            : 'outline'
+                            ? "default"
+                            : "outline"
                         }
                         size="sm"
                         onClick={() => handleAmountSelect(amount)}
@@ -278,12 +277,12 @@ export function DonationDrawer({
                       Total Donasi:
                     </span>
                     <span className="font-semibold text-lg">
-                      {!donationAmount && '~'}
+                      {!donationAmount && "~"}
                       {donationAmount && (
                         <>
-                          Rp{' '}
+                          Rp{" "}
                           {(parseInt(donationAmount) * 1000).toLocaleString(
-                            'id-ID'
+                            "id-ID",
                           )}
                         </>
                       )}
@@ -295,20 +294,20 @@ export function DonationDrawer({
           )}
 
           {/* Step 2: Payment Method Selection */}
-          {currentStep === 'payment' && (
+          {currentStep === "payment" && (
             <div className="space-y-4">
               <div className="text-sm text-gray-600 dark:text-gray-400">
                 Pilih metode pembayaran yang Anda inginkan
               </div>
 
               <div className="grid grid-cols-3 gap-3">
-                {paymentMethods.map(method => (
+                {paymentMethods.map((method) => (
                   <Card
                     key={method.id}
                     className={`cursor-pointer transition-colors ${
                       selectedPaymentMethod === method.id
-                        ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-950'
-                        : 'hover:bg-gray-50 dark:hover:bg-gray-800'
+                        ? "ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-950"
+                        : "hover:bg-gray-50 dark:hover:bg-gray-800"
                     }`}
                     onClick={() => setSelectedPaymentMethod(method.id)}
                   >
@@ -328,7 +327,7 @@ export function DonationDrawer({
               </div>
 
               {/* Bank Transfer Details */}
-              {selectedPaymentMethod === 'bank_transfer' && (
+              {selectedPaymentMethod === "bank_transfer" && (
                 <div className="space-y-3">
                   <Alert>
                     <Info className="h-4 w-4" />
@@ -344,7 +343,7 @@ export function DonationDrawer({
                         <Button
                           key={index}
                           variant={
-                            selectedBank === bank.name ? 'default' : 'outline'
+                            selectedBank === bank.name ? "default" : "outline"
                           }
                           size="sm"
                           onClick={() => setSelectedBank(bank.name)}
@@ -364,7 +363,7 @@ export function DonationDrawer({
                           Informasi Rekening
                         </h4>
                         {getSelectedPaymentMethod()
-                          ?.banks?.filter(bank => bank.name === selectedBank)
+                          ?.banks?.filter((bank) => bank.name === selectedBank)
                           .map((bank, index) => (
                             <div key={index} className="space-y-2">
                               <div className="flex justify-between items-center">
@@ -406,10 +405,10 @@ export function DonationDrawer({
                                   Jumlah:
                                 </span>
                                 <span className="font-semibold text-green-600">
-                                  Rp{' '}
+                                  Rp{" "}
                                   {(
                                     parseInt(donationAmount) * 1000
-                                  ).toLocaleString('id-ID')}
+                                  ).toLocaleString("id-ID")}
                                 </span>
                               </div>
                             </div>
@@ -421,7 +420,7 @@ export function DonationDrawer({
               )}
 
               {/* Digital Wallet Details */}
-              {selectedPaymentMethod === 'digital_wallet' && (
+              {selectedPaymentMethod === "digital_wallet" && (
                 <div className="space-y-3">
                   <Alert>
                     <Info className="h-4 w-4" />
@@ -441,8 +440,8 @@ export function DonationDrawer({
                             key={index}
                             variant={
                               selectedDigitalWallet === wallet.name
-                                ? 'default'
-                                : 'outline'
+                                ? "default"
+                                : "outline"
                             }
                             size="sm"
                             onClick={() =>
@@ -453,7 +452,7 @@ export function DonationDrawer({
                             <Smartphone className="w-4 h-4 mr-2" />
                             {wallet.name}
                           </Button>
-                        )
+                        ),
                       )}
                     </div>
                   </div>
@@ -466,7 +465,7 @@ export function DonationDrawer({
                         </h4>
                         {getSelectedPaymentMethod()
                           ?.wallets?.filter(
-                            wallet => wallet.name === selectedDigitalWallet
+                            (wallet) => wallet.name === selectedDigitalWallet,
                           )
                           .map((wallet, index) => (
                             <div key={index} className="space-y-2">
@@ -503,10 +502,10 @@ export function DonationDrawer({
                                   Jumlah:
                                 </span>
                                 <span className="font-semibold text-blue-600">
-                                  Rp{' '}
+                                  Rp{" "}
                                   {(
                                     parseInt(donationAmount) * 1000
-                                  ).toLocaleString('id-ID')}
+                                  ).toLocaleString("id-ID")}
                                 </span>
                               </div>
                             </div>
@@ -518,7 +517,7 @@ export function DonationDrawer({
               )}
 
               {/* QRIS Details */}
-              {selectedPaymentMethod === 'qris' && (
+              {selectedPaymentMethod === "qris" && (
                 <div className="space-y-3">
                   <Alert>
                     <Info className="h-4 w-4" />
@@ -545,9 +544,9 @@ export function DonationDrawer({
                             Jumlah:
                           </span>
                           <span className="font-semibold text-purple-600">
-                            Rp{' '}
+                            Rp{" "}
                             {(parseInt(donationAmount) * 1000).toLocaleString(
-                              'id-ID'
+                              "id-ID",
                             )}
                           </span>
                         </div>
@@ -564,7 +563,7 @@ export function DonationDrawer({
           )}
 
           {/* Step 3: Upload Transaction Proof */}
-          {currentStep === 'upload' && (
+          {currentStep === "upload" && (
             <div className="space-y-4">
               <div className="text-sm text-gray-600 dark:text-gray-400">
                 Upload bukti transaksi pembayaran Anda
@@ -623,7 +622,7 @@ export function DonationDrawer({
           )}
 
           {/* Step 4: Success */}
-          {currentStep === 'success' && (
+          {currentStep === "success" && (
             <div className="text-center space-y-4">
               <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />
               <div>
@@ -631,10 +630,10 @@ export function DonationDrawer({
                   Donasi Berhasil!
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  Terima kasih atas donasi Anda sebesar{' '}
+                  Terima kasih atas donasi Anda sebesar{" "}
                   <span className="font-semibold">
-                    Rp{' '}
-                    {(parseInt(donationAmount) * 1000).toLocaleString('id-ID')}
+                    Rp{" "}
+                    {(parseInt(donationAmount) * 1000).toLocaleString("id-ID")}
                   </span>
                 </p>
                 <p className="text-xs text-gray-500 mt-2">
@@ -646,7 +645,7 @@ export function DonationDrawer({
 
           {/* Action Buttons */}
           <div className="space-y-2">
-            {currentStep === 'amount' && (
+            {currentStep === "amount" && (
               <>
                 <Button
                   onClick={handleAmountSubmit}
@@ -668,15 +667,15 @@ export function DonationDrawer({
               </>
             )}
 
-            {currentStep === 'payment' && (
+            {currentStep === "payment" && (
               <>
                 <Button
                   onClick={handlePaymentSubmit}
                   disabled={
                     !selectedPaymentMethod ||
-                    (selectedPaymentMethod === 'bank_transfer' &&
+                    (selectedPaymentMethod === "bank_transfer" &&
                       !selectedBank) ||
-                    (selectedPaymentMethod === 'digital_wallet' &&
+                    (selectedPaymentMethod === "digital_wallet" &&
                       !selectedDigitalWallet)
                   }
                   className="w-full"
@@ -693,7 +692,7 @@ export function DonationDrawer({
               </>
             )}
 
-            {currentStep === 'upload' && (
+            {currentStep === "upload" && (
               <>
                 <Button onClick={handleUploadSubmit} className="w-full">
                   Kirim Donasi
@@ -708,7 +707,7 @@ export function DonationDrawer({
               </>
             )}
 
-            {currentStep === 'success' && (
+            {currentStep === "success" && (
               <Button onClick={handleClose} className="w-full">
                 Tutup
               </Button>

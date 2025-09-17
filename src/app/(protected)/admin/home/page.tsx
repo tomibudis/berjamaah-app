@@ -3,13 +3,7 @@ import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -22,16 +16,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import {
-  Users,
-  UserPlus,
-  Shield,
-  Settings,
-  BarChart3,
-  UserCheck,
-  UserX,
-  Eye,
-} from "lucide-react";
+import { Shield, Eye } from "lucide-react";
 import { formatCurrency } from "@/lib/currency-utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { trpcClient } from "@/utils/trpc";
@@ -40,10 +25,12 @@ import { ProgramConfirmationDrawer } from "@/features/program/program-confirmati
 export default function AdminDashboard() {
   const router = useRouter();
   const { data: session, status } = useSession();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [users, setUsers] = useState<any[]>([]);
-  const [isLoadingUsers, setIsLoadingUsers] = useState(false);
+  const [, setIsLoadingUsers] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [programs, setPrograms] = useState<any[]>([]);
-  const [isLoadingPrograms, setIsLoadingPrograms] = useState(false);
+  const [, setIsLoadingPrograms] = useState(false);
   const [selectedProgramId, setSelectedProgramId] = useState<string | null>(
     null,
   );
@@ -117,36 +104,6 @@ export default function AdminDashboard() {
   const handleApprovalChange = () => {
     refetchDraftPrograms();
     loadPrograms();
-  };
-
-  const handleBanUser = async (userId: string) => {
-    try {
-      // TODO: Implement user banning with tRPC
-      console.log("Banning user:", userId);
-      loadUsers(); // Refresh the list
-    } catch (error) {
-      console.error("Error banning user:", error);
-    }
-  };
-
-  const handleUnbanUser = async (userId: string) => {
-    try {
-      // TODO: Implement user unbanning with tRPC
-      console.log("Unbanning user:", userId);
-      loadUsers(); // Refresh the list
-    } catch (error) {
-      console.error("Error unbanning user:", error);
-    }
-  };
-
-  const handleSetRole = async (userId: string, role: "user" | "admin") => {
-    try {
-      // TODO: Implement role setting with tRPC
-      console.log("Setting role for user:", userId, "to", role);
-      loadUsers(); // Refresh the list
-    } catch (error) {
-      console.error("Error setting role:", error);
-    }
   };
 
   if (status === "loading") {

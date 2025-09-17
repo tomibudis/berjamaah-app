@@ -1,8 +1,7 @@
-'use client';
+"use client";
 
-import SignInForm from '@/features/auth/sign-in-form';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import SignInForm from "@/features/auth/sign-in-form";
+import Link from "next/link";
 
 export default function SignInPage() {
   return (
@@ -12,7 +11,7 @@ export default function SignInPage() {
         <SignInForm />
         <div className="mt-4 text-center">
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Don't have an account?{' '}
+            Don't have an account?{" "}
             <Link
               href="/signup"
               className="text-green-600 hover:text-green-500"

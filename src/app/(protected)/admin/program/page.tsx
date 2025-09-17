@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback, Suspense } from 'react';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect, useCallback, Suspense } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 import {
   Drawer,
   DrawerClose,
@@ -19,13 +19,13 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from '@/components/ui/drawer';
-import { trpc, trpcClient, queryClient } from '@/utils/trpc';
-import Loader from '@/components/shared/loader';
-import { useQuery } from '@tanstack/react-query';
-import { ProgramDetailDrawer } from '@/features/program/program-detail-drawer';
-import { ProgramFilterDrawer } from '@/features/program/program-filter-drawer';
-import { useQueryParams } from '@/hooks/use-query-params';
+} from "@/components/ui/drawer";
+import { trpcClient } from "@/utils/trpc";
+import Loader from "@/components/shared/loader";
+import { useQuery } from "@tanstack/react-query";
+import { ProgramDetailDrawer } from "@/features/program/program-detail-drawer";
+import { ProgramFilterDrawer } from "@/features/program/program-filter-drawer";
+import { useQueryParams } from "@/hooks/use-query-params";
 
 // Types for program data
 interface Program {
@@ -47,7 +47,7 @@ interface Program {
     endDate: string;
     currentAmount: string; // Changed from number to string to match database
     cycleNumber?: number | null;
-    recurringFrequency?: 'weekly' | 'monthly' | 'quarterly' | 'yearly' | null;
+    recurringFrequency?: "weekly" | "monthly" | "quarterly" | "yearly" | null;
     recurringDay?: number | null;
     recurringDurationDays?: number | null;
     totalCycles?: number | null;
@@ -60,7 +60,7 @@ interface Program {
 
 function ProgramPageContent() {
   const [selectedProgramId, setSelectedProgramId] = useState<string | null>(
-    null
+    null,
   );
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
@@ -68,9 +68,9 @@ function ProgramPageContent() {
   const [allPrograms, setAllPrograms] = useState<Program[]>([]);
 
   // Use query params for filters
-  const [filters, setFilters] = useQueryParams({
-    status: 'all',
-    category: 'all',
+  const [filters] = useQueryParams({
+    status: "all",
+    category: "all",
   });
 
   const LIMIT = 10;
@@ -82,19 +82,19 @@ function ProgramPageContent() {
     error,
     refetch,
   } = useQuery({
-    queryKey: ['programs', filters.status, filters.category, offset],
+    queryKey: ["programs", filters.status, filters.category, offset],
     queryFn: async () => {
       return await trpcClient.program.getAll.query({
         status:
-          filters.status !== 'all'
+          filters.status !== "all"
             ? (filters.status as
-                | 'draft'
-                | 'pending'
-                | 'active'
-                | 'paused'
-                | 'ended')
+                | "draft"
+                | "pending"
+                | "active"
+                | "paused"
+                | "ended")
             : undefined,
-        category: filters.category !== 'all' ? filters.category : undefined,
+        category: filters.category !== "all" ? filters.category : undefined,
         limit: LIMIT,
         offset: offset,
       });
@@ -104,7 +104,7 @@ function ProgramPageContent() {
   // Load more programs
   const loadMore = useCallback(async () => {
     if (programsData && programsData.hasMore && !isLoading) {
-      setOffset(prev => prev + LIMIT);
+      setOffset((prev) => prev + LIMIT);
     }
   }, [programsData, isLoading]);
 
@@ -114,7 +114,7 @@ function ProgramPageContent() {
       if (offset === 0) {
         setAllPrograms(programsData.programs);
       } else {
-        setAllPrograms(prev => [...prev, ...programsData.programs]);
+        setAllPrograms((prev) => [...prev, ...programsData.programs]);
       }
     }
   }, [programsData, offset]);
@@ -130,49 +130,49 @@ function ProgramPageContent() {
   }, [loadMore]);
 
   useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
       minimumFractionDigits: 0,
     }).format(amount);
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-      case 'ended':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-      case 'paused':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
-      case 'draft':
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
-      case 'pending':
-        return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
+      case "active":
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+      case "ended":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
+      case "paused":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
+      case "draft":
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
+      case "pending":
+        return "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200";
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
     }
   };
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'active':
-        return 'Aktif';
-      case 'ended':
-        return 'Selesai';
-      case 'paused':
-        return 'Dijeda';
-      case 'draft':
-        return 'Draft';
-      case 'pending':
-        return 'Menunggu';
+      case "active":
+        return "Aktif";
+      case "ended":
+        return "Selesai";
+      case "paused":
+        return "Dijeda";
+      case "draft":
+        return "Draft";
+      case "pending":
+        return "Menunggu";
       default:
-        return 'Tidak Diketahui';
+        return "Tidak Diketahui";
     }
   };
 
@@ -200,7 +200,7 @@ function ProgramPageContent() {
   const getCurrentAmount = (program: Program) => {
     return program.programPeriods.reduce(
       (sum, period) => sum + Number(period.currentAmount),
-      0
+      0,
     );
   };
 
@@ -245,7 +245,7 @@ function ProgramPageContent() {
                   Sedang berjalan
                 </p>
                 <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {allPrograms.filter(p => p.status === 'active').length}
+                  {allPrograms.filter((p) => p.status === "active").length}
                 </div>
               </div>
             </div>
@@ -273,7 +273,7 @@ function ProgramPageContent() {
                   Berhasil diselesaikan
                 </p>
                 <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {allPrograms.filter(p => p.status === 'ended').length}
+                  {allPrograms.filter((p) => p.status === "ended").length}
                 </div>
               </div>
             </div>
@@ -288,7 +288,10 @@ function ProgramPageContent() {
                 </p>
                 <div className="text-2xl font-bold text-gray-900 dark:text-white">
                   {formatCurrency(
-                    allPrograms.reduce((sum, p) => sum + getCurrentAmount(p), 0)
+                    allPrograms.reduce(
+                      (sum, p) => sum + getCurrentAmount(p),
+                      0,
+                    ),
                   )}
                 </div>
               </div>
@@ -354,14 +357,14 @@ function ProgramPageContent() {
                     />
                   </svg>
                   Filter
-                  {Object.keys(filters).some(key => {
+                  {Object.keys(filters).some((key) => {
                     const value = filters[key as keyof typeof filters];
-                    return value && value !== 'all';
+                    return value && value !== "all";
                   }) && (
                     <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                       {
-                        Object.entries(filters).filter(([key, value]) => {
-                          return value && value !== 'all';
+                        Object.entries(filters).filter(([, value]) => {
+                          return value && value !== "all";
                         }).length
                       }
                     </span>
@@ -409,7 +412,7 @@ function ProgramPageContent() {
                 <p className="text-gray-500">No programs found</p>
               </div>
             ) : (
-              allPrograms.map(program => {
+              allPrograms.map((program) => {
                 const currentAmount = getCurrentAmount(program);
                 const progressPercentage = getProgressPercentage(program);
 
@@ -461,7 +464,7 @@ function ProgramPageContent() {
                               Terkumpul: {formatCurrency(currentAmount)}
                             </span>
                             <span>
-                              Target:{' '}
+                              Target:{" "}
                               {formatCurrency(Number(program.targetAmount))}
                             </span>
                           </div>

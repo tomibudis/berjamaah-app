@@ -6,7 +6,6 @@ import { trpc } from "@/utils/trpc";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
 import { History, Plus } from "lucide-react";
 import {
   DonationHistoryCard,

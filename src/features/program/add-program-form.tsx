@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import React from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -13,59 +13,55 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
-import Loader from '@/components/shared/loader';
-import { trpc, trpcClient, queryClient } from '@/utils/trpc';
-import { ChevronLeft, CalendarIcon } from 'lucide-react';
-import { format } from 'date-fns';
-import { Calendar } from '@/components/ui/calendar';
+} from "@/components/ui/form";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import Loader from "@/components/shared/loader";
+import { trpcClient, queryClient } from "@/utils/trpc";
+import { ChevronLeft, CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { cn } from '@/lib/utils';
-import {
-  formatCalendarDate,
-  formatInputDate,
-  formatInputTime,
-} from '@/utils/dateFormat';
+} from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { cn } from "@/lib/utils";
+import { formatCalendarDate, formatInputDate } from "@/utils/dateFormat";
 
 const addProgramSchema = z
   .object({
     title: z
       .string()
-      .min(1, { message: 'Judul program harus diisi.' })
-      .min(3, { message: 'Judul program minimal 3 karakter.' })
-      .max(100, { message: 'Judul program maksimal 100 karakter.' }),
+      .min(1, { message: "Judul program harus diisi." })
+      .min(3, { message: "Judul program minimal 3 karakter." })
+      .max(100, { message: "Judul program maksimal 100 karakter." }),
     description: z
       .string()
-      .min(1, { message: 'Deskripsi program harus diisi.' })
-      .min(10, { message: 'Deskripsi program minimal 10 karakter.' })
-      .max(500, { message: 'Deskripsi program maksimal 500 karakter.' }),
+      .min(1, { message: "Deskripsi program harus diisi." })
+      .min(10, { message: "Deskripsi program minimal 10 karakter." })
+      .max(500, { message: "Deskripsi program maksimal 500 karakter." }),
     targetAmount: z
       .string()
-      .min(1, { message: 'Target dana harus diisi.' })
-      .refine(val => !isNaN(Number(val)) && Number(val) > 0, {
-        message: 'Target dana harus berupa angka yang valid dan lebih dari 0.',
+      .min(1, { message: "Target dana harus diisi." })
+      .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
+        message: "Target dana harus berupa angka yang valid dan lebih dari 0.",
       }),
     category: z
       .string()
-      .min(1, { message: 'Kategori program harus diisi.' })
-      .min(2, { message: 'Kategori program minimal 2 karakter.' })
-      .max(50, { message: 'Kategori program maksimal 50 karakter.' }),
-    programType: z.enum(['one_time', 'multiple', 'selected_date'], {
-      message: 'Tipe program harus dipilih.',
+      .min(1, { message: "Kategori program harus diisi." })
+      .min(2, { message: "Kategori program minimal 2 karakter." })
+      .max(50, { message: "Kategori program maksimal 50 karakter." }),
+    programType: z.enum(["one_time", "multiple", "selected_date"], {
+      message: "Tipe program harus dipilih.",
     }),
     // One-time program fields
     startDate: z.string().optional(),
@@ -85,44 +81,44 @@ const addProgramSchema = z
           date: z.string(),
           startTime: z.string(),
           endTime: z.string(),
-        })
+        }),
       )
       .optional(),
   })
   .refine(
-    data => {
-      if (data.programType === 'one_time') {
-        return data.startDate && data.startDate.trim() !== '';
+    (data) => {
+      if (data.programType === "one_time") {
+        return data.startDate && data.startDate.trim() !== "";
       }
       return true;
     },
     {
-      message: 'Tanggal mulai harus diisi untuk program sekali jalan.',
-      path: ['startDate'],
-    }
+      message: "Tanggal mulai harus diisi untuk program sekali jalan.",
+      path: ["startDate"],
+    },
   )
   .refine(
-    data => {
-      if (data.programType === 'one_time') {
-        return data.endDate && data.endDate.trim() !== '';
+    (data) => {
+      if (data.programType === "one_time") {
+        return data.endDate && data.endDate.trim() !== "";
       }
       return true;
     },
     {
-      message: 'Tanggal selesai harus diisi untuk program sekali jalan.',
-      path: ['endDate'],
-    }
+      message: "Tanggal selesai harus diisi untuk program sekali jalan.",
+      path: ["endDate"],
+    },
   )
   .refine(
-    data => {
-      if (data.programType === 'one_time' && data.startDate && data.endDate) {
+    (data) => {
+      if (data.programType === "one_time" && data.startDate && data.endDate) {
         const startDate = new Date(data.startDate);
         const endDate = new Date(data.endDate);
 
         // If dates are the same, check if end time is after start time
         if (startDate.getTime() === endDate.getTime()) {
-          const startTime = data.startTime || '00:00';
-          const endTime = data.endTime || '23:59';
+          const startTime = data.startTime || "00:00";
+          const endTime = data.endTime || "23:59";
           return endTime > startTime;
         }
 
@@ -133,14 +129,14 @@ const addProgramSchema = z
     },
     {
       message:
-        'Tanggal selesai harus setelah tanggal mulai, atau waktu selesai harus setelah waktu mulai jika tanggal sama.',
-      path: ['endDate'],
-    }
+        "Tanggal selesai harus setelah tanggal mulai, atau waktu selesai harus setelah waktu mulai jika tanggal sama.",
+      path: ["endDate"],
+    },
   )
   .refine(
-    data => {
+    (data) => {
       if (
-        data.programType === 'one_time' &&
+        data.programType === "one_time" &&
         data.startDate &&
         data.endDate &&
         data.startTime &&
@@ -158,28 +154,28 @@ const addProgramSchema = z
     },
     {
       message:
-        'Waktu selesai harus setelah waktu mulai untuk tanggal yang sama.',
-      path: ['endTime'],
-    }
+        "Waktu selesai harus setelah waktu mulai untuk tanggal yang sama.",
+      path: ["endTime"],
+    },
   )
   .refine(
-    data => {
-      if (data.programType === 'selected_date') {
+    (data) => {
+      if (data.programType === "selected_date") {
         return data.selectedDateTimes && data.selectedDateTimes.length > 0;
       }
       return true;
     },
     {
       message:
-        'Minimal satu tanggal dan waktu harus dipilih untuk program tanggal terpilih.',
-      path: ['selectedDateTimes'],
-    }
+        "Minimal satu tanggal dan waktu harus dipilih untuk program tanggal terpilih.",
+      path: ["selectedDateTimes"],
+    },
   )
   .refine(
-    data => {
-      if (data.programType === 'selected_date' && data.selectedDateTimes) {
+    (data) => {
+      if (data.programType === "selected_date" && data.selectedDateTimes) {
         // Check that all selected date times have valid time ranges
-        return data.selectedDateTimes.every(dateTime => {
+        return data.selectedDateTimes.every((dateTime) => {
           if (dateTime.startTime === dateTime.endTime) {
             return false; // Start and end time cannot be the same
           }
@@ -190,50 +186,50 @@ const addProgramSchema = z
     },
     {
       message:
-        'Waktu selesai harus berbeda dari waktu mulai untuk setiap tanggal.',
-      path: ['selectedDateTimes'],
-    }
+        "Waktu selesai harus berbeda dari waktu mulai untuk setiap tanggal.",
+      path: ["selectedDateTimes"],
+    },
   );
 
 export type AddProgramFormValues = z.infer<typeof addProgramSchema>;
 
-const DEFAULT_START_TIME = '00:00';
-const DEFAULT_END_TIME = '23:59';
+const DEFAULT_START_TIME = "00:00";
+const DEFAULT_END_TIME = "23:59";
 
 export default function AddProgramForm() {
   const router = useRouter();
-  const [newCategory, setNewCategory] = React.useState('');
+  const [newCategory, setNewCategory] = React.useState("");
   const [showNewCategoryInput, setShowNewCategoryInput] = React.useState(false);
-  const [newStartDate, setNewStartDate] = React.useState('');
-  const [newEndDate, setNewEndDate] = React.useState('');
+  const [newStartDate, setNewStartDate] = React.useState("");
+  const [newEndDate, setNewEndDate] = React.useState("");
   const [newStartTime, setNewStartTime] = React.useState(DEFAULT_START_TIME);
   const [newEndTime, setNewEndTime] = React.useState(DEFAULT_END_TIME);
 
   const form = useForm<AddProgramFormValues>({
     resolver: zodResolver(addProgramSchema),
     defaultValues: {
-      title: '',
-      description: '',
-      targetAmount: '',
-      category: '',
-      programType: 'one_time',
-      startDate: '',
+      title: "",
+      description: "",
+      targetAmount: "",
+      category: "",
+      programType: "one_time",
+      startDate: "",
       startTime: DEFAULT_START_TIME,
-      endDate: '',
+      endDate: "",
       endTime: DEFAULT_END_TIME,
-      recurringFrequency: '',
-      recurringDay: '',
-      recurringDurationDays: '',
-      totalCycles: '',
+      recurringFrequency: "",
+      recurringDay: "",
+      recurringDurationDays: "",
+      totalCycles: "",
       selectedDates: [],
       selectedDateTimes: [],
     },
-    mode: 'onChange',
-    reValidateMode: 'onChange',
+    mode: "onChange",
+    reValidateMode: "onChange",
   });
 
-  const programType = form.watch('programType');
-  const description = form.watch('description');
+  const programType = form.watch("programType");
+  const description = form.watch("description");
 
   const onSubmitForm = async (formValues: AddProgramFormValues) => {
     try {
@@ -245,53 +241,53 @@ export default function AddProgramForm() {
       };
 
       // Use the appropriate tRPC function based on program type
-      if (formValues.programType === 'one_time') {
+      if (formValues.programType === "one_time") {
         if (!formValues.startDate || !formValues.endDate) {
           throw new Error(
-            'Start date and end date are required for one-time programs'
+            "Start date and end date are required for one-time programs",
           );
         }
 
         await trpcClient.program.createOneTime.mutate({
           ...baseProgramData,
           startDate: new Date(
-            `${formValues.startDate}T${formValues.startTime || '00:00'}`
+            `${formValues.startDate}T${formValues.startTime || "00:00"}`,
           ),
           endDate: new Date(
-            `${formValues.endDate}T${formValues.endTime || '23:59'}`
+            `${formValues.endDate}T${formValues.endTime || "23:59"}`,
           ),
         });
-      } else if (formValues.programType === 'multiple') {
+      } else if (formValues.programType === "multiple") {
         if (
           !formValues.recurringFrequency ||
           !formValues.recurringDay ||
           !formValues.recurringDurationDays
         ) {
           throw new Error(
-            'Recurring settings are required for multiple programs'
+            "Recurring settings are required for multiple programs",
           );
         }
 
         await trpcClient.program.createRecurring.mutate({
           ...baseProgramData,
           recurringFrequency: formValues.recurringFrequency as
-            | 'weekly'
-            | 'monthly'
-            | 'quarterly'
-            | 'yearly',
+            | "weekly"
+            | "monthly"
+            | "quarterly"
+            | "yearly",
           recurringDay: Number(formValues.recurringDay),
           recurringDurationDays: Number(formValues.recurringDurationDays),
           totalCycles: formValues.totalCycles
             ? Number(formValues.totalCycles)
             : undefined,
         });
-      } else if (formValues.programType === 'selected_date') {
+      } else if (formValues.programType === "selected_date") {
         if (
           !formValues.selectedDateTimes ||
           formValues.selectedDateTimes.length === 0
         ) {
           throw new Error(
-            'At least one date and time must be selected for selected date programs'
+            "At least one date and time must be selected for selected date programs",
           );
         }
 
@@ -300,65 +296,66 @@ export default function AddProgramForm() {
           selectedDateTimes: formValues.selectedDateTimes,
         });
       } else {
-        throw new Error('Invalid program type');
+        throw new Error("Invalid program type");
       }
 
       // Invalidate program queries to refresh the list
       await queryClient.invalidateQueries({
-        queryKey: ['program', 'getAll'],
+        queryKey: ["program", "getAll"],
       });
 
-      toast.success('Program berhasil ditambahkan!');
-      router.push('/admin/program');
+      toast.success("Program berhasil ditambahkan!");
+      router.push("/admin/program");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.error('Error adding program:', error);
+      console.error("Error adding program:", error);
       toast.error(
-        error.message || 'Gagal menambahkan program. Silakan coba lagi.'
+        error.message || "Gagal menambahkan program. Silakan coba lagi.",
       );
     }
   };
 
   const handleCategoryChange = (value: string) => {
-    if (value === 'new') {
+    if (value === "new") {
       setShowNewCategoryInput(true);
-      form.setValue('category', '');
+      form.setValue("category", "");
     } else {
       setShowNewCategoryInput(false);
-      form.setValue('category', value);
+      form.setValue("category", value);
       // Clear any validation errors when a valid category is selected
-      form.clearErrors('category');
+      form.clearErrors("category");
     }
   };
 
   const handleNewCategorySubmit = () => {
     if (newCategory.trim()) {
-      form.setValue('category', newCategory.trim());
+      form.setValue("category", newCategory.trim());
       // Clear any validation errors when a valid category is set
-      form.clearErrors('category');
-      setNewCategory('');
+      form.clearErrors("category");
+      setNewCategory("");
       setShowNewCategoryInput(false);
     }
   };
 
   const formatCurrency = (value: string) => {
     // Remove non-numeric characters
-    const numericValue = value.replace(/\D/g, '');
+    const numericValue = value.replace(/\D/g, "");
 
-    if (!numericValue) return '';
+    if (!numericValue) return "";
 
     // Format as currency
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
       minimumFractionDigits: 0,
     }).format(Number(numericValue));
   };
 
   const handleAmountChange = (
     value: string,
-    onChange: (value: string) => void
+    onChange: (value: string) => void,
   ) => {
-    const numericValue = value.replace(/\D/g, '');
+    const numericValue = value.replace(/\D/g, "");
     onChange(numericValue);
   };
 
@@ -452,7 +449,7 @@ export default function AddProgramForm() {
                           type="text"
                           placeholder="Masukkan target dana"
                           value={field.value}
-                          onChange={e =>
+                          onChange={(e) =>
                             handleAmountChange(e.target.value, field.onChange)
                           }
                           className="pl-10"
@@ -507,9 +504,9 @@ export default function AddProgramForm() {
                             type="text"
                             placeholder="Masukkan kategori baru"
                             value={newCategory}
-                            onChange={e => setNewCategory(e.target.value)}
-                            onKeyDown={e => {
-                              if (e.key === 'Enter') {
+                            onChange={(e) => setNewCategory(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
                                 e.preventDefault();
                                 handleNewCategorySubmit();
                               }
@@ -529,7 +526,7 @@ export default function AddProgramForm() {
                             size="sm"
                             onClick={() => {
                               setShowNewCategoryInput(false);
-                              setNewCategory('');
+                              setNewCategory("");
                             }}
                           >
                             Batal
@@ -565,10 +562,10 @@ export default function AddProgramForm() {
                     <FormControl>
                       <Select
                         value={field.value}
-                        onValueChange={value => {
+                        onValueChange={(value) => {
                           field.onChange(value);
                           // Clear any validation errors when a valid program type is selected
-                          form.clearErrors('programType');
+                          form.clearErrors("programType");
                         }}
                       >
                         <SelectTrigger>
@@ -589,7 +586,7 @@ export default function AddProgramForm() {
               />
 
               {/* One-time program fields */}
-              {programType === 'one_time' && (
+              {programType === "one_time" && (
                 <div className="space-y-4">
                   <h3 className="text-sm font-medium text-gray-900 dark:text-white">
                     Periode Program
@@ -611,14 +608,14 @@ export default function AddProgramForm() {
                                       variant="outline"
                                       size="lg"
                                       className={cn(
-                                        'w-full pl-3 text-left font-normal text-sm',
-                                        !field.value && 'text-muted-foreground'
+                                        "w-full pl-3 text-left font-normal text-sm",
+                                        !field.value && "text-muted-foreground",
                                       )}
                                     >
                                       {field.value ? (
                                         format(
                                           new Date(field.value),
-                                          'MMM dd, yyyy'
+                                          "MMM dd, yyyy",
                                         )
                                       ) : (
                                         <span>Pilih tanggal</span>
@@ -638,16 +635,16 @@ export default function AddProgramForm() {
                                         ? new Date(field.value)
                                         : undefined
                                     }
-                                    onSelect={date => {
+                                    onSelect={(date) => {
                                       field.onChange(
                                         date
-                                          ? date.toISOString().split('T')[0]
-                                          : ''
+                                          ? date.toISOString().split("T")[0]
+                                          : "",
                                       );
                                       // Clear validation errors when date is selected
-                                      form.clearErrors('startDate');
+                                      form.clearErrors("startDate");
                                     }}
-                                    disabled={date => date < new Date()}
+                                    disabled={(date) => date < new Date()}
                                     captionLayout="dropdown"
                                   />
                                 </PopoverContent>
@@ -694,14 +691,14 @@ export default function AddProgramForm() {
                                       variant="outline"
                                       size="lg"
                                       className={cn(
-                                        'w-full pl-3 text-left font-normal text-sm',
-                                        !field.value && 'text-muted-foreground'
+                                        "w-full pl-3 text-left font-normal text-sm",
+                                        !field.value && "text-muted-foreground",
                                       )}
                                     >
                                       {field.value ? (
                                         format(
                                           new Date(field.value),
-                                          'MMM dd, yyyy'
+                                          "MMM dd, yyyy",
                                         )
                                       ) : (
                                         <span>Pilih tanggal</span>
@@ -721,18 +718,18 @@ export default function AddProgramForm() {
                                         ? new Date(field.value)
                                         : undefined
                                     }
-                                    onSelect={date => {
+                                    onSelect={(date) => {
                                       field.onChange(
                                         date
-                                          ? date.toISOString().split('T')[0]
-                                          : ''
+                                          ? date.toISOString().split("T")[0]
+                                          : "",
                                       );
                                       // Clear validation errors when date is selected
-                                      form.clearErrors('endDate');
+                                      form.clearErrors("endDate");
                                     }}
-                                    disabled={date => {
+                                    disabled={(date) => {
                                       const startDate =
-                                        form.getValues('startDate');
+                                        form.getValues("startDate");
                                       return (
                                         date < new Date() ||
                                         (startDate
@@ -774,7 +771,7 @@ export default function AddProgramForm() {
               )}
 
               {/* Multiple/recurring program fields */}
-              {programType === 'multiple' && (
+              {programType === "multiple" && (
                 <div className="space-y-4">
                   <h3 className="text-sm font-medium text-gray-900 dark:text-white">
                     Pengaturan Program Berulang
@@ -897,7 +894,7 @@ export default function AddProgramForm() {
               )}
 
               {/* Selected date program fields */}
-              {programType === 'selected_date' && (
+              {programType === "selected_date" && (
                 <div className="space-y-4">
                   <h3 className="text-sm font-medium text-gray-900 dark:text-white">
                     Pilih Tanggal Program
@@ -925,9 +922,9 @@ export default function AddProgramForm() {
                                           variant="outline"
                                           size="lg"
                                           className={cn(
-                                            'w-full pl-3 text-left font-normal text-sm',
+                                            "w-full pl-3 text-left font-normal text-sm",
                                             !newStartDate &&
-                                              'text-muted-foreground'
+                                              "text-muted-foreground",
                                           )}
                                         >
                                           {newStartDate ? (
@@ -949,12 +946,12 @@ export default function AddProgramForm() {
                                               ? new Date(newStartDate)
                                               : undefined
                                           }
-                                          onSelect={date => {
+                                          onSelect={(date) => {
                                             setNewStartDate(
-                                              date ? formatInputDate(date) : ''
+                                              date ? formatInputDate(date) : "",
                                             );
                                           }}
-                                          disabled={date => date < new Date()}
+                                          disabled={(date) => date < new Date()}
                                           captionLayout="dropdown"
                                         />
                                       </PopoverContent>
@@ -970,7 +967,7 @@ export default function AddProgramForm() {
                                       type="time"
                                       placeholder="Waktu mulai"
                                       value={newStartTime}
-                                      onChange={e =>
+                                      onChange={(e) =>
                                         setNewStartTime(e.target.value)
                                       }
                                       className="h-10 bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
@@ -992,9 +989,9 @@ export default function AddProgramForm() {
                                           variant="outline"
                                           size="lg"
                                           className={cn(
-                                            'w-full pl-3 text-left font-normal text-sm',
+                                            "w-full pl-3 text-left font-normal text-sm",
                                             !newEndDate &&
-                                              'text-muted-foreground'
+                                              "text-muted-foreground",
                                           )}
                                         >
                                           {newEndDate ? (
@@ -1016,12 +1013,12 @@ export default function AddProgramForm() {
                                               ? new Date(newEndDate)
                                               : undefined
                                           }
-                                          onSelect={date => {
+                                          onSelect={(date) => {
                                             setNewEndDate(
-                                              date ? formatInputDate(date) : ''
+                                              date ? formatInputDate(date) : "",
                                             );
                                           }}
-                                          disabled={date => {
+                                          disabled={(date) => {
                                             return (
                                               date < new Date() ||
                                               (newStartDate
@@ -1044,7 +1041,7 @@ export default function AddProgramForm() {
                                       type="time"
                                       placeholder="Waktu selesai"
                                       value={newEndTime}
-                                      onChange={e =>
+                                      onChange={(e) =>
                                         setNewEndTime(e.target.value)
                                       }
                                       className="h-10 bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
@@ -1072,7 +1069,7 @@ export default function AddProgramForm() {
                                         newEndTime <= newStartTime
                                       ) {
                                         toast.error(
-                                          'Waktu selesai harus setelah waktu mulai untuk tanggal yang sama'
+                                          "Waktu selesai harus setelah waktu mulai untuk tanggal yang sama",
                                         );
                                         return;
                                       }
@@ -1085,10 +1082,10 @@ export default function AddProgramForm() {
 
                                       // Check if this exact combination already exists
                                       const exists = field.value?.some(
-                                        item =>
+                                        (item) =>
                                           item.date === newStartDate &&
                                           item.startTime === newStartTime &&
-                                          item.endTime === newEndTime
+                                          item.endTime === newEndTime,
                                       );
 
                                       if (!exists) {
@@ -1096,8 +1093,8 @@ export default function AddProgramForm() {
                                           ...(field.value || []),
                                           newDateTime,
                                         ]);
-                                        setNewStartDate('');
-                                        setNewEndDate('');
+                                        setNewStartDate("");
+                                        setNewEndDate("");
                                         setNewStartTime(DEFAULT_START_TIME);
                                         setNewEndTime(DEFAULT_END_TIME);
                                       }
@@ -1109,10 +1106,10 @@ export default function AddProgramForm() {
                                     !newStartTime ||
                                     !newEndTime ||
                                     field.value?.some(
-                                      item =>
+                                      (item) =>
                                         item.date === newStartDate &&
                                         item.startTime === newStartTime &&
-                                        item.endTime === newEndTime
+                                        item.endTime === newEndTime,
                                     )
                                   }
                                 >
@@ -1133,8 +1130,8 @@ export default function AddProgramForm() {
                                       className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-md text-sm"
                                     >
                                       <span>
-                                        {formatCalendarDate(dateTime.date)}{' '}
-                                        {dateTime.startTime} -{' '}
+                                        {formatCalendarDate(dateTime.date)}{" "}
+                                        {dateTime.startTime} -{" "}
                                         {dateTime.endTime}
                                       </span>
                                       <button
@@ -1142,7 +1139,7 @@ export default function AddProgramForm() {
                                         onClick={() => {
                                           const newDateTimes =
                                             field.value?.filter(
-                                              (_, i) => i !== index
+                                              (_, i) => i !== index,
                                             ) || [];
                                           field.onChange(newDateTimes);
                                         }}
@@ -1171,7 +1168,7 @@ export default function AddProgramForm() {
             className="w-full bg-green-600 hover:bg-green-700"
             disabled={form.formState.isSubmitting}
           >
-            {form.formState.isSubmitting ? 'Menyimpan...' : 'Simpan Program'}
+            {form.formState.isSubmitting ? "Menyimpan..." : "Simpan Program"}
           </Button>
         </form>
       </Form>

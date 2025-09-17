@@ -1,6 +1,6 @@
 import "dotenv/config";
-import { PrismaClient } from "./generated";
 import { hash } from "bcryptjs";
+import { PrismaClient } from "@prisma/client";
 // import { auth } from '../src/lib/auth'; // Temporarily disabled
 
 const prisma = new PrismaClient();

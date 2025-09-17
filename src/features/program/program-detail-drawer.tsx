@@ -90,6 +90,7 @@ export function ProgramDetailDrawer({
       onClose();
       onDelete?.();
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       toast.error(error.message || "Gagal menghapus program");
     },
@@ -172,14 +173,6 @@ export function ProgramDetailDrawer({
       : " (tanpa batas)";
 
     return `Berulang ${frequencyText[period.recurringFrequency as keyof typeof frequencyText] || period.recurringFrequency}${dayText}${durationText}${cyclesText}`;
-  };
-
-  const formatTime = (timeString: string) => {
-    if (!timeString) return "";
-    const [hours, minutes] = timeString.split(":");
-    const hour = parseInt(hours, 10);
-    const minute = parseInt(minutes, 10);
-    return `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
   };
 
   if (!isOpen) return null;
@@ -365,7 +358,7 @@ export function ProgramDetailDrawer({
             {program.programType === "one_time" &&
               // One-time program: display period as current
               program.programPeriods.map(
-                (period: Program["programPeriods"][0], index: number) => (
+                (period: Program["programPeriods"][0]) => (
                   <div
                     key={period.id}
                     className="border-l-2 border-green-500 pl-4"
@@ -413,7 +406,7 @@ export function ProgramDetailDrawer({
             {program.programType === "multiple" &&
               // Recurring program: display descriptive text about schedule
               program.programPeriods.map(
-                (period: Program["programPeriods"][0], index: number) => (
+                (period: Program["programPeriods"][0]) => (
                   <div
                     key={period.id}
                     className="border-l-2 border-purple-500 pl-4"

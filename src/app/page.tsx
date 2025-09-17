@@ -1,12 +1,10 @@
 "use client";
-import { useQuery } from "@tanstack/react-query";
-import { trpc } from "@/utils/trpc";
+
 import { ProgramCard } from "@/features/donation/program-card";
 import { useSession } from "next-auth/react";
 import BottomNavigationUser from "@/components/layout/bottom-navigation-user";
 
 export default function Home() {
-  const healthCheck = useQuery(trpc.healthCheck.queryOptions());
   const { data: session, status } = useSession();
 
   const handleDonationSubmit = (programId: string, amount: string) => {

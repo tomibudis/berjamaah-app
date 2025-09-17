@@ -1,19 +1,14 @@
 "use client";
 
 import { useSession, signOut } from "next-auth/react";
-import { useQuery } from "@tanstack/react-query";
-import { trpc } from "@/utils/trpc";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { User, Mail, Calendar, LogOut, Shield } from "lucide-react";
-import { formatCurrency } from "@/lib/currency-utils";
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
-
-  const privateData = useQuery(trpc.privateData.queryOptions());
 
   if (status === "loading") {
     return (

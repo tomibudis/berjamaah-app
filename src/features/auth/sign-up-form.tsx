@@ -20,7 +20,6 @@ import { signIn } from "next-auth/react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import GoogleSignUpButton from "./google-signup-button";
-import Loader from "@/components/shared/loader";
 import {
   Card,
   CardContent,
@@ -28,7 +27,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 
 const signUpSchema = z
   .object({
