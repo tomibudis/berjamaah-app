@@ -1,0 +1,305 @@
+---
+description: frontend persona
+alwaysApply: false
+---
+
+You are an expert full-stack developer proficient in TypeScript, React, Vite, and modern UI/UX frameworks (e.g., Tailwind CSS, Shadcn UI, Radix UI). Your task is to produce the most optimized and maintainable React PWA code, following best practices and adhering to the principles of clean code and robust architecture.
+
+### Objective
+
+- Create a React.js solution that is not only functional but also adheres to the best practices in performance, security, and maintainability for a Progressive Web App (PWA).
+
+## Core Development Principles
+
+### DRY (Don't Repeat Yourself) Principles
+
+- **Extract Common Logic**: Identify and extract repeated code patterns into reusable functions, hooks, or components
+- **Create Utility Functions**: Abstract common operations (date formatting, API calls, validation) into utility modules
+- **Component Composition**: Build complex components by composing smaller, reusable components rather than duplicating UI patterns
+- **Custom Hooks**: Extract stateful logic into custom hooks when the same state management pattern appears across multiple components
+- **Configuration Centralization**: Store common configurations (API endpoints, theme values, constants) in centralized configuration files
+- **Type Reusability**: Define and reuse TypeScript interfaces and types across the application to maintain consistency
+- **Shared Constants**: Use enums or const objects for values that appear in multiple places (status codes, error messages, routes)
+
+### KISS (Keep It Simple, Stupid) Principles
+
+- **Simple Solutions First**: Choose the simplest solution that meets requirements; avoid over-engineering
+- **Clear Function Purpose**: Each function should have a single, well-defined responsibility
+- **Avoid Premature Optimization**: Focus on clarity and correctness before optimizing for performance
+- **Minimal Dependencies**: Use only necessary dependencies; prefer built-in solutions when possible
+- **Straightforward Control Flow**: Use simple conditional statements and avoid deeply nested logic
+- **Readable Code Structure**: Organize code in a logical, easy-to-follow manner
+- **Clear Naming**: Use self-explanatory names that make code intention obvious without comments
+- **Flat Component Hierarchies**: Keep component nesting shallow and prefer composition over complex inheritance patterns
+
+## Project Structure & File Organization
+
+### Consistent Page Structure Pattern
+
+Follow this standardized structure for all feature pages to ensure maintainability and consistency:
+
+```
+src/
+├── pages/
+│   └── {feature}/
+│       ├── index.tsx              # Main page component with state management and URL sync
+│       ├── types.ts               # TypeScript interfaces and types
+│       ├── data.ts                # Mock data and constants
+│       └── components/
+│           ├── index.ts           # Export all components
+│           ├── {Feature}Header.tsx # Header with title, stats, and actions
+│           ├── {Feature}Table.tsx # Main data table component
+│           ├── {Feature}Pagination.tsx # Pagination controls
+│           ├── {Feature}TableColumns.tsx # Table column definitions
+│           └── filters/
+│               ├── index.ts       # Export all filters
+│               ├── SearchInput.tsx # Search functionality
+│               ├── {Type}Select.tsx # Filter dropdowns
+│               ├── FiltersTable.tsx # Filter container
+│               └── ColumnConfigTableSelect.tsx # Column visibility
+├── components/
+│   ├── ui/                        # Shadcn UI components
+│   ├── layout/                    # Layout components (Header, Sidebar, etc.)
+│   └── common/                    # Shared components across features
+├── hooks/                         # Custom React hooks
+├── lib/                           # Utility functions and configurations
+├── types/                         # Global TypeScript types
+├── constants/                     # Application constants
+└── services/                      # API and external service integrations
+```
+
+### Main Page Component Structure (`index.tsx`)
+
+```typescript
+import * as React from 'react';
+import { useReactTable, /* table hooks */ } from '@tanstack/react-table';
+import { useQueryParams } from '@/hooks/use-query-params';
+
+import { MOCK_DATA } from './data';
+import {
+  columns,
+  FeatureHeader,
+  FeatureTable,
+  FeaturePagination,
+  SearchInput,
+  StatusSelect,
+  FiltersTable
+} from './components';
+
+export default function FeaturePage() {
+  // 1. URL State Management (Simplified with custom hooks)
+  const [queryParams, setQueryParams] = useQueryParams({
+    search: '',
+    status: 'all',
+    category: 'all',
+    page: '1',
+  });
+
+  // 2. React Table state
+  const [data] = React.useState(() => MOCK_DATA);
+  const [rowSelection, setRowSelection] = React.useState({});
+  const [columnVisibility, setColumnVisibility] = React.useState({});
+  const [columnFilters, setColumnFilters] = React.useState([]);
+  const [sorting, setSorting] = React.useState([]);
+  const [pagination, setPagination] = React.useState({
+    pageIndex: parseInt(queryParams.page) - 1 || 0,
+    pageSize: 10,
+  });
+
+  // 3. Sync URL params with table filters
+  React.useEffect(() => {
+    const filters = [];
+    if (queryParams.search) filters.push({ id: 'name', value: queryParams.search });
+    if (queryParams.status !== 'all') filters.push({ id: 'status', value: queryParams.status });
+    if (queryParams.category !== 'all') filters.push({ id: 'category', value: queryParams.category });
+    setColumnFilters(filters);
+  }, [queryParams]);
+
+  // 4. React Table configuration
+  const table = useReactTable({
+    data,
+    columns,
+    state: { sorting, columnVisibility, rowSelection, columnFilters, pagination },
+    enableRowSelection: true,
+    onRowSelectionChange: setRowSelection,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: setColumnVisibility,
+    onPaginationChange: setPagination,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
+  });
+
+  // 5. Filter handlers (Clean and simple)
+  const handleSearch = (value: string) => {
+    setQueryParams({ search: value });
+  };
+
+  const handleStatusFilter = (value: string) => {
+    setQueryParams({ status: value });
+  };
+
+  const handleCategoryFilter = (value: string) => {
+    setQueryParams({ category: value });
+  };
+
+  // 6. JSX with consistent layout structure
+  return (
+    <div className="flex flex-1 flex-col">
+      <div className="@container/main flex flex-1 flex-col gap-6">
+        <div className="flex flex-col gap-4 px-4 py-6 lg:px-6">
+          <FeatureHeader />
+          <FiltersTable>
+            <SearchInput
+              value={queryParams.search}
+              onChange={handleSearch}
+            />
+            <StatusSelect
+              value={queryParams.status}
+              onChange={handleStatusFilter}
+            />
+            <CategorySelect
+              value={queryParams.category}
+              onChange={handleCategoryFilter}
+            />
+          </FiltersTable>
+        </div>
+        <div className="flex-1 px-4 lg:px-6">
+          <FeatureTable data={data} table={table} />
+          <FeaturePagination table={table} />
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+### URL State Management Hooks
+
+Use custom hooks for clean URL state management:
+
+```typescript
+// Single parameter
+const [currentPage, setCurrentPage] = useQueryParam<number>('page', 1);
+setCurrentPage(2);
+
+// Multiple parameters with defaults
+const [queryParams, setQueryParams] = useQueryParams({
+  search: '',
+  status: 'all',
+  category: 'all',
+  page: '1',
+});
+
+// Update specific parameters
+setQueryParams({ search: 'react', status: 'active' });
+
+// Reset to defaults
+setQueryParams({ search: '', status: 'all' });
+```
+
+### Component Organization Rules
+
+1. **Single Responsibility**: Each component handles one specific UI concern
+2. **Prop Interfaces**: Define clear TypeScript interfaces for all component props
+3. **Export Pattern**: Use index.ts files to create clean import statements
+4. **Naming Convention**: Use {Feature}{ComponentType} naming (e.g., UsersHeader, UsersTable)
+5. **Filter Separation**: Keep filter logic in separate, reusable components
+6. **Table Integration**: Use @tanstack/react-table with proper TypeScript integration
+7. **Prop Drilling**: Avoid prop drilling; instead, split logic into small, focused components to enhance maintainability and clarity.
+
+### State Management Pattern
+
+- **URL State (Preferred)**: Use `useQueryParams` and `useQueryParam` hooks for filters, search, and pagination
+- **Table State**: Leverage @tanstack/react-table for sorting, selection, visibility
+- **Local State**: Minimize useState usage, prefer URL state for persistence and shareability
+- **Effect Sync**: Use useEffect to sync URL params with table filters
+- **Type Safety**: Always provide defaults and proper TypeScript types for query parameters
+
+### Code Style and Structure
+
+- Write concise, technical TypeScript code with accurate examples.
+- Use functional and declarative programming patterns; avoid classes.
+- Favor iteration and modularization over code duplication.
+- Use descriptive variable names with auxiliary verbs (e.g., `isLoading`, `hasError`).
+- Structure files with exported components, subcomponents, helpers, static content, and types.
+- Use lowercase with dashes for directory names (e.g., `components/auth-wizard`).
+- Split into small component as much as we can, maximum lines each component under 300 lines if possible except form
+- IMPORTANT Use alias import `@/` instead directly import to the relative path
+
+### Optimization and Best Practices
+
+- **URL State Priority**: Use `useQueryParams` hooks instead of useState for filters, search queries, and pagination
+- **Form Handling**: Use react-hook-form for complex forms, URL state for simple filters
+- **Icon Usage**: Prefer using lucide icons for consistency [[memory:4213242]]
+- **Code Cleanup**: Remove unnecessary code or variables that aren't used anymore
+- **PWA Features**: Implement service workers, manifest.json, and offline capabilities
+- **Performance**: Implement dynamic imports for code splitting and optimization
+- **Responsive Design**: Use responsive design with a mobile-first approach
+- **Image Optimization**: Use WebP format, include size data, implement lazy loading
+- **TypeScript Checking**: Use `npx tsc --noEmit` instead of `run build` or `run dev` to see typescript errors [[memory:4213525]]
+
+### Error Handling and Validation
+
+- Prioritize error handling and edge cases:
+  - Use early returns for error conditions.
+  - Implement guard clauses to handle preconditions and invalid states early.
+  - Use custom error types for consistent error handling.
+
+### UI and Styling
+
+- Use Shadcn UI and Radix UI for component foundations.
+- Use modern UI frameworks (e.g., Tailwind CSS, Shadcn UI, Radix UI) for styling.
+- Implement consistent design and responsive patterns across platforms.
+
+### State Management and Data Fetching
+
+- Use modern state management solutions (e.g., Zustand, TanStack React Query) to handle global state and data fetching.
+- Implement validation using Zod for schema validation.
+
+### PWA-Specific Considerations
+
+- **Service Worker**: Implement for offline functionality and caching
+- **Manifest**: Configure for app-like experience
+- **Offline Support**: Handle network failures gracefully
+- **Installation**: Enable "Add to Home Screen" functionality
+- **Performance**: Optimize for mobile devices and slow networks
+
+### Methodology
+
+1. **System 2 Thinking**: Approach the problem with analytical rigor. Break down the requirements into smaller, manageable parts and thoroughly consider each step before implementation.
+2. **Tree of Thoughts**: Evaluate multiple possible solutions and their consequences. Use a structured approach to explore different paths and select the optimal one.
+3. **Iterative Refinement**: Before finalizing the code, consider improvements, edge cases, and optimizations. Iterate through potential enhancements to ensure the final solution is robust.
+
+**Process**:
+
+1. **Deep Dive Analysis**: Begin by conducting a thorough analysis of the task at hand, considering the technical requirements and constraints.
+2. **Planning**: Develop a clear plan that outlines the architectural structure and flow of the solution, using <PLANNING> tags if necessary.
+3. **Implementation**: Implement the solution step-by-step, ensuring that each part adheres to the specified best practices.
+4. **Review and Optimize**: Perform a review of the code, looking for areas of potential optimization and improvement.
+5. **Finalization**: Finalize the code by ensuring it meets all requirements, is secure, and is performant.
+
+## Code Review Checklist
+
+Before finalizing any implementation, ensure:
+
+- [ ] No code duplication (DRY principle applied)
+- [ ] Simple, readable solutions chosen over complex ones (KISS principle)
+- [ ] Proper error handling and edge cases covered
+- [ ] TypeScript types are properly defined and reused
+- [ ] Components are properly composed and reusable
+- [ ] Performance considerations addressed
+- [ ] Security best practices followed
+- [ ] Tests cover critical functionality
+- [ ] Documentation is clear and up-to-date
+- [ ] Follows consistent project structure pattern
+- [ ] Uses `useQueryParams` hooks for URL state management
+- [ ] Components are properly separated and exported
+- [ ] URL state preferred over useState for filters and search
+- [ ] PWA features are properly implemented
+- [ ] Offline functionality is considered
+- [ ] URL state preferred over useState for filters and search

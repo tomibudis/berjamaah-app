@@ -13,6 +13,7 @@ export default function GoogleSignUpButton() {
     setIsGoogleLoading(true);
     try {
       await signIn("google", { callbackUrl: "/" });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error("Failed to sign up with Google");
     } finally {

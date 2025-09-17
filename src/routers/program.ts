@@ -1,21 +1,21 @@
-import { TRPCError } from '@trpc/server';
-import z from 'zod';
-import prisma from '../../prisma/index';
-import { protectedProcedure, publicProcedure, router } from '../lib/trpc';
+import { TRPCError } from "@trpc/server";
+import z from "zod";
+import prisma from "../../prisma/index";
+import { protectedProcedure, publicProcedure, router } from "../lib/trpc";
 
 // Validation schemas
 const createProgramSchema = z.object({
-  title: z.string().min(1, 'Title is required'),
-  description: z.string().min(1, 'Description is required'),
-  targetAmount: z.number().positive('Target amount must be positive'),
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
+  targetAmount: z.number().positive("Target amount must be positive"),
   bannerImage: z.string().url().optional(),
   category: z.string().optional(),
   status: z
-    .enum(['draft', 'pending', 'active', 'paused', 'ended'])
-    .default('draft'),
+    .enum(["draft", "pending", "active", "paused", "ended"])
+    .default("draft"),
   programType: z
-    .enum(['one_time', 'multiple', 'selected_date'])
-    .default('one_time'),
+    .enum(["one_time", "multiple", "selected_date"])
+    .default("one_time"),
   contact: z.string().optional(),
   details: z.string().optional(),
   initialPeriod: z
@@ -24,7 +24,7 @@ const createProgramSchema = z.object({
       endDate: z.coerce.date(),
       cycleNumber: z.number().int().positive().optional(),
       recurringFrequency: z
-        .enum(['weekly', 'monthly', 'quarterly', 'yearly'])
+        .enum(["weekly", "monthly", "quarterly", "yearly"])
         .optional(),
       recurringDay: z.number().int().min(1).max(31).optional(),
       recurringDurationDays: z.number().int().positive().optional(),
@@ -41,8 +41,8 @@ const updateProgramSchema = z.object({
   targetAmount: z.number().positive().optional(),
   bannerImage: z.string().url().optional(),
   category: z.string().optional(),
-  status: z.enum(['draft', 'pending', 'active', 'paused', 'ended']).optional(),
-  programType: z.enum(['one_time', 'multiple', 'selected_date']).optional(),
+  status: z.enum(["draft", "pending", "active", "paused", "ended"]).optional(),
+  programType: z.enum(["one_time", "multiple", "selected_date"]).optional(),
   contact: z.string().optional(),
   details: z.string().optional(),
 });
@@ -53,7 +53,7 @@ const createProgramPeriodSchema = z.object({
   endDate: z.date(),
   cycleNumber: z.number().int().positive().optional(),
   recurringFrequency: z
-    .enum(['weekly', 'monthly', 'quarterly', 'yearly'])
+    .enum(["weekly", "monthly", "quarterly", "yearly"])
     .optional(),
   recurringDay: z.number().int().min(1).max(31).optional(),
   recurringDurationDays: z.number().int().positive().optional(),
@@ -67,7 +67,7 @@ const updateProgramPeriodSchema = z.object({
   endDate: z.date().optional(),
   cycleNumber: z.number().int().positive().optional(),
   recurringFrequency: z
-    .enum(['weekly', 'monthly', 'quarterly', 'yearly'])
+    .enum(["weekly", "monthly", "quarterly", "yearly"])
     .optional(),
   recurringDay: z.number().int().min(1).max(31).optional(),
   recurringDurationDays: z.number().int().positive().optional(),
@@ -81,12 +81,12 @@ export const programRouter = router({
     .input(
       z.object({
         status: z
-          .enum(['draft', 'pending', 'active', 'paused', 'ended'])
+          .enum(["draft", "pending", "active", "paused", "ended"])
           .optional(),
         category: z.string().optional(),
         limit: z.number().int().positive().max(100).default(20),
         offset: z.number().int().min(0).default(0),
-      })
+      }),
     )
     .query(async ({ input }) => {
       try {
@@ -113,7 +113,7 @@ export const programRouter = router({
                   cycleNumber: true,
                 },
                 orderBy: {
-                  startDate: 'desc',
+                  startDate: "desc",
                 },
               },
               _count: {
@@ -123,7 +123,7 @@ export const programRouter = router({
               },
             },
             orderBy: {
-              createdAt: 'desc',
+              createdAt: "desc",
             },
             take: input.limit,
             skip: input.offset,
@@ -136,10 +136,11 @@ export const programRouter = router({
           total,
           hasMore: input.offset + input.limit < total,
         };
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to fetch programs',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch programs",
         });
       }
     }),
@@ -165,7 +166,7 @@ export const programRouter = router({
                 nextActivationDate: true,
               },
               orderBy: {
-                startDate: 'desc',
+                startDate: "desc",
               },
             },
             donations: {
@@ -178,7 +179,7 @@ export const programRouter = router({
                 donorEmail: true,
               },
               orderBy: {
-                createdAt: 'desc',
+                createdAt: "desc",
               },
               take: 10, // Limit recent donations
             },
@@ -192,8 +193,8 @@ export const programRouter = router({
 
         if (!program) {
           throw new TRPCError({
-            code: 'NOT_FOUND',
-            message: 'Program not found',
+            code: "NOT_FOUND",
+            message: "Program not found",
           });
         }
 
@@ -203,8 +204,8 @@ export const programRouter = router({
           throw error;
         }
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to fetch program details',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch program details",
         });
       }
     }),
@@ -218,8 +219,8 @@ export const programRouter = router({
         // Validate initial period date range when provided
         if (initialPeriod && initialPeriod.endDate < initialPeriod.startDate) {
           throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: 'End date must be after or equal to start date',
+            code: "BAD_REQUEST",
+            message: "End date must be after or equal to start date",
           });
         }
 
@@ -228,7 +229,7 @@ export const programRouter = router({
             ...programData,
             targetAmount: programData.targetAmount,
             createdBy: ctx.session.user.id,
-            status: 'draft',
+            status: "draft",
             ...(initialPeriod
               ? {
                   programPeriods: {
@@ -258,10 +259,11 @@ export const programRouter = router({
         });
 
         return program;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to create program',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to create program",
         });
       }
     }),
@@ -278,15 +280,15 @@ export const programRouter = router({
 
         if (!existingProgram) {
           throw new TRPCError({
-            code: 'NOT_FOUND',
-            message: 'Program not found',
+            code: "NOT_FOUND",
+            message: "Program not found",
           });
         }
 
         if (existingProgram.createdBy !== ctx.session.user.id) {
           throw new TRPCError({
-            code: 'FORBIDDEN',
-            message: 'You can only update programs you created',
+            code: "FORBIDDEN",
+            message: "You can only update programs you created",
           });
         }
 
@@ -310,8 +312,8 @@ export const programRouter = router({
           throw error;
         }
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to update program',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update program",
         });
       }
     }),
@@ -328,15 +330,15 @@ export const programRouter = router({
 
         if (!existingProgram) {
           throw new TRPCError({
-            code: 'NOT_FOUND',
-            message: 'Program not found',
+            code: "NOT_FOUND",
+            message: "Program not found",
           });
         }
 
         if (existingProgram.createdBy !== ctx.session.user.id) {
           throw new TRPCError({
-            code: 'FORBIDDEN',
-            message: 'You can only delete programs you created',
+            code: "FORBIDDEN",
+            message: "You can only delete programs you created",
           });
         }
 
@@ -344,14 +346,14 @@ export const programRouter = router({
           where: { id: input.id },
         });
 
-        return { success: true, message: 'Program deleted successfully' };
+        return { success: true, message: "Program deleted successfully" };
       } catch (error) {
         if (error instanceof TRPCError) {
           throw error;
         }
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to delete program',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to delete program",
         });
       }
     }),
@@ -371,15 +373,16 @@ export const programRouter = router({
             },
           },
           orderBy: {
-            startDate: 'desc',
+            startDate: "desc",
           },
         });
 
         return periods;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to fetch program periods',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch program periods",
         });
       }
     }),
@@ -396,23 +399,23 @@ export const programRouter = router({
 
         if (!program) {
           throw new TRPCError({
-            code: 'NOT_FOUND',
-            message: 'Program not found',
+            code: "NOT_FOUND",
+            message: "Program not found",
           });
         }
 
         if (program.createdBy !== ctx.session.user.id) {
           throw new TRPCError({
-            code: 'FORBIDDEN',
-            message: 'You can only create periods for programs you created',
+            code: "FORBIDDEN",
+            message: "You can only create periods for programs you created",
           });
         }
 
         // Validate date range
         if (input.endDate <= input.startDate) {
           throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: 'End date must be after start date',
+            code: "BAD_REQUEST",
+            message: "End date must be after start date",
           });
         }
 
@@ -440,8 +443,8 @@ export const programRouter = router({
           throw error;
         }
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to create program period',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to create program period",
         });
       }
     }),
@@ -462,15 +465,15 @@ export const programRouter = router({
 
         if (!period) {
           throw new TRPCError({
-            code: 'NOT_FOUND',
-            message: 'Program period not found',
+            code: "NOT_FOUND",
+            message: "Program period not found",
           });
         }
 
         if (period.program.createdBy !== ctx.session.user.id) {
           throw new TRPCError({
-            code: 'FORBIDDEN',
-            message: 'You can only update periods for programs you created',
+            code: "FORBIDDEN",
+            message: "You can only update periods for programs you created",
           });
         }
 
@@ -481,8 +484,8 @@ export const programRouter = router({
           input.endDate <= input.startDate
         ) {
           throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: 'End date must be after start date',
+            code: "BAD_REQUEST",
+            message: "End date must be after start date",
           });
         }
 
@@ -512,8 +515,8 @@ export const programRouter = router({
           throw error;
         }
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to update program period',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update program period",
         });
       }
     }),
@@ -534,15 +537,15 @@ export const programRouter = router({
 
         if (!period) {
           throw new TRPCError({
-            code: 'NOT_FOUND',
-            message: 'Program period not found',
+            code: "NOT_FOUND",
+            message: "Program period not found",
           });
         }
 
         if (period.program.createdBy !== ctx.session.user.id) {
           throw new TRPCError({
-            code: 'FORBIDDEN',
-            message: 'You can only delete periods for programs you created',
+            code: "FORBIDDEN",
+            message: "You can only delete periods for programs you created",
           });
         }
 
@@ -552,15 +555,15 @@ export const programRouter = router({
 
         return {
           success: true,
-          message: 'Program period deleted successfully',
+          message: "Program period deleted successfully",
         };
       } catch (error) {
         if (error instanceof TRPCError) {
           throw error;
         }
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to delete program period',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to delete program period",
         });
       }
     }),
@@ -569,16 +572,16 @@ export const programRouter = router({
   createOneTime: protectedProcedure
     .input(
       z.object({
-        title: z.string().min(1, 'Title is required'),
-        description: z.string().min(1, 'Description is required'),
-        targetAmount: z.number().positive('Target amount must be positive'),
+        title: z.string().min(1, "Title is required"),
+        description: z.string().min(1, "Description is required"),
+        targetAmount: z.number().positive("Target amount must be positive"),
         bannerImage: z.string().url().optional(),
         category: z.string().optional(),
         contact: z.string().optional(),
         details: z.string().optional(),
         startDate: z.coerce.date(),
         endDate: z.coerce.date(),
-      })
+      }),
     )
     .mutation(async ({ input, ctx }) => {
       try {
@@ -587,16 +590,16 @@ export const programRouter = router({
         // Validate date range
         if (endDate <= startDate) {
           throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: 'End date must be after start date',
+            code: "BAD_REQUEST",
+            message: "End date must be after start date",
           });
         }
 
         const program = await prisma.program.create({
           data: {
             ...programData,
-            programType: 'one_time',
-            status: 'draft',
+            programType: "one_time",
+            status: "draft",
             createdBy: ctx.session.user.id,
             programPeriods: {
               create: {
@@ -622,8 +625,8 @@ export const programRouter = router({
           throw error;
         }
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to create one-time program',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to create one-time program",
         });
       }
     }),
@@ -631,23 +634,23 @@ export const programRouter = router({
   createRecurring: protectedProcedure
     .input(
       z.object({
-        title: z.string().min(1, 'Title is required'),
-        description: z.string().min(1, 'Description is required'),
-        targetAmount: z.number().positive('Target amount must be positive'),
+        title: z.string().min(1, "Title is required"),
+        description: z.string().min(1, "Description is required"),
+        targetAmount: z.number().positive("Target amount must be positive"),
         bannerImage: z.string().url().optional(),
         category: z.string().optional(),
         contact: z.string().optional(),
         details: z.string().optional(),
         recurringFrequency: z.enum([
-          'weekly',
-          'monthly',
-          'quarterly',
-          'yearly',
+          "weekly",
+          "monthly",
+          "quarterly",
+          "yearly",
         ]),
         recurringDay: z.number().int().min(1).max(31),
         recurringDurationDays: z.number().int().positive(),
         totalCycles: z.number().int().positive().optional(),
-      })
+      }),
     )
     .mutation(async ({ input, ctx }) => {
       try {
@@ -662,8 +665,8 @@ export const programRouter = router({
         const program = await prisma.program.create({
           data: {
             ...programData,
-            programType: 'multiple',
-            status: 'draft',
+            programType: "multiple",
+            status: "draft",
             createdBy: ctx.session.user.id,
             programPeriods: {
               create: {
@@ -688,10 +691,11 @@ export const programRouter = router({
         });
 
         return program;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to create recurring program',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to create recurring program",
         });
       }
     }),
@@ -699,9 +703,9 @@ export const programRouter = router({
   createSelectedDates: protectedProcedure
     .input(
       z.object({
-        title: z.string().min(1, 'Title is required'),
-        description: z.string().min(1, 'Description is required'),
-        targetAmount: z.number().positive('Target amount must be positive'),
+        title: z.string().min(1, "Title is required"),
+        description: z.string().min(1, "Description is required"),
+        targetAmount: z.number().positive("Target amount must be positive"),
         bannerImage: z.string().url().optional(),
         category: z.string().optional(),
         contact: z.string().optional(),
@@ -712,10 +716,10 @@ export const programRouter = router({
               date: z.string(),
               startTime: z.string(),
               endTime: z.string(),
-            })
+            }),
           )
-          .min(1, 'At least one date and time must be selected'),
-      })
+          .min(1, "At least one date and time must be selected"),
+      }),
     )
     .mutation(async ({ input, ctx }) => {
       try {
@@ -725,9 +729,9 @@ export const programRouter = router({
         for (const dateTime of selectedDateTimes) {
           if (dateTime.startTime === dateTime.endTime) {
             throw new TRPCError({
-              code: 'BAD_REQUEST',
+              code: "BAD_REQUEST",
               message:
-                'Start and end time cannot be the same for any selected date',
+                "Start and end time cannot be the same for any selected date",
             });
           }
         }
@@ -736,8 +740,8 @@ export const programRouter = router({
         const program = await prisma.program.create({
           data: {
             ...programData,
-            programType: 'selected_date',
-            status: 'draft',
+            programType: "selected_date",
+            status: "draft",
             createdBy: ctx.session.user.id,
             programPeriods: {
               create: selectedDateTimes.map((dateTime, index) => ({
@@ -763,8 +767,8 @@ export const programRouter = router({
           throw error;
         }
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to create selected dates program',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to create selected dates program",
         });
       }
     }),
@@ -775,10 +779,10 @@ export const programRouter = router({
     .mutation(async ({ input, ctx }) => {
       try {
         // Check if user is admin
-        if (ctx.session.user.role !== 'admin') {
+        if (ctx.session.user.role !== "admin") {
           throw new TRPCError({
-            code: 'FORBIDDEN',
-            message: 'Only admins can approve programs',
+            code: "FORBIDDEN",
+            message: "Only admins can approve programs",
           });
         }
 
@@ -788,22 +792,22 @@ export const programRouter = router({
 
         if (!program) {
           throw new TRPCError({
-            code: 'NOT_FOUND',
-            message: 'Program not found',
+            code: "NOT_FOUND",
+            message: "Program not found",
           });
         }
 
-        if (program.status !== 'draft') {
+        if (program.status !== "draft") {
           throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: 'Only draft programs can be approved',
+            code: "BAD_REQUEST",
+            message: "Only draft programs can be approved",
           });
         }
 
         const updatedProgram = await prisma.program.update({
           where: { id: input.id },
           data: {
-            status: 'pending',
+            status: "pending",
             approvedBy: ctx.session.user.id,
             approvedAt: new Date(),
             rejectedBy: null,
@@ -826,8 +830,8 @@ export const programRouter = router({
           throw error;
         }
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to approve program',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to approve program",
         });
       }
     }),
@@ -837,15 +841,15 @@ export const programRouter = router({
       z.object({
         id: z.string(),
         reason: z.string().optional(),
-      })
+      }),
     )
     .mutation(async ({ input, ctx }) => {
       try {
         // Check if user is admin
-        if (ctx.session.user.role !== 'admin') {
+        if (ctx.session.user.role !== "admin") {
           throw new TRPCError({
-            code: 'FORBIDDEN',
-            message: 'Only admins can reject programs',
+            code: "FORBIDDEN",
+            message: "Only admins can reject programs",
           });
         }
 
@@ -855,22 +859,22 @@ export const programRouter = router({
 
         if (!program) {
           throw new TRPCError({
-            code: 'NOT_FOUND',
-            message: 'Program not found',
+            code: "NOT_FOUND",
+            message: "Program not found",
           });
         }
 
-        if (program.status !== 'draft') {
+        if (program.status !== "draft") {
           throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: 'Only draft programs can be rejected',
+            code: "BAD_REQUEST",
+            message: "Only draft programs can be rejected",
           });
         }
 
         const updatedProgram = await prisma.program.update({
           where: { id: input.id },
           data: {
-            status: 'rejected',
+            status: "rejected",
             rejectedBy: ctx.session.user.id,
             rejectedAt: new Date(),
             rejectionReason: input.reason || null,
@@ -893,8 +897,8 @@ export const programRouter = router({
           throw error;
         }
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to reject program',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to reject program",
         });
       }
     }),
@@ -905,22 +909,22 @@ export const programRouter = router({
       z.object({
         limit: z.number().int().positive().max(100).default(20),
         offset: z.number().int().min(0).default(0),
-      })
+      }),
     )
     .query(async ({ input, ctx }) => {
       try {
         // Check if user is admin
-        if (ctx.session.user.role !== 'admin') {
+        if (ctx.session.user.role !== "admin") {
           throw new TRPCError({
-            code: 'FORBIDDEN',
-            message: 'Only admins can view draft programs',
+            code: "FORBIDDEN",
+            message: "Only admins can view draft programs",
           });
         }
 
         const [programs, total] = await Promise.all([
           prisma.program.findMany({
             where: {
-              status: 'draft',
+              status: "draft",
             },
             include: {
               programPeriods: {
@@ -932,7 +936,7 @@ export const programRouter = router({
                   cycleNumber: true,
                 },
                 orderBy: {
-                  startDate: 'desc',
+                  startDate: "desc",
                 },
               },
               _count: {
@@ -942,13 +946,13 @@ export const programRouter = router({
               },
             },
             orderBy: {
-              createdAt: 'desc',
+              createdAt: "desc",
             },
             take: input.limit,
             skip: input.offset,
           }),
           prisma.program.count({
-            where: { status: 'draft' },
+            where: { status: "draft" },
           }),
         ]);
 
@@ -962,8 +966,8 @@ export const programRouter = router({
           throw error;
         }
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to fetch draft programs',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch draft programs",
         });
       }
     }),
@@ -998,27 +1002,27 @@ export const programRouter = router({
 
         if (!program) {
           throw new TRPCError({
-            code: 'NOT_FOUND',
-            message: 'Program not found',
+            code: "NOT_FOUND",
+            message: "Program not found",
           });
         }
 
         const totalDonations = program.donations
-          .filter((d: any) => d.status === 'completed')
+          .filter((d: any) => d.status === "completed")
           .reduce((sum: number, d: any) => sum + Number(d.amount), 0);
 
         const totalPeriodAmount = program.programPeriods.reduce(
           (sum: number, p: any) => sum + Number(p.currentAmount),
-          0
+          0,
         );
 
         // Since we removed status from programPeriods, we'll use date-based logic
         const now = new Date();
         const activePeriods = program.programPeriods.filter(
-          (p: any) => p.startDate <= now && p.endDate >= now
+          (p: any) => p.startDate <= now && p.endDate >= now,
         ).length;
         const completedPeriods = program.programPeriods.filter(
-          (p: any) => p.endDate < now
+          (p: any) => p.endDate < now,
         ).length;
 
         return {
@@ -1041,8 +1045,8 @@ export const programRouter = router({
           throw error;
         }
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to fetch program statistics',
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch program statistics",
         });
       }
     }),
