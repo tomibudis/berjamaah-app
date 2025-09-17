@@ -2,9 +2,11 @@
 
 import * as React from 'react';
 import { Suspense } from 'react';
+import type { Route } from 'next';
+import { useRouter } from 'next/navigation';
 import { useQueryParams } from '@/hooks/use-query-params';
 import { MOCK_USERS } from './data';
-import { User, UserFilters, CreateUserData } from './types';
+import { User, UserFilters } from './types';
 import {
   UsersHeader,
   UsersGrid,
@@ -12,10 +14,10 @@ import {
   StatusSelect,
   RoleSelect,
   FiltersTable,
-  CreateUserForm,
 } from './components';
 
 function UsersPageContent() {
+  const router = useRouter();
   // URL State Management
   const [queryParams, setQueryParams] = useQueryParams<UserFilters>({
     search: '',
@@ -24,9 +26,8 @@ function UsersPageContent() {
     page: '1',
   });
 
-  // Local state for users data
-  const [users, setUsers] = React.useState<User[]>(() => MOCK_USERS);
-  const [isCreateFormOpen, setIsCreateFormOpen] = React.useState(false);
+  // Data source (mocked for now)
+  const users = React.useMemo<User[]>(() => MOCK_USERS, []);
 
   // Filter users based on query parameters
   const filteredUsers = React.useMemo(() => {
@@ -67,24 +68,7 @@ function UsersPageContent() {
 
   // User actions
   const handleCreateUser = () => {
-    setIsCreateFormOpen(true);
-  };
-
-  const handleCreateUserSubmit = (data: CreateUserData) => {
-    const newUser: User = {
-      id: Date.now().toString(),
-      name: data.name,
-      email: data.email,
-      role: data.role,
-      status: 'active',
-      createdAt: new Date().toISOString(),
-      phone: data.phone,
-      totalDonations: 0,
-      totalAmount: 0,
-    };
-
-    setUsers(prev => [newUser, ...prev]);
-    setIsCreateFormOpen(false);
+    router.push('/admin/users/add' as Route);
   };
 
   const handleEditUser = (user: User) => {
@@ -123,12 +107,6 @@ function UsersPageContent() {
           />
         </div>
       </div>
-
-      <CreateUserForm
-        isOpen={isCreateFormOpen}
-        onClose={() => setIsCreateFormOpen(false)}
-        onSubmit={handleCreateUserSubmit}
-      />
     </div>
   );
 }

@@ -7,7 +7,9 @@ export default function AdminLayout({
 }) {
   return (
     <div className=''>
-      <div className='pb-14'>{children}</div>
+      <div className='pb-14 mx-auto max-w-sm sm:max-w-md md:max-w-lg lg:max-w-md xl:max-w-lg'>
+        {children}
+      </div>
       <BottomNavigationAdmin />
     </div>
   );
