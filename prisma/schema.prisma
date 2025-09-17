@@ -9,6 +9,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserStatus {
+  scheduled
+  pending
+  active
+}
+
 model User {
   id                String     @id @default(cuid())
   name              String?
@@ -27,6 +33,11 @@ model User {
   bio               String?
   firstName         String?    @map("first_name")
   lastName          String?    @map("last_name")
+  // Onboarding fields
+  status            UserStatus @default(scheduled)
+  username          String?    @unique
+  uniqueId          String?    @unique
+  dob               DateTime?
   accounts          Account[]
   sessions          Session[]
   verifiedDonations Donation[] @relation("VerifiedByAdmin")
@@ -34,6 +45,7 @@ model User {
   rejectedPrograms  Program[]  @relation("RejectedPrograms")
 
   @@map("user")
+  @@index([status, createdAt])
 }
 
 model Session {
@@ -73,6 +85,16 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("verification_token")
+}
+
+// Custom verification tokens used by activation flow
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String   @unique
+  expiresAt  DateTime @map("expires_at")
+
+  @@map("verification")
 }
 
 model Donation {

@@ -1,0 +1,25 @@
+name: Process Scheduled Activation Users
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch: {}
+
+jobs:
+  call-webhook:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call webhook
+        env:
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+          WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
+        run: |
+          if [ -z "$WEBHOOK_URL" ]; then
+            echo "WEBHOOK_URL not set in repo secrets" >&2
+            exit 1
+          fi
+          curl -sS -X POST "$WEBHOOK_URL" \
+            -H "x-webhook-secret: $WEBHOOK_SECRET" \
+            -H "Content-Type: application/json" \
+            -d '{}' \
+            | tail -n +1

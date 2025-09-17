@@ -24,6 +24,7 @@ import {
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { Plus, Trash2, Loader2, ChevronLeft } from 'lucide-react';
+import { trpcClient } from '@/utils/trpc';
 
 // Schema for single user email
 const userEmailSchema = z.object({
@@ -82,18 +83,10 @@ export default function AddUsersPage() {
 
   const onSubmitForm = async (formValues: AddUsersFormValues) => {
     try {
-      // TODO: Implement actual API call to create users
-      console.log('Creating users:', formValues.users);
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      toast.success(`Berhasil membuat ${formValues.users.length} pengguna`);
-
-      // Reset form
-      form.reset({
-        users: [{ email: '' }],
-      });
+      const emails = formValues.users.map(u => u.email);
+      const res = await trpcClient.user.scheduleBulkUsers.mutate({ emails });
+      toast.success(`Berhasil menjadwalkan ${res.count} pengguna`);
+      form.reset({ users: [{ email: '' }] });
     } catch (error) {
       console.error('Error creating users:', error);
       toast.error('Gagal membuat pengguna. Silakan coba lagi.');

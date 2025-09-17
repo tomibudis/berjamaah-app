@@ -27,6 +27,7 @@ export default withAuth(
           '/signup',
           '/forgot-password',
           '/status',
+          '/complete-registration',
         ];
 
         if (
