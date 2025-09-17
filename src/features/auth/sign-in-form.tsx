@@ -20,7 +20,6 @@ import { signIn, useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import GoogleSignInButton from "./google-signin-button";
 import Loader from "@/components/shared/loader";
 import {
   Card,
@@ -85,21 +84,6 @@ export default function SignInForm() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {/* Google Sign In Button */}
-        <GoogleSignInButton />
-
-        {/* Divider */}
-        <div className="relative my-6">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">
-              Or continue with email
-            </span>
-          </div>
-        </div>
-
         <Form {...form}>
           <form
             className="space-y-6"

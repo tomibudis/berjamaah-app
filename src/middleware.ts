@@ -6,33 +6,8 @@ export default withAuth(
     const { pathname } = req.nextUrl;
     const token = req.nextauth.token;
 
-    // Handle preflight OPTIONS requests
-    if (req.method === "OPTIONS") {
-      return new NextResponse(null, {
-        status: 200,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-          "Access-Control-Allow-Headers":
-            "Content-Type, Authorization, X-Requested-With",
-          "Access-Control-Allow-Credentials": "true",
-          "Access-Control-Max-Age": "86400",
-        },
-      });
-    }
-
     // Add CORS headers to all responses
     const res = NextResponse.next();
-    res.headers.set("Access-Control-Allow-Origin", "*");
-    res.headers.set("Access-Control-Allow-Credentials", "true");
-    res.headers.set(
-      "Access-Control-Allow-Methods",
-      "GET, POST, PUT, DELETE, OPTIONS",
-    );
-    res.headers.set(
-      "Access-Control-Allow-Headers",
-      "Content-Type, Authorization, X-Requested-With",
-    );
 
     // Check if user is trying to access admin routes
     if (pathname.startsWith("/admin") && token?.role !== "admin") {
@@ -48,7 +23,6 @@ export default withAuth(
 
         // Public routes that don't require authentication
         const publicRoutes = [
-          "/",
           "/signin",
           "/signup",
           "/forgot-password",
