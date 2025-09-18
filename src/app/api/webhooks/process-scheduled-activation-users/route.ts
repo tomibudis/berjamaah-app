@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '../../../../../prisma/index';
 import { Resend } from 'resend';
+import ActivationEmail from '../../../../emails/ActivationEmail';
 
 function generateToken(length = 48) {
   const alphabet =
@@ -14,14 +15,23 @@ function generateToken(length = 48) {
 
 async function sendActivationEmail(email: string, activationUrl: string) {
   const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.RESEND_FROM || 'noreply@berjamaah.com';
+  const from = process.env.RESEND_FROM || 'noreply@berjamaah.id';
   if (!apiKey) return;
   const resend = new Resend(apiKey);
+  const appName = process.env.NEXT_PUBLIC_APP_NAME || 'Berjamaah';
+  const logoUrl =
+    process.env.NEXT_PUBLIC_LOGO_URL ||
+    `${process.env.NEXT_PUBLIC_SERVER_URL || ''}/favicon.ico`;
+
   const { error } = await resend.emails.send({
     from,
     to: email,
     subject: 'Aktivasi Akun Berjamaah',
-    html: `<strong>Selamat datang!</strong><br/>Silakan aktifkan akun Anda dengan membuka tautan berikut: <a href="${activationUrl}">Aktifkan Akun</a>`,
+    react: ActivationEmail({
+      appName,
+      logoUrl,
+      activationUrl,
+    }),
   });
   if (error) {
     console.error('Resend error', error);

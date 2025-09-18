@@ -35,6 +35,10 @@ Update the following variables in `.env.local`:
 - `GOOGLE_CLIENT_ID`: Google OAuth client ID
 - `GOOGLE_CLIENT_SECRET`: Google OAuth client secret
 - `NEXT_PUBLIC_SERVER_URL`: Public server URL
+- `RESEND_API_KEY`: API key for Resend email service
+- `RESEND_FROM`: From address for emails (e.g., `Berjamaah <noreply@yourdomain.com>`)
+- `NEXT_PUBLIC_APP_NAME`: Public application name for emails (optional)
+- `NEXT_PUBLIC_LOGO_URL`: Public logo URL for emails (optional)
 
 3. Set up the database:
 
