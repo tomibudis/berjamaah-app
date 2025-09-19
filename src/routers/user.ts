@@ -5,7 +5,6 @@ import prisma from '../../prisma/index';
 import { hash } from 'bcryptjs';
 
 export const userRouter = router({
-  // Schedule bulk users (admin only)
   scheduleBulkUsers: protectedProcedure
     .input(
       z.object({
@@ -190,7 +189,7 @@ export const userRouter = router({
           confirmPassword: z.string().min(8),
         })
         .refine(v => v.password === v.confirmPassword, {
-          message: 'Password confirmation does not match',
+          message: 'Konfirmasi password tidak sama',
           path: ['confirmPassword'],
         })
     )
@@ -212,6 +211,28 @@ export const userRouter = router({
       const user = await prisma.user.findUnique({ where: { email } });
       if (!user) {
         throw new Error('User not found');
+      }
+
+      // Check for existing uniqueId and username
+      const existingUser = await prisma.user.findFirst({
+        where: {
+          OR: [{ uniqueId: input.uniqueId }, { username: input.username }],
+        },
+        select: { uniqueId: true, username: true },
+      });
+
+      if (existingUser) {
+        const fieldErrors: string[] = [];
+
+        if (existingUser.uniqueId === input.uniqueId) {
+          fieldErrors.push('ID unik sudah digunakan');
+        }
+
+        if (existingUser.username === input.username) {
+          fieldErrors.push('Username sudah digunakan');
+        }
+
+        throw new Error(fieldErrors.join(', '));
       }
 
       const hashedPassword = await hash(input.password, 12);

@@ -5,8 +5,17 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { format } from 'date-fns';
+import { CalendarIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
+import { Calendar } from '@/components/ui/calendar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import {
   Form,
   FormControl,
@@ -24,16 +33,19 @@ import {
 } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { trpcClient } from '@/utils/trpc';
+import { cn } from '@/lib/utils';
 
 const schema = z
   .object({
-    uniqueId: z.string().min(3),
-    username: z.string().min(3),
-    fullName: z.string().min(3),
-    dob: z.string().min(4),
-    phone: z.string().min(6),
-    password: z.string().min(8),
-    confirmPassword: z.string().min(8),
+    uniqueId: z.string().min(3, { message: 'ID unik minimal 3 karakter' }),
+    username: z.string().min(3, { message: 'Username minimal 3 karakter' }),
+    fullName: z.string().min(3, { message: 'Nama lengkap minimal 3 karakter' }),
+    dob: z.string().min(1, { message: 'Tanggal lahir harus diisi' }),
+    phone: z.string().min(6, { message: 'Nomor HP minimal 6 karakter' }),
+    password: z.string().min(8, { message: 'Password minimal 8 karakter' }),
+    confirmPassword: z
+      .string()
+      .min(8, { message: 'Konfirmasi password minimal 8 karakter' }),
   })
   .refine(v => v.password === v.confirmPassword, {
     message: 'Konfirmasi password tidak sama',
@@ -65,8 +77,29 @@ function CompleteRegistrationForm() {
       await trpcClient.user.completeRegistration.mutate({ token, ...values });
       toast.success('Registrasi berhasil, silakan masuk');
       router.push('/signin');
-    } catch {
-      toast.error('Gagal menyelesaikan registrasi');
+    } catch (error: unknown) {
+      const errorMessage =
+        (error as Error)?.message || 'Gagal menyelesaikan registrasi';
+
+      // Check if error contains field-specific messages
+      if (errorMessage.includes('ID unik sudah digunakan')) {
+        form.setError('uniqueId', {
+          type: 'manual',
+          message: 'ID unik sudah digunakan',
+        });
+      }
+
+      if (errorMessage.includes('Username sudah digunakan')) {
+        form.setError('username', {
+          type: 'manual',
+          message: 'Username sudah digunakan',
+        });
+      }
+
+      // Show general error toast if no specific field errors
+      if (!errorMessage.includes('sudah digunakan')) {
+        toast.error(errorMessage);
+      }
     }
   };
 
@@ -84,9 +117,9 @@ function CompleteRegistrationForm() {
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Unique ID</FormLabel>
+                  <FormLabel>ID Unik</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input placeholder='Masukkan ID unik' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -99,7 +132,7 @@ function CompleteRegistrationForm() {
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input placeholder='Masukkan username' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -112,7 +145,7 @@ function CompleteRegistrationForm() {
                 <FormItem>
                   <FormLabel>Nama Lengkap</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input placeholder='Masukkan nama lengkap' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -124,9 +157,41 @@ function CompleteRegistrationForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Tanggal Lahir</FormLabel>
-                  <FormControl>
-                    <Input placeholder='YYYY-MM-DD' {...field} />
-                  </FormControl>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant='outline'
+                          className={cn(
+                            'w-full pl-3 text-left font-normal',
+                            !field.value && 'text-muted-foreground'
+                          )}
+                        >
+                          {field.value ? (
+                            format(new Date(field.value), 'dd/MM/yyyy')
+                          ) : (
+                            <span>Pilih tanggal lahir</span>
+                          )}
+                          <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className='w-auto p-0' align='start'>
+                      <Calendar
+                        mode='single'
+                        selected={
+                          field.value ? new Date(field.value) : undefined
+                        }
+                        onSelect={date => {
+                          field.onChange(
+                            date ? date.toISOString().split('T')[0] : ''
+                          );
+                        }}
+                        disabled={date => date > new Date()}
+                        captionLayout='dropdown'
+                      />
+                    </PopoverContent>
+                  </Popover>
                   <FormMessage />
                 </FormItem>
               )}
@@ -136,9 +201,9 @@ function CompleteRegistrationForm() {
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>No. HP</FormLabel>
+                  <FormLabel>Nomor HP</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input placeholder='Masukkan nomor HP' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -151,7 +216,7 @@ function CompleteRegistrationForm() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input type='password' {...field} />
+                    <PasswordInput placeholder='••••••••' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -164,7 +229,7 @@ function CompleteRegistrationForm() {
                 <FormItem>
                   <FormLabel>Konfirmasi Password</FormLabel>
                   <FormControl>
-                    <Input type='password' {...field} />
+                    <PasswordInput placeholder='••••••••' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
