@@ -231,8 +231,8 @@ function ProgramPageContent() {
   };
 
   return (
-    <div className='bg-white dark:bg-gray-900'>
-      <div className='mx-auto max-w-sm px-4 py-6 sm:max-w-md md:max-w-lg lg:max-w-md xl:max-w-lg'>
+    <div>
+      <div>
         <div className='space-y-6'>
           {/* Stats Cards */}
           <div className='grid grid-cols-2 gap-4'>

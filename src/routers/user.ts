@@ -21,18 +21,51 @@ export const userRouter = router({
         new Set(input.emails.map(e => e.trim().toLowerCase()))
       );
 
+      // Check for existing users first
+      const existingUsers = await prisma.user.findMany({
+        where: {
+          email: {
+            in: normalizedUniqueEmails,
+          },
+        },
+        select: { email: true },
+      });
+
+      // Create a map of existing emails for quick lookup
+      const existingEmailsSet = new Set(existingUsers.map(user => user.email));
+
+      // Check which emails already exist and create field-specific errors
+      const fieldErrors: Array<{
+        index: number;
+        email: string;
+        message: string;
+      }> = [];
+
+      input.emails.forEach((email, index) => {
+        const normalizedEmail = email.trim().toLowerCase();
+        if (existingEmailsSet.has(normalizedEmail)) {
+          fieldErrors.push({
+            index,
+            email: email.trim(),
+            message: 'Email ini sudah terdaftar dalam sistem',
+          });
+        }
+      });
+
+      // If there are field errors, return them instead of throwing
+      if (fieldErrors.length > 0) {
+        return {
+          success: false,
+          fieldErrors,
+          message: 'Beberapa email sudah terdaftar dalam sistem',
+        };
+      }
+
+      // Create new users only if none exist
       const results = await prisma.$transaction(
         normalizedUniqueEmails.map(email =>
-          prisma.user.upsert({
-            where: { email },
-            update: {
-              status: 'scheduled' as const,
-              // Ensure password stays empty for scheduled accounts
-              password: null,
-              role: 'user',
-              updatedAt: new Date(),
-            },
-            create: {
+          prisma.user.create({
+            data: {
               email,
               status: 'scheduled' as const,
               password: null,
@@ -43,7 +76,11 @@ export const userRouter = router({
         )
       );
 
-      return { count: results.length };
+      return {
+        success: true,
+        count: results.length,
+        message: `Berhasil menjadwalkan ${results.length} pengguna`,
+      };
     }),
   // Get current user profile
   getProfile: protectedProcedure.query(async ({ ctx }) => {

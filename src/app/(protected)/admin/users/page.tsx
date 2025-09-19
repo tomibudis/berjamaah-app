@@ -83,29 +83,27 @@ function UsersPageContent() {
 
   return (
     <div className='flex flex-1 flex-col'>
-      <div className='@container/main flex flex-1 flex-col gap-6'>
-        <div className='flex flex-col gap-4 px-4 py-6 lg:px-6'>
-          <UsersHeader
-            onCreateUser={handleCreateUser}
-            totalUsers={totalUsers}
-            activeUsers={activeUsers}
+      <div className='flex flex-col gap-4'>
+        <UsersHeader
+          onCreateUser={handleCreateUser}
+          totalUsers={totalUsers}
+          activeUsers={activeUsers}
+        />
+        <FiltersTable>
+          <SearchInput value={queryParams.search} onChange={handleSearch} />
+          <StatusSelect
+            value={queryParams.status}
+            onChange={handleStatusFilter}
           />
-          <FiltersTable>
-            <SearchInput value={queryParams.search} onChange={handleSearch} />
-            <StatusSelect
-              value={queryParams.status}
-              onChange={handleStatusFilter}
-            />
-            <RoleSelect value={queryParams.role} onChange={handleRoleFilter} />
-          </FiltersTable>
-        </div>
-        <div className='flex-1 px-4 lg:px-6 pb-6'>
-          <UsersGrid
-            users={filteredUsers}
-            onEditUser={handleEditUser}
-            onDeleteUser={handleDeleteUser}
-          />
-        </div>
+          <RoleSelect value={queryParams.role} onChange={handleRoleFilter} />
+        </FiltersTable>
+      </div>
+      <div className='flex-1'>
+        <UsersGrid
+          users={filteredUsers}
+          onEditUser={handleEditUser}
+          onDeleteUser={handleDeleteUser}
+        />
       </div>
     </div>
   );

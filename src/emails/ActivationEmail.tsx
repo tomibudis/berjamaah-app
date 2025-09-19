@@ -109,12 +109,14 @@ const styles: Record<string, React.CSSProperties> = {
   },
   header: {
     display: 'flex',
+    flexDirection: 'column',
     alignItems: 'center',
-    gap: 12,
-    marginBottom: 12,
+    gap: 8,
+    marginBottom: 16,
   },
   logo: {
     borderRadius: 8,
+    margin: '0 auto',
   },
   appTitle: {
     margin: 0,

@@ -71,118 +71,116 @@ function CompleteRegistrationForm() {
   };
 
   return (
-    <div className='flex flex-1 flex-col px-4 py-10'>
-      <Card className='w-full max-w-xl mx-auto'>
-        <CardHeader>
-          <CardTitle>Selesaikan Pendaftaran</CardTitle>
-          <CardDescription>Lengkapi data akun Anda</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form className='space-y-4' onSubmit={form.handleSubmit(onSubmit)}>
-              <FormField
-                name='uniqueId'
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Unique ID</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                name='username'
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Username</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                name='fullName'
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nama Lengkap</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                name='dob'
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tanggal Lahir</FormLabel>
-                    <FormControl>
-                      <Input placeholder='YYYY-MM-DD' {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                name='phone'
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>No. HP</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                name='password'
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input type='password' {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                name='confirmPassword'
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Konfirmasi Password</FormLabel>
-                    <FormControl>
-                      <Input type='password' {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button
-                type='submit'
-                disabled={form.formState.isSubmitting}
-                className='w-full'
-              >
-                Selesaikan
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
-    </div>
+    <Card className='w-full'>
+      <CardHeader>
+        <CardTitle>Selesaikan Pendaftaran</CardTitle>
+        <CardDescription>Lengkapi data akun Anda</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form className='space-y-4' onSubmit={form.handleSubmit(onSubmit)}>
+            <FormField
+              name='uniqueId'
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Unique ID</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name='username'
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name='fullName'
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nama Lengkap</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name='dob'
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tanggal Lahir</FormLabel>
+                  <FormControl>
+                    <Input placeholder='YYYY-MM-DD' {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name='phone'
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>No. HP</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name='password'
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input type='password' {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name='confirmPassword'
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Konfirmasi Password</FormLabel>
+                  <FormControl>
+                    <Input type='password' {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              type='submit'
+              disabled={form.formState.isSubmitting}
+              className='w-full'
+            >
+              Selesaikan
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   );
 }
 

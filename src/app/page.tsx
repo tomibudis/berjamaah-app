@@ -62,11 +62,9 @@ export default function Home() {
   ];
 
   return (
-    <div className='bg-white dark:bg-gray-900'>
+    <div>
       <div
-        className={`mx-auto max-w-sm px-4 py-6 sm:max-w-md md:max-w-lg lg:max-w-md xl:max-w-lg ${
-          session && status === 'authenticated' ? 'pb-20' : ''
-        }`}
+        className={`${session && status === 'authenticated' ? 'pb-20' : ''}`}
       >
         <div className='space-y-6'>
           {/* Daftar Program Aktif Section */}

@@ -64,6 +64,21 @@ const addUsersSchema = z
 
 export type AddUsersFormValues = z.infer<typeof addUsersSchema>;
 
+// Type for field-specific errors from the backend
+type FieldError = {
+  index: number;
+  email: string;
+  message: string;
+};
+
+// Type for the backend response
+type ScheduleBulkUsersResponse = {
+  success: boolean;
+  count?: number;
+  message: string;
+  fieldErrors?: FieldError[];
+};
+
 export default function AddUsersPage() {
   const router = useRouter();
 
@@ -84,12 +99,42 @@ export default function AddUsersPage() {
   const onSubmitForm = async (formValues: AddUsersFormValues) => {
     try {
       const emails = formValues.users.map(u => u.email);
-      const res = await trpcClient.user.scheduleBulkUsers.mutate({ emails });
-      toast.success(`Berhasil menjadwalkan ${res.count} pengguna`);
-      form.reset({ users: [{ email: '' }] });
+      const res = (await trpcClient.user.scheduleBulkUsers.mutate({
+        emails,
+      })) as ScheduleBulkUsersResponse;
+
+      if (res.success) {
+        toast.success(res.message);
+        form.reset({ users: [{ email: '' }] });
+      } else {
+        // Handle field-specific errors
+        if (res.fieldErrors && res.fieldErrors.length > 0) {
+          // Set field-specific errors
+          res.fieldErrors.forEach(({ index, message }: FieldError) => {
+            form.setError(`users.${index}.email`, {
+              type: 'manual',
+              message: message,
+            });
+          });
+
+          // Show general message
+          toast.error(res.message);
+        } else {
+          toast.error(
+            res.message || 'Gagal membuat pengguna. Silakan coba lagi.'
+          );
+        }
+      }
     } catch (error) {
       console.error('Error creating users:', error);
-      toast.error('Gagal membuat pengguna. Silakan coba lagi.');
+
+      // Display specific error message from the server
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Gagal membuat pengguna. Silakan coba lagi.';
+
+      toast.error(errorMessage);
     }
   };
 
@@ -106,8 +151,8 @@ export default function AddUsersPage() {
 
   return (
     <div className='flex flex-1 flex-col'>
-      <div className='@container/main flex flex-1 flex-col gap-6'>
-        <div className='flex flex-col gap-4 px-4 py-6 lg:px-6'>
+      <div className='flex flex-1 flex-col gap-6'>
+        <div className='flex flex-col gap-4 '>
           {/* Header */}
           <div className='flex items-center gap-3'>
             <Button
@@ -130,8 +175,8 @@ export default function AddUsersPage() {
           </div>
         </div>
 
-        <div className='flex-1 px-4 lg:px-6'>
-          <Card className='w-full max-w-2xl mx-auto'>
+        <div className='flex-1'>
+          <Card className='w-full mx-auto'>
             <CardHeader>
               <CardTitle>Informasi Pengguna</CardTitle>
               <CardDescription>

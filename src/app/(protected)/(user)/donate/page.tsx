@@ -295,55 +295,53 @@ export default function DonatePage() {
   const donations = mockDonations;
 
   return (
-    <div className='bg-white dark:bg-gray-900'>
-      <div className='mx-auto max-w-sm px-4 py-6 sm:max-w-md md:max-w-lg lg:max-w-md xl:max-w-lg'>
-        <div className='space-y-6'>
-          {/* Header */}
-          <div>
-            <h1 className='text-lg font-semibold text-gray-900 dark:text-white mb-2'>
-              Riwayat Donasi
-            </h1>
-            <p className='text-sm text-gray-600 dark:text-gray-400'>
-              Lihat riwayat donasi Anda dan status verifikasinya.
-            </p>
-          </div>
-
-          {/* Donation History List */}
-          {donationsQuery.isLoading ? (
-            <div className='space-y-4'>
-              {[...Array(3)].map((_, i) => (
-                <Skeleton key={i} className='h-32 w-full' />
-              ))}
-            </div>
-          ) : donations.length === 0 ? (
-            <Card className='border border-gray-200 dark:border-gray-700 shadow-sm py-0'>
-              <CardContent className='p-8 text-center'>
-                <History className='w-12 h-12 text-gray-400 mx-auto mb-4' />
-                <h3 className='text-lg font-semibold text-gray-900 dark:text-white mb-2'>
-                  Belum Ada Donasi
-                </h3>
-                <p className='text-sm text-gray-600 dark:text-gray-400 mb-4'>
-                  Anda belum melakukan donasi apapun. Mulai donasi pertama Anda
-                  sekarang!
-                </p>
-                <Button className='bg-green-500 hover:bg-green-600 text-white'>
-                  <Plus className='w-4 h-4 mr-2' />
-                  Mulai Donasi
-                </Button>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className='space-y-4'>
-              {donations.map((donation: DonationHistoryItem) => (
-                <DonationHistoryCard
-                  key={donation.id}
-                  donation={donation}
-                  onViewDetails={handleViewDetails}
-                />
-              ))}
-            </div>
-          )}
+    <div>
+      <div className='space-y-6'>
+        {/* Header */}
+        <div>
+          <h1 className='text-lg font-semibold text-gray-900 dark:text-white mb-2'>
+            Riwayat Donasi
+          </h1>
+          <p className='text-sm text-gray-600 dark:text-gray-400'>
+            Lihat riwayat donasi Anda dan status verifikasinya.
+          </p>
         </div>
+
+        {/* Donation History List */}
+        {donationsQuery.isLoading ? (
+          <div className='space-y-4'>
+            {[...Array(3)].map((_, i) => (
+              <Skeleton key={i} className='h-32 w-full' />
+            ))}
+          </div>
+        ) : donations.length === 0 ? (
+          <Card className='border border-gray-200 dark:border-gray-700 shadow-sm py-0'>
+            <CardContent className='p-8 text-center'>
+              <History className='w-12 h-12 text-gray-400 mx-auto mb-4' />
+              <h3 className='text-lg font-semibold text-gray-900 dark:text-white mb-2'>
+                Belum Ada Donasi
+              </h3>
+              <p className='text-sm text-gray-600 dark:text-gray-400 mb-4'>
+                Anda belum melakukan donasi apapun. Mulai donasi pertama Anda
+                sekarang!
+              </p>
+              <Button className='bg-green-500 hover:bg-green-600 text-white'>
+                <Plus className='w-4 h-4 mr-2' />
+                Mulai Donasi
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className='space-y-4'>
+            {donations.map((donation: DonationHistoryItem) => (
+              <DonationHistoryCard
+                key={donation.id}
+                donation={donation}
+                onViewDetails={handleViewDetails}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Donation Detail Drawer */}

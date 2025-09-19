@@ -129,348 +129,338 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className='bg-white dark:bg-gray-900'>
-      <div className='mx-auto max-w-sm px-4 py-6 sm:max-w-md md:max-w-lg lg:max-w-md xl:max-w-lg'>
-        <div className='space-y-6'>
-          {/* Header */}
-          <div className='flex items-center justify-between'>
-            <div>
-              <h1 className='text-lg font-semibold text-gray-900 dark:text-white'>
-                Dashboard Admin
-              </h1>
-              <p className='text-sm text-gray-600 dark:text-gray-400'>
-                Kelola pengguna dan pengaturan sistem
-              </p>
-            </div>
-            <Badge variant='outline' className='flex items-center gap-2'>
-              <Shield className='w-4 h-4' />
-              Admin
-            </Badge>
-          </div>
-
-          {/* Stats Cards */}
-          <div className='grid grid-cols-2 gap-4'>
-            <Card className='border border-gray-200 dark:border-gray-700 shadow-sm py-2'>
-              <CardContent className='p-4'>
-                <div className='text-center'>
-                  <p className='text-sm font-medium text-gray-900 dark:text-white mb-1'>
-                    Total Pengguna
-                  </p>
-                  <p className='text-xs text-gray-600 dark:text-gray-400 mb-2'>
-                    Pengguna terdaftar
-                  </p>
-                  <div className='text-2xl font-bold text-gray-900 dark:text-white'>
-                    {users.length}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className='border border-gray-200 dark:border-gray-700 shadow-sm py-2'>
-              <CardContent className='p-4'>
-                <div className='text-center'>
-                  <p className='text-sm font-medium text-gray-900 dark:text-white mb-1'>
-                    Total Admin
-                  </p>
-                  <p className='text-xs text-gray-600 dark:text-gray-400 mb-2'>
-                    Pengguna admin
-                  </p>
-                  <div className='text-2xl font-bold text-gray-900 dark:text-white'>
-                    {users.filter(user => user.role === 'admin').length}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className='border border-gray-200 dark:border-gray-700 shadow-sm py-2'>
-              <CardContent className='p-4'>
-                <div className='text-center'>
-                  <p className='text-sm font-medium text-gray-900 dark:text-white mb-1'>
-                    Total Program
-                  </p>
-                  <p className='text-xs text-gray-600 dark:text-gray-400 mb-2'>
-                    Program aktif
-                  </p>
-                  <div className='text-2xl font-bold text-gray-900 dark:text-white'>
-                    {programs.length}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className='border border-gray-200 dark:border-gray-700 shadow-sm py-2'>
-              <CardContent className='p-4'>
-                <div className='text-center'>
-                  <p className='text-sm font-medium text-gray-900 dark:text-white mb-1'>
-                    Program Butuh Dikonfirmasi
-                  </p>
-                  <p className='text-xs text-gray-600 dark:text-gray-400 mb-2'>
-                    Menunggu persetujuan
-                  </p>
-                  <div className='text-2xl font-bold text-gray-900 dark:text-white'>
-                    {isLoadingDraftPrograms
-                      ? '...'
-                      : draftProgramsData?.total || 0}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Confirmation Management */}
+    <div>
+      <div className='space-y-6'>
+        {/* Header */}
+        <div className='flex items-center justify-between'>
           <div>
-            <h2 className='text-lg font-semibold text-gray-900 dark:text-white mb-2'>
-              Manajemen Konfirmasi
-            </h2>
-            <p className='text-sm text-gray-600 dark:text-gray-400 mb-4'>
-              Kelola konfirmasi dana dan program yang memerlukan persetujuan
+            <h1 className='text-lg font-semibold text-gray-900 dark:text-white'>
+              Dashboard Admin
+            </h1>
+            <p className='text-sm text-gray-600 dark:text-gray-400'>
+              Kelola pengguna dan pengaturan sistem
             </p>
+          </div>
+          <Badge variant='outline' className='flex items-center gap-2'>
+            <Shield className='w-4 h-4' />
+            Admin
+          </Badge>
+        </div>
 
-            <Tabs defaultValue='dana' className='w-full'>
-              <TabsList className='grid w-full grid-cols-2'>
-                <TabsTrigger value='dana' className='flex items-center gap-2'>
-                  Konfirmasi Dana
-                  <Badge
-                    variant='secondary'
-                    className='ml-1 h-5 w-5 rounded-full p-0 text-xs'
-                  >
-                    3
-                  </Badge>
-                </TabsTrigger>
-                <TabsTrigger
-                  value='program'
-                  className='flex items-center gap-2'
+        {/* Stats Cards */}
+        <div className='grid grid-cols-2 gap-4'>
+          <Card className='border border-gray-200 dark:border-gray-700 shadow-sm py-2'>
+            <CardContent className='p-4'>
+              <div className='text-center'>
+                <p className='text-sm font-medium text-gray-900 dark:text-white mb-1'>
+                  Total Pengguna
+                </p>
+                <p className='text-xs text-gray-600 dark:text-gray-400 mb-2'>
+                  Pengguna terdaftar
+                </p>
+                <div className='text-2xl font-bold text-gray-900 dark:text-white'>
+                  {users.length}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className='border border-gray-200 dark:border-gray-700 shadow-sm py-2'>
+            <CardContent className='p-4'>
+              <div className='text-center'>
+                <p className='text-sm font-medium text-gray-900 dark:text-white mb-1'>
+                  Total Admin
+                </p>
+                <p className='text-xs text-gray-600 dark:text-gray-400 mb-2'>
+                  Pengguna admin
+                </p>
+                <div className='text-2xl font-bold text-gray-900 dark:text-white'>
+                  {users.filter(user => user.role === 'admin').length}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className='border border-gray-200 dark:border-gray-700 shadow-sm py-2'>
+            <CardContent className='p-4'>
+              <div className='text-center'>
+                <p className='text-sm font-medium text-gray-900 dark:text-white mb-1'>
+                  Total Program
+                </p>
+                <p className='text-xs text-gray-600 dark:text-gray-400 mb-2'>
+                  Program aktif
+                </p>
+                <div className='text-2xl font-bold text-gray-900 dark:text-white'>
+                  {programs.length}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className='border border-gray-200 dark:border-gray-700 shadow-sm py-2'>
+            <CardContent className='p-4'>
+              <div className='text-center'>
+                <p className='text-sm font-medium text-gray-900 dark:text-white mb-1'>
+                  Program Butuh Dikonfirmasi
+                </p>
+                <p className='text-xs text-gray-600 dark:text-gray-400 mb-2'>
+                  Menunggu persetujuan
+                </p>
+                <div className='text-2xl font-bold text-gray-900 dark:text-white'>
+                  {isLoadingDraftPrograms
+                    ? '...'
+                    : draftProgramsData?.total || 0}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Confirmation Management */}
+        <div>
+          <h2 className='text-lg font-semibold text-gray-900 dark:text-white mb-2'>
+            Manajemen Konfirmasi
+          </h2>
+          <p className='text-sm text-gray-600 dark:text-gray-400 mb-4'>
+            Kelola konfirmasi dana dan program yang memerlukan persetujuan
+          </p>
+
+          <Tabs defaultValue='dana' className='w-full'>
+            <TabsList className='grid w-full grid-cols-2'>
+              <TabsTrigger value='dana' className='flex items-center gap-2'>
+                Konfirmasi Dana
+                <Badge
+                  variant='secondary'
+                  className='ml-1 h-5 w-5 rounded-full p-0 text-xs'
                 >
-                  Konfirmasi Program
-                  <Badge
-                    variant='secondary'
-                    className='ml-1 h-5 w-5 rounded-full p-0 text-xs'
+                  3
+                </Badge>
+              </TabsTrigger>
+              <TabsTrigger value='program' className='flex items-center gap-2'>
+                Konfirmasi Program
+                <Badge
+                  variant='secondary'
+                  className='ml-1 h-5 w-5 rounded-full p-0 text-xs'
+                >
+                  {isLoadingDraftPrograms
+                    ? '...'
+                    : draftProgramsData?.total || 0}
+                </Badge>
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value='dana' className='mt-4'>
+              <div className='space-y-3'>
+                {/* Mock donor payment data */}
+                {[
+                  {
+                    id: '1',
+                    donorName: 'Ahmad Fauzi',
+                    programTitle: 'Bantu Pendidikan Anak',
+                    amount: 500000,
+                    paymentMethod: 'Bank Transfer',
+                    paymentDate: '2024-01-15',
+                    status: 'pending',
+                  },
+                  {
+                    id: '2',
+                    donorName: 'Siti Nurhaliza',
+                    programTitle: 'Bantuan Makanan untuk Lansia',
+                    amount: 250000,
+                    paymentMethod: 'E-Wallet',
+                    paymentDate: '2024-01-14',
+                    status: 'pending',
+                  },
+                  {
+                    id: '3',
+                    donorName: 'Budi Santoso',
+                    programTitle: 'Renovasi Masjid',
+                    amount: 1000000,
+                    paymentMethod: 'Bank Transfer',
+                    paymentDate: '2024-01-13',
+                    status: 'pending',
+                  },
+                ].map(payment => (
+                  <Card
+                    key={payment.id}
+                    className='border border-gray-200 dark:border-gray-700'
                   >
-                    {isLoadingDraftPrograms
-                      ? '...'
-                      : draftProgramsData?.total || 0}
-                  </Badge>
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value='dana' className='mt-4'>
-                <div className='space-y-3'>
-                  {/* Mock donor payment data */}
-                  {[
-                    {
-                      id: '1',
-                      donorName: 'Ahmad Fauzi',
-                      programTitle: 'Bantu Pendidikan Anak',
-                      amount: 500000,
-                      paymentMethod: 'Bank Transfer',
-                      paymentDate: '2024-01-15',
-                      status: 'pending',
-                    },
-                    {
-                      id: '2',
-                      donorName: 'Siti Nurhaliza',
-                      programTitle: 'Bantuan Makanan untuk Lansia',
-                      amount: 250000,
-                      paymentMethod: 'E-Wallet',
-                      paymentDate: '2024-01-14',
-                      status: 'pending',
-                    },
-                    {
-                      id: '3',
-                      donorName: 'Budi Santoso',
-                      programTitle: 'Renovasi Masjid',
-                      amount: 1000000,
-                      paymentMethod: 'Bank Transfer',
-                      paymentDate: '2024-01-13',
-                      status: 'pending',
-                    },
-                  ].map(payment => (
-                    <Card
-                      key={payment.id}
-                      className='border border-gray-200 dark:border-gray-700'
-                    >
-                      <CardContent className='p-4'>
-                        <div className='space-y-3'>
-                          <div className='flex items-center justify-between'>
-                            <div>
-                              <h3 className='font-semibold text-gray-900 dark:text-white text-base'>
-                                {payment.donorName}
-                              </h3>
-                              <p className='text-sm text-gray-600 dark:text-gray-400'>
-                                Program: {payment.programTitle}
-                              </p>
-                            </div>
-                            <Badge variant='outline' className='text-xs'>
-                              {payment.status}
-                            </Badge>
+                    <CardContent className='p-4'>
+                      <div className='space-y-3'>
+                        <div className='flex items-center justify-between'>
+                          <div>
+                            <h3 className='font-semibold text-gray-900 dark:text-white text-base'>
+                              {payment.donorName}
+                            </h3>
+                            <p className='text-sm text-gray-600 dark:text-gray-400'>
+                              Program: {payment.programTitle}
+                            </p>
                           </div>
+                          <Badge variant='outline' className='text-xs'>
+                            {payment.status}
+                          </Badge>
+                        </div>
 
-                          <div className='space-y-2'>
-                            <div className='flex justify-between text-sm'>
-                              <span className='text-gray-600 dark:text-gray-400'>
-                                Jumlah: {formatCurrency(payment.amount)}
-                              </span>
-                              <span className='text-gray-600 dark:text-gray-400'>
-                                Metode: {payment.paymentMethod}
-                              </span>
-                            </div>
-                            <div className='text-sm text-gray-600 dark:text-gray-400'>
-                              Tanggal:{' '}
-                              {new Date(payment.paymentDate).toLocaleDateString(
-                                'id-ID'
-                              )}
-                            </div>
+                        <div className='space-y-2'>
+                          <div className='flex justify-between text-sm'>
+                            <span className='text-gray-600 dark:text-gray-400'>
+                              Jumlah: {formatCurrency(payment.amount)}
+                            </span>
+                            <span className='text-gray-600 dark:text-gray-400'>
+                              Metode: {payment.paymentMethod}
+                            </span>
                           </div>
-
-                          <div className='flex gap-2'>
-                            <Button
-                              size='sm'
-                              className='text-xs px-3 py-1 h-auto bg-green-500 hover:bg-green-600'
-                            >
-                              Konfirmasi
-                            </Button>
-                            <Button
-                              size='sm'
-                              variant='outline'
-                              className='text-xs px-3 py-1 h-auto'
-                            >
-                              Tolak
-                            </Button>
-                            <Button
-                              size='sm'
-                              variant='outline'
-                              className='text-xs px-3 py-1 h-auto'
-                            >
-                              <Eye className='w-3 h-3 mr-1' />
-                              Detail
-                            </Button>
+                          <div className='text-sm text-gray-600 dark:text-gray-400'>
+                            Tanggal:{' '}
+                            {new Date(payment.paymentDate).toLocaleDateString(
+                              'id-ID'
+                            )}
                           </div>
                         </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </TabsContent>
 
-              <TabsContent value='program' className='mt-4'>
-                <div className='space-y-3'>
-                  {isLoadingDraftPrograms ? (
-                    <div className='flex justify-center py-8'>
-                      <Skeleton className='h-4 w-32' />
-                    </div>
-                  ) : draftProgramsData?.programs?.length === 0 ? (
-                    <div className='text-center py-8'>
-                      <p className='text-gray-500'>
-                        Tidak ada program yang menunggu persetujuan
-                      </p>
-                    </div>
-                  ) : (
-                    draftProgramsData?.programs?.map((program: any) => {
-                      const currentAmount = program.programPeriods.reduce(
-                        (sum: number, period: any) =>
-                          sum + Number(period.currentAmount),
-                        0
-                      );
-                      const progressPercentage = Math.round(
-                        (currentAmount / Number(program.targetAmount)) * 100
-                      );
+                        <div className='flex gap-2'>
+                          <Button
+                            size='sm'
+                            className='text-xs px-3 py-1 h-auto bg-green-500 hover:bg-green-600'
+                          >
+                            Konfirmasi
+                          </Button>
+                          <Button
+                            size='sm'
+                            variant='outline'
+                            className='text-xs px-3 py-1 h-auto'
+                          >
+                            Tolak
+                          </Button>
+                          <Button
+                            size='sm'
+                            variant='outline'
+                            className='text-xs px-3 py-1 h-auto'
+                          >
+                            <Eye className='w-3 h-3 mr-1' />
+                            Detail
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
 
-                      return (
-                        <Card
-                          key={program.id}
-                          className='py-0 border border-gray-200 dark:border-gray-700 cursor-pointer hover:shadow-md transition-shadow'
-                          onClick={() => handleProgramSelect(program.id)}
-                        >
-                          <CardContent className='p-4'>
-                            <div className='space-y-3'>
-                              <div className='flex items-center justify-between'>
-                                <div className='flex-1'>
-                                  <h3 className='font-semibold text-gray-900 dark:text-white text-base'>
-                                    {program.title}
-                                  </h3>
-                                  <p className='text-sm text-gray-600 dark:text-gray-400 line-clamp-2'>
-                                    {program.description}
-                                  </p>
-                                </div>
-                                <Badge
-                                  variant='outline'
-                                  className='text-xs ml-2'
-                                >
-                                  {program.status}
-                                </Badge>
+            <TabsContent value='program' className='mt-4'>
+              <div className='space-y-3'>
+                {isLoadingDraftPrograms ? (
+                  <div className='flex justify-center py-8'>
+                    <Skeleton className='h-4 w-32' />
+                  </div>
+                ) : draftProgramsData?.programs?.length === 0 ? (
+                  <div className='text-center py-8'>
+                    <p className='text-gray-500'>
+                      Tidak ada program yang menunggu persetujuan
+                    </p>
+                  </div>
+                ) : (
+                  draftProgramsData?.programs?.map((program: any) => {
+                    const currentAmount = program.programPeriods.reduce(
+                      (sum: number, period: any) =>
+                        sum + Number(period.currentAmount),
+                      0
+                    );
+                    const progressPercentage = Math.round(
+                      (currentAmount / Number(program.targetAmount)) * 100
+                    );
+
+                    return (
+                      <Card
+                        key={program.id}
+                        className='py-0 border border-gray-200 dark:border-gray-700 cursor-pointer hover:shadow-md transition-shadow'
+                        onClick={() => handleProgramSelect(program.id)}
+                      >
+                        <CardContent className='p-4'>
+                          <div className='space-y-3'>
+                            <div className='flex items-center justify-between'>
+                              <div className='flex-1'>
+                                <h3 className='font-semibold text-gray-900 dark:text-white text-base'>
+                                  {program.title}
+                                </h3>
+                                <p className='text-sm text-gray-600 dark:text-gray-400 line-clamp-2'>
+                                  {program.description}
+                                </p>
+                              </div>
+                              <Badge variant='outline' className='text-xs ml-2'>
+                                {program.status}
+                              </Badge>
+                            </div>
+
+                            <div className='space-y-2'>
+                              <div className='flex justify-between text-sm'>
+                                <span className='text-gray-600 dark:text-gray-400'>
+                                  Target:{' '}
+                                  {formatCurrency(Number(program.targetAmount))}
+                                </span>
+                                <span className='text-gray-600 dark:text-gray-400'>
+                                  Kategori: {program.category || 'Tidak ada'}
+                                </span>
+                              </div>
+                              <div className='text-sm text-gray-600 dark:text-gray-400'>
+                                Dibuat:{' '}
+                                {new Date(program.createdAt).toLocaleDateString(
+                                  'id-ID'
+                                )}
                               </div>
 
-                              <div className='space-y-2'>
-                                <div className='flex justify-between text-sm'>
+                              {/* Progress Bar */}
+                              <div>
+                                <div className='flex justify-between text-xs mb-1'>
                                   <span className='text-gray-600 dark:text-gray-400'>
-                                    Target:{' '}
-                                    {formatCurrency(
-                                      Number(program.targetAmount)
-                                    )}
+                                    Progress
                                   </span>
-                                  <span className='text-gray-600 dark:text-gray-400'>
-                                    Kategori: {program.category || 'Tidak ada'}
+                                  <span className='text-gray-900 dark:text-white font-medium'>
+                                    {progressPercentage}%
                                   </span>
                                 </div>
-                                <div className='text-sm text-gray-600 dark:text-gray-400'>
-                                  Dibuat:{' '}
-                                  {new Date(
-                                    program.createdAt
-                                  ).toLocaleDateString('id-ID')}
+                                <div className='w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5'>
+                                  <div
+                                    className='bg-green-600 h-1.5 rounded-full transition-all duration-300'
+                                    style={{
+                                      width: `${progressPercentage}%`,
+                                    }}
+                                  ></div>
                                 </div>
-
-                                {/* Progress Bar */}
-                                <div>
-                                  <div className='flex justify-between text-xs mb-1'>
-                                    <span className='text-gray-600 dark:text-gray-400'>
-                                      Progress
-                                    </span>
-                                    <span className='text-gray-900 dark:text-white font-medium'>
-                                      {progressPercentage}%
-                                    </span>
-                                  </div>
-                                  <div className='w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5'>
-                                    <div
-                                      className='bg-green-600 h-1.5 rounded-full transition-all duration-300'
-                                      style={{
-                                        width: `${progressPercentage}%`,
-                                      }}
-                                    ></div>
-                                  </div>
-                                  <div className='flex justify-between text-xs text-gray-600 dark:text-gray-400 mt-1'>
-                                    <span>
-                                      Terkumpul: {formatCurrency(currentAmount)}
-                                    </span>
-                                    <span>
-                                      Donatur: {program._count.donations}
-                                    </span>
-                                  </div>
+                                <div className='flex justify-between text-xs text-gray-600 dark:text-gray-400 mt-1'>
+                                  <span>
+                                    Terkumpul: {formatCurrency(currentAmount)}
+                                  </span>
+                                  <span>
+                                    Donatur: {program._count.donations}
+                                  </span>
                                 </div>
-                              </div>
-
-                              <div className='flex gap-2'>
-                                <Button
-                                  size='sm'
-                                  className='text-xs px-3 py-1 h-auto bg-green-500 hover:bg-green-600'
-                                  onClick={e => {
-                                    e.stopPropagation();
-                                    handleProgramSelect(program.id);
-                                  }}
-                                >
-                                  <Eye className='w-3 h-3 mr-1' />
-                                  Review
-                                </Button>
                               </div>
                             </div>
-                          </CardContent>
-                        </Card>
-                      );
-                    })
-                  )}
-                </div>
-              </TabsContent>
-            </Tabs>
-          </div>
+
+                            <div className='flex gap-2'>
+                              <Button
+                                size='sm'
+                                className='text-xs px-3 py-1 h-auto bg-green-500 hover:bg-green-600'
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  handleProgramSelect(program.id);
+                                }}
+                              >
+                                <Eye className='w-3 h-3 mr-1' />
+                                Review
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })
+                )}
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
 
