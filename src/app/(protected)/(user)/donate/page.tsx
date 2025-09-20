@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { useQuery } from '@tanstack/react-query';
 import { trpc } from '@/utils/trpc';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,9 +21,7 @@ export default function DonatePage() {
     null
   );
 
-  const donationsQuery = useQuery(
-    trpc.donation.getUserDonations.queryOptions()
-  );
+  const donationsQuery = trpc.donation.getUserDonations.useQuery();
 
   const handleViewDetails = (donationId: string) => {
     setSelectedDonationId(donationId);

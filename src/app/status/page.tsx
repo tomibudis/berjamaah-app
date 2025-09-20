@@ -1,5 +1,4 @@
 'use client';
-import { useQuery } from '@tanstack/react-query';
 import { trpc } from '@/utils/trpc';
 import {
   Card,
@@ -25,8 +24,7 @@ import { useState, useEffect } from 'react';
 export default function StatusPage() {
   const [lastChecked, setLastChecked] = useState<Date>(new Date());
 
-  const healthCheck = useQuery({
-    ...trpc.healthCheck.queryOptions(),
+  const healthCheck = trpc.healthCheck.useQuery(undefined, {
     refetchInterval: 30000, // Refetch every 30 seconds
   });
 

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { protectedProcedure, publicProcedure, router } from '../lib/trpc';
 import prisma from '../../prisma/index';
+import type { Prisma } from '@prisma/client';
 
 import { hash } from 'bcryptjs';
 
@@ -172,6 +173,121 @@ export const userRouter = router({
       }
 
       return user;
+    }),
+
+  // Get all users with pagination and filtering (admin only)
+  getAllUsers: protectedProcedure
+    .input(
+      z.object({
+        page: z.number().min(1).default(1),
+        limit: z.number().min(1).max(100).default(10),
+        search: z.string().optional(),
+        status: z
+          .enum(['all', 'scheduled', 'pending', 'active'])
+          .default('all'),
+        role: z.enum(['all', 'admin', 'user']).default('all'),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      // Check if user is admin
+      if (ctx.session.user.role !== 'admin') {
+        throw new Error('Unauthorized');
+      }
+
+      const { page, limit, search, status, role } = input;
+      const skip = (page - 1) * limit;
+
+      // Build where clause
+      const where: Prisma.UserWhereInput = {};
+
+      // Search filter
+      if (search) {
+        where.OR = [
+          { name: { contains: search, mode: 'insensitive' } },
+          { email: { contains: search, mode: 'insensitive' } },
+          { fullName: { contains: search, mode: 'insensitive' } },
+          { firstName: { contains: search, mode: 'insensitive' } },
+          { lastName: { contains: search, mode: 'insensitive' } },
+        ];
+      }
+
+      // Status filter
+      if (status !== 'all') {
+        where.status = status as 'scheduled' | 'pending' | 'active';
+      }
+
+      // Role filter
+      if (role !== 'all') {
+        where.role = role as 'admin' | 'user';
+      }
+
+      // Get users with pagination
+      const [users, totalCount] = await Promise.all([
+        prisma.user.findMany({
+          where,
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            fullName: true,
+            firstName: true,
+            lastName: true,
+            phone: true,
+            image: true,
+            role: true,
+            status: true,
+            createdAt: true,
+            updatedAt: true,
+            _count: {
+              select: {
+                verifiedDonations: true,
+              },
+            },
+          },
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: limit,
+        }),
+        prisma.user.count({ where }),
+      ]);
+
+      // Calculate total pages
+      const totalPages = Math.ceil(totalCount / limit);
+
+      // Get user statistics
+      const [activeCount, pendingCount, scheduledCount] = await Promise.all([
+        prisma.user.count({ where: { status: 'active' } }),
+        prisma.user.count({ where: { status: 'pending' } }),
+        prisma.user.count({ where: { status: 'scheduled' } }),
+      ]);
+
+      const statusStats = {
+        active: activeCount,
+        pending: pendingCount,
+        scheduled: scheduledCount,
+      };
+
+      return {
+        users: users.map(user => ({
+          ...user,
+          totalDonations: user._count.verifiedDonations,
+          totalAmount: 0, // This would need to be calculated from donations if needed
+        })),
+        pagination: {
+          page,
+          limit,
+          totalCount,
+          totalPages,
+          hasNextPage: page < totalPages,
+          hasPrevPage: page > 1,
+        },
+        stats: {
+          total: totalCount,
+          active: statusStats.active || 0,
+          pending: statusStats.pending || 0,
+          scheduled: statusStats.scheduled || 0,
+        },
+      };
     }),
 
   // Complete registration via token (public)

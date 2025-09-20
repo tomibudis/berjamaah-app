@@ -1,14 +1,14 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { trpc, trpcClient } from '@/utils/trpc';
+import { trpc } from '@/utils/trpc';
 import { toast } from 'sonner';
 
 const profileSchema = z.object({
@@ -20,41 +20,24 @@ const profileSchema = z.object({
 
 type ProfileFormData = z.infer<typeof profileSchema>;
 
-type UserProfile = {
-  id: string;
-  name: string;
-  email: string;
-  firstName: string | null;
-  lastName: string | null;
-  phone: string | null;
-  bio: string | null;
-  image: string | null;
-  role: string;
-};
-
 export function AdminProfileForm() {
   const queryClient = useQueryClient();
 
   // Fetch current user profile
-  const { data: userProfile, isLoading: isLoadingProfile } = useQuery(
-    trpc.user.getProfile.queryOptions()
-  );
+  const { data: userProfile, isLoading: isLoadingProfile } =
+    trpc.user.getProfile.useQuery();
 
-  // Type assertion to ensure proper typing
-  const typedUserProfile = userProfile as UserProfile | undefined;
+  // userProfile is now properly typed from tRPC
 
   // Update profile mutation
-  const updateProfileMutation = useMutation({
-    mutationFn: (data: ProfileFormData) =>
-      trpcClient.user.updateProfile.mutate(data),
+  const updateProfileMutation = trpc.user.updateProfile.useMutation({
     onSuccess: () => {
       toast.success('Profil berhasil diperbarui');
-      queryClient.invalidateQueries({
-        queryKey: trpc.user.getProfile.queryKey(),
-      });
+      queryClient.invalidateQueries({ queryKey: ['user', 'getProfile'] });
     },
-    onError: (error: any) => {
-      toast.error(`Gagal memperbarui profil: ${error.message}`);
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Gagal memperbarui profil: ${message}`);
     },
   });
 
@@ -69,16 +52,16 @@ export function AdminProfileForm() {
 
   // Prepopulate form when user data is loaded
   useEffect(() => {
-    if (typedUserProfile) {
-      setValue('firstName', typedUserProfile.firstName || '');
-      setValue('lastName', typedUserProfile.lastName || '');
-      setValue('phone', typedUserProfile.phone || '');
-      setValue('bio', typedUserProfile.bio || '');
+    if (userProfile) {
+      setValue('firstName', userProfile.firstName || '');
+      setValue('lastName', userProfile.lastName || '');
+      setValue('phone', userProfile.phone || '');
+      setValue('bio', userProfile.bio || '');
     }
-  }, [typedUserProfile, setValue]);
+  }, [userProfile, setValue]);
 
   const onSubmit = async (data: ProfileFormData) => {
-    await updateProfileMutation.mutateAsync(data);
+    updateProfileMutation.mutate(data);
   };
 
   if (isLoadingProfile) {
@@ -95,9 +78,9 @@ export function AdminProfileForm() {
         {/* Profile Photo */}
         <div className='flex items-center space-x-4'>
           <div className='w-16 h-16 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center'>
-            {typedUserProfile?.image ? (
+            {userProfile?.image ? (
               <img
-                src={typedUserProfile.image}
+                src={userProfile.image}
                 alt='Profile'
                 className='w-16 h-16 rounded-full object-cover'
               />
@@ -113,10 +96,10 @@ export function AdminProfileForm() {
           </div>
           <div>
             <p className='text-sm text-gray-600 dark:text-gray-400'>
-              {typedUserProfile?.email}
+              {userProfile?.email}
             </p>
             <p className='text-xs text-gray-500 dark:text-gray-500'>
-              {typedUserProfile?.role === 'admin' ? 'Administrator' : 'User'}
+              {userProfile?.role === 'admin' ? 'Administrator' : 'User'}
             </p>
           </div>
         </div>
@@ -210,7 +193,7 @@ export function AdminProfileForm() {
         <div className='flex gap-3'>
           <Button
             type='submit'
-            loading={isSubmitting || updateProfileMutation.isPending}
+            disabled={isSubmitting || updateProfileMutation.isPending}
             className='flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm'
           >
             {isSubmitting || updateProfileMutation.isPending

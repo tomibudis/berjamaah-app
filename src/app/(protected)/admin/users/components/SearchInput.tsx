@@ -5,13 +5,13 @@ import { Search } from 'lucide-react';
 
 interface SearchInputProps {
   value: string;
-  onChange: (value: string) => void;
+  onChangeAction: (value: string) => void;
   placeholder?: string;
 }
 
 export function SearchInput({
   value,
-  onChange,
+  onChangeAction,
   placeholder = 'Search users...',
 }: SearchInputProps) {
   return (
@@ -21,8 +21,8 @@ export function SearchInput({
         type='text'
         placeholder={placeholder}
         value={value}
-        onChange={e => onChange(e.target.value)}
-        className='pl-10'
+        onChange={e => onChangeAction(e.target.value)}
+        className='pl-10 h-10'
       />
     </div>
   );

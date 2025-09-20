@@ -74,7 +74,6 @@ function ProgramPageContent() {
   });
 
   const LIMIT = 10;
-
   // TRPC query for programs with pagination
   const {
     data: programsData,

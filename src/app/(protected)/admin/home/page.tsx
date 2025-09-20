@@ -59,6 +59,7 @@ export default function AdminDashboard() {
         limit: 50,
         offset: 0,
       });
+
       setPrograms(data.programs || []);
     } catch (error) {
       console.error('Error loading programs:', error);

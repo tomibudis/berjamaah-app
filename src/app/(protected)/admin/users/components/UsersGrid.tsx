@@ -5,11 +5,9 @@ import { UserCard } from './UserCard';
 
 interface UsersGridProps {
   users: User[];
-  onEditUser?: (user: User) => void;
-  onDeleteUser?: (user: User) => void;
 }
 
-export function UsersGrid({ users, onEditUser, onDeleteUser }: UsersGridProps) {
+export function UsersGrid({ users }: UsersGridProps) {
   if (users.length === 0) {
     return (
       <div className='text-center py-12'>
@@ -39,14 +37,9 @@ export function UsersGrid({ users, onEditUser, onDeleteUser }: UsersGridProps) {
   }
 
   return (
-    <div className='grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-2'>
+    <div className='grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4'>
       {users.map(user => (
-        <UserCard
-          key={user.id}
-          user={user}
-          onEdit={onEditUser}
-          onDelete={onDeleteUser}
-        />
+        <UserCard key={user.id} user={user} />
       ))}
     </div>
   );
