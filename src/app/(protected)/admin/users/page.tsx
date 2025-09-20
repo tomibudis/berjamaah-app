@@ -123,7 +123,7 @@ function UsersPageContent() {
 
         {!isLoading && (
           <>
-            <UsersGrid users={users} />
+            <UsersGrid users={users} onUserUpdate={() => {}} />
             {usersData?.pagination && (
               <UsersPagination
                 currentPage={usersData.pagination.page}

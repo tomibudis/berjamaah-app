@@ -375,4 +375,42 @@ export const userRouter = router({
 
       return { userId: updated.id };
     }),
+
+  // Update user role to admin (admin only)
+  updateUserRole: protectedProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+        role: z.enum(['admin', 'user']),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Check if user is admin
+      if (ctx.session.user.role !== 'admin') {
+        throw new Error('Unauthorized');
+      }
+
+      // Check if user is trying to change their own role
+      if (ctx.session.user.id === input.userId) {
+        throw new Error('Cannot change your own role');
+      }
+
+      const updatedUser = await prisma.user.update({
+        where: { id: input.userId },
+        data: {
+          role: input.role,
+          updatedAt: new Date(),
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          fullName: true,
+          role: true,
+          status: true,
+        },
+      });
+
+      return updatedUser;
+    }),
 });

@@ -1,16 +1,81 @@
 'use client';
 
+import { useState } from 'react';
 import { User } from '../types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Mail, Phone, Calendar, DollarSign } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
+  Mail,
+  Phone,
+  Calendar,
+  DollarSign,
+  MoreHorizontal,
+  UserPlus,
+} from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { trpc } from '@/utils/trpc';
+import { toast } from 'sonner';
+import { useSession } from 'next-auth/react';
 
 interface UserCardProps {
   user: User;
+  onUserUpdate?: () => void;
 }
 
-export function UserCard({ user }: UserCardProps) {
+export function UserCard({ user, onUserUpdate }: UserCardProps) {
+  const [showAdminDialog, setShowAdminDialog] = useState(false);
+  const [showUserDialog, setShowUserDialog] = useState(false);
+
+  const { data: session } = useSession();
+
+  const utils = trpc.useUtils();
+
+  const updateUserRoleMutation = trpc.user.updateUserRole.useMutation({
+    onSuccess: () => {
+      toast.success('Role pengguna berhasil diperbarui');
+      utils.user.getAllUsers.invalidate();
+      if (onUserUpdate) {
+        onUserUpdate();
+      }
+      setShowAdminDialog(false);
+      setShowUserDialog(false);
+    },
+    onError: error => {
+      toast.error(error.message || 'Gagal memperbarui role pengguna');
+    },
+  });
+
+  const handleMakeAdmin = () => {
+    updateUserRoleMutation.mutate({
+      userId: user.id,
+      role: 'admin',
+    });
+  };
+
+  const handleMakeUser = () => {
+    updateUserRoleMutation.mutate({
+      userId: user.id,
+      role: 'user',
+    });
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active':
@@ -57,9 +122,29 @@ export function UserCard({ user }: UserCardProps) {
               </div>
             </div>
           </div>
-          {/* <Button variant='ghost' size='sm'>
-            <MoreHorizontal className='w-4 h-4' />
-          </Button> */}
+          {(user.name !== 'Admin User' ||
+            user.email !== session?.user.email) && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant='ghost' size='sm'>
+                  <MoreHorizontal className='w-4 h-4' />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align='end'>
+                {user.role === 'user' ? (
+                  <DropdownMenuItem onClick={() => setShowAdminDialog(true)}>
+                    <UserPlus className='w-4 h-4' />
+                    Jadikan Admin
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem onClick={() => setShowUserDialog(true)}>
+                    <UserPlus className='w-4 h-4' />
+                    Jadikan User
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
 
         <div className='mt-4 space-y-2'>
@@ -98,6 +183,58 @@ export function UserCard({ user }: UserCardProps) {
           )}
         </div>
       </CardContent>
+
+      {/* Make Admin Confirmation Dialog */}
+      <AlertDialog open={showAdminDialog} onOpenChange={setShowAdminDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Jadikan Pengguna Admin</AlertDialogTitle>
+            <AlertDialogDescription>
+              Apakah Anda yakin ingin menjadikan{' '}
+              <strong>{user.name || user.fullName || user.email}</strong>{' '}
+              sebagai admin? Ini akan memberikan mereka hak akses administratif
+              penuh.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleMakeAdmin}
+              disabled={updateUserRoleMutation.isPending}
+            >
+              {updateUserRoleMutation.isPending
+                ? 'Mengubah ke Admin...'
+                : 'Jadikan Admin'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Jadikan User Confirmation Dialog */}
+      <AlertDialog open={showUserDialog} onOpenChange={setShowUserDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Jadikan Admin User</AlertDialogTitle>
+            <AlertDialogDescription>
+              Apakah Anda yakin ingin menjadikan{' '}
+              <strong>{user.name || user.fullName || user.email}</strong>{' '}
+              sebagai user biasa? Ini akan menghapus hak akses administratif
+              mereka.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleMakeUser}
+              disabled={updateUserRoleMutation.isPending}
+            >
+              {updateUserRoleMutation.isPending
+                ? 'Mengubah ke User...'
+                : 'Jadikan User'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 }
