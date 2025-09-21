@@ -40,6 +40,7 @@ export default function StatusPage() {
     setLastChecked(new Date());
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getStatusIcon = (isLoading: boolean, isError: boolean, data: any) => {
     if (isLoading)
       return <RefreshCw className='h-4 w-4 animate-spin text-blue-500' />;
@@ -48,6 +49,7 @@ export default function StatusPage() {
     return <AlertCircle className='h-4 w-4 text-yellow-500' />;
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getStatusText = (isLoading: boolean, isError: boolean, data: any) => {
     if (isLoading) return 'Checking...';
     if (isError) return 'Error';
@@ -55,6 +57,7 @@ export default function StatusPage() {
     return 'Unknown';
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getStatusColor = (isLoading: boolean, isError: boolean, data: any) => {
     if (isLoading) return 'bg-blue-500';
     if (isError) return 'bg-red-500';

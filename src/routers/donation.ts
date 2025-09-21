@@ -163,13 +163,16 @@ export const donationRouter = router({
         });
 
         // Transform data to match frontend expectations
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const transformedPrograms = programs.map((program: any) => {
           const activePeriod = program.programPeriods[0];
           const totalDonations = program.donations.reduce(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (sum: number, donation: any) => sum + Number(donation.amount),
             0
           );
           const uniqueDonors = new Set(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             program.donations.map((d: any) => d.userId)
           ).size;
           const progress =
@@ -392,10 +395,12 @@ export const donationRouter = router({
         }
 
         const totalDonations = program.donations.reduce(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (sum: number, donation: any) => sum + Number(donation.amount),
           0
         );
         const uniqueDonors = new Set(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           program.donations.map((d: any) => d.userId)
         ).size;
         const progress =

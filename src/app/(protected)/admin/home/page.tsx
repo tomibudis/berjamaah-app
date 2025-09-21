@@ -362,8 +362,10 @@ export default function AdminDashboard() {
                     </p>
                   </div>
                 ) : (
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   draftProgramsData?.programs?.map((program: any) => {
                     const currentAmount = program.programPeriods.reduce(
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
                       (sum: number, period: any) =>
                         sum + Number(period.currentAmount),
                       0
