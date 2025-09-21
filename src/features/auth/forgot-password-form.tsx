@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/form';
 import { toast } from 'sonner';
 import { useState } from 'react';
+import { trpcClient } from '@/utils/trpc';
 
 const forgotPasswordSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
@@ -35,18 +36,16 @@ export default function ForgotPasswordForm() {
 
   const onSubmitForm = async (formValues: ForgotPasswordFormValues) => {
     try {
-      // TODO: Implement actual password reset functionality
-      // This would typically call an API endpoint to send reset email
-      console.log('Password reset requested for:', formValues.email);
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
+      await trpcClient.user.forgotPassword.mutate({ email: formValues.email });
       setIsSubmitted(true);
       toast.success('Password reset link sent to your email!');
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      toast.error('Failed to send password reset email. Please try again.');
+      console.error('Password reset error:', error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : 'Failed to send password reset email. Please try again.'
+      );
     }
   };
 
@@ -77,13 +76,6 @@ export default function ForgotPasswordForm() {
             <strong>{form.getValues('email')}</strong>
           </p>
         </div>
-        <Button
-          variant='outline'
-          onClick={() => setIsSubmitted(false)}
-          className='w-full'
-        >
-          Send another email
-        </Button>
       </div>
     );
   }

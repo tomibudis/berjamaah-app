@@ -4,6 +4,7 @@ import prisma from '../../prisma/index';
 import type { Prisma } from '@prisma/client';
 import { Resend } from 'resend';
 import ActivationEmail from '../emails/ActivationEmail';
+import ForgotPasswordEmail from '../emails/ForgotPasswordEmail';
 
 import { hash } from 'bcryptjs';
 
@@ -498,6 +499,141 @@ export const userRouter = router({
         message: 'Activation email sent successfully',
       };
     }),
+
+  // Forgot password (public)
+  forgotPassword: publicProcedure
+    .input(
+      z.object({
+        email: z.string().email('Please enter a valid email address'),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const { email } = input;
+
+      // Check if user exists
+      const user = await prisma.user.findUnique({
+        where: { email: email.toLowerCase() },
+        select: { id: true, email: true, status: true },
+      });
+
+      if (!user || user.status !== 'active') {
+        // Return success even if user doesn't exist for security
+        return {
+          success: true,
+          message:
+            'If an account with that email exists, we sent a password reset link.',
+        };
+      }
+
+      // Generate reset token
+      const token = generateToken(48);
+      const expiresAt = new Date(Date.now() + 1000 * 60 * 60); // 1 hour
+
+      // Create verification record for password reset
+      await prisma.verification.upsert({
+        where: {
+          value: token,
+        },
+        update: {
+          identifier: user.email,
+          expiresAt,
+        },
+        create: {
+          identifier: user.email,
+          value: token,
+          expiresAt,
+        },
+      });
+
+      // Generate reset URL
+      const baseUrl =
+        process.env.NEXT_PUBLIC_SERVER_URL || process.env.VERCEL_URL || '';
+      const resetUrl = `${baseUrl}/reset-password?token=${encodeURIComponent(token)}`;
+
+      // Send password reset email
+      await sendPasswordResetEmail(user.email, resetUrl);
+
+      return {
+        success: true,
+        message:
+          'If an account with that email exists, we sent a password reset link.',
+      };
+    }),
+
+  // Reset password (public)
+  resetPassword: publicProcedure
+    .input(
+      z
+        .object({
+          token: z.string().min(10, 'Invalid reset token'),
+          password: z
+            .string()
+            .min(8, 'Password must be at least 8 characters long')
+            .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, {
+              message:
+                'Password must contain at least one uppercase letter, one lowercase letter, and one number',
+            }),
+          confirmPassword: z.string().min(8, 'Please confirm your password'),
+        })
+        .refine(data => data.password === data.confirmPassword, {
+          message: "Passwords don't match",
+          path: ['confirmPassword'],
+        })
+    )
+    .mutation(async ({ input }) => {
+      const { token, password } = input;
+
+      // Find verification record by token
+      const verification = await prisma.verification.findFirst({
+        where: {
+          value: token,
+          expiresAt: { gt: new Date() },
+        },
+      });
+
+      if (!verification) {
+        throw new Error('Invalid or expired reset token');
+      }
+
+      const email = verification.identifier;
+
+      // Find user by email
+      const user = await prisma.user.findUnique({
+        where: { email },
+        select: { id: true, email: true, status: true },
+      });
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      // Only allow password reset for active users
+      if (user.status !== 'active') {
+        throw new Error('Account is not active');
+      }
+
+      // Hash the new password
+      const hashedPassword = await hash(password, 12);
+
+      // Update user password
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          password: hashedPassword,
+          updatedAt: new Date(),
+        },
+      });
+
+      // Remove the verification token after successful password reset
+      await prisma.verification.delete({
+        where: { id: verification.id },
+      });
+
+      return {
+        success: true,
+        message: 'Password reset successfully',
+      };
+    }),
 });
 
 // Helper function to generate token
@@ -541,5 +677,38 @@ async function sendActivationEmail(email: string, activationUrl: string) {
   if (error) {
     console.error('Resend error', error);
     throw new Error('Failed to send activation email');
+  }
+}
+
+// Helper function to send password reset email
+async function sendPasswordResetEmail(email: string, resetUrl: string) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.RESEND_FROM || 'noreply@berjamaah.id';
+
+  if (!apiKey) {
+    throw new Error('Email service not configured');
+  }
+
+  const resend = new Resend(apiKey);
+  const appName = process.env.NEXT_PUBLIC_APP_NAME || 'Berjamaah';
+  const logoUrl =
+    process.env.NEXT_PUBLIC_LOGO_URL ||
+    `${process.env.NEXT_PUBLIC_SERVER_URL || ''}/favicon.ico`;
+
+  const { error } = await resend.emails.send({
+    from,
+    to: email,
+    subject: 'Reset Password - Berjamaah',
+    react: ForgotPasswordEmail({
+      appName,
+      logoUrl,
+      resetUrl,
+      userName: email.split('@')[0], // Use email prefix as username
+    }),
+  });
+
+  if (error) {
+    console.error('Resend error', error);
+    throw new Error('Failed to send password reset email');
   }
 }

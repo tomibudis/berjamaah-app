@@ -44,7 +44,11 @@ export default function UserMenu() {
 
   if (!session) {
     // Hide the Sign In button when on the signin page
-    if (pathname === '/signin') {
+    if (
+      pathname === '/signin' ||
+      pathname === '/forgot-password' ||
+      pathname === '/reset-password'
+    ) {
       return null;
     }
 

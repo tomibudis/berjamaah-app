@@ -28,6 +28,7 @@ export default withAuth(
           '/forgot-password',
           '/status',
           '/complete-registration',
+          '/reset-password',
         ];
 
         if (
