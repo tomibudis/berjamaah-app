@@ -48,8 +48,8 @@ npm run db:seed
 
 This will create:
 
-- Admin user: `admin@berjamaah.com` / `admin123`
-- Sample user: `user@berjamaah.com` / `user123`
+- Admin user: `admin@berjamaah.id` / `admin123`
+- Sample user: `user@berjamaah.id` / `user123`
 
 #### Option B: Reset and seed the entire database
 
@@ -92,7 +92,7 @@ UPDATE "user" SET role = 'admin' WHERE email = 'your-email@example.com';
 
 2. **Login as admin**:
    - Go to `http://localhost:3000/signin`
-   - Use admin credentials: `admin@berjamaah.com` / `admin123`
+   - Use admin credentials: `admin@berjamaah.id` / `admin123`
    - You should be automatically redirected to `/admin`
 
 3. **Test admin features**:

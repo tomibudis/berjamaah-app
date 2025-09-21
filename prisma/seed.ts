@@ -11,7 +11,7 @@ async function main() {
   // Check if admin user already exists
   const existingAdmin = await prisma.user.findFirst({
     where: {
-      OR: [{ email: 'admin@berjamaah.com' }, { role: 'admin' }],
+      OR: [{ email: 'admin@berjamaah.id' }, { role: 'admin' }],
     },
   });
 
@@ -24,7 +24,7 @@ async function main() {
 
       const adminUser = await prisma.user.create({
         data: {
-          email: 'admin@berjamaah.com',
+          email: 'admin@berjamaah.id',
           password: hashedPassword,
           name: 'Admin User',
           role: 'admin',
@@ -32,7 +32,7 @@ async function main() {
       });
 
       console.log('✅ Admin user created successfully:');
-      console.log('   📧 Email: admin@berjamaah.com');
+      console.log('   📧 Email: admin@berjamaah.id');
       console.log('   🔑 Password: admin123!');
       console.log('   👑 Role: admin');
       console.log('   🆔 ID:', adminUser.id);
@@ -43,7 +43,7 @@ async function main() {
 
   // Create a sample regular user for testing
   const existingUser = await prisma.user.findFirst({
-    where: { email: 'user@berjamaah.com' },
+    where: { email: 'user@berjamaah.id' },
   });
 
   if (!existingUser) {
@@ -52,7 +52,7 @@ async function main() {
 
       const regularUser = await prisma.user.create({
         data: {
-          email: 'user@berjamaah.com',
+          email: 'user@berjamaah.id',
           password: hashedPassword,
           name: 'Regular User',
           role: 'user',
@@ -60,7 +60,7 @@ async function main() {
       });
 
       console.log('✅ Sample user created successfully:');
-      console.log('   📧 Email: user@berjamaah.com');
+      console.log('   📧 Email: user@berjamaah.id');
       console.log('   🔑 Password: user123!');
       console.log('   👤 Role: user');
       console.log('   🆔 ID:', regularUser.id);
