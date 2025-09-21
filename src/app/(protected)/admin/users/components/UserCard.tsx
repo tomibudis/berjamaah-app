@@ -28,6 +28,7 @@ import {
   DollarSign,
   MoreHorizontal,
   UserPlus,
+  Send,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { trpc } from '@/utils/trpc';
@@ -42,6 +43,7 @@ interface UserCardProps {
 export function UserCard({ user, onUserUpdate }: UserCardProps) {
   const [showAdminDialog, setShowAdminDialog] = useState(false);
   const [showUserDialog, setShowUserDialog] = useState(false);
+  const [showResendDialog, setShowResendDialog] = useState(false);
 
   const { data: session } = useSession();
 
@@ -62,6 +64,20 @@ export function UserCard({ user, onUserUpdate }: UserCardProps) {
     },
   });
 
+  const resendActivationMutation = trpc.user.resendActivationEmail.useMutation({
+    onSuccess: () => {
+      toast.success('Email aktivasi berhasil dikirim ulang');
+      utils.user.getAllUsers.invalidate();
+      if (onUserUpdate) {
+        onUserUpdate();
+      }
+      setShowResendDialog(false);
+    },
+    onError: error => {
+      toast.error(error.message || 'Gagal mengirim ulang email aktivasi');
+    },
+  });
+
   const handleMakeAdmin = () => {
     updateUserRoleMutation.mutate({
       userId: user.id,
@@ -73,6 +89,12 @@ export function UserCard({ user, onUserUpdate }: UserCardProps) {
     updateUserRoleMutation.mutate({
       userId: user.id,
       role: 'user',
+    });
+  };
+
+  const handleResendActivation = () => {
+    resendActivationMutation.mutate({
+      userId: user.id,
     });
   };
 
@@ -132,7 +154,10 @@ export function UserCard({ user, onUserUpdate }: UserCardProps) {
               </DropdownMenuTrigger>
               <DropdownMenuContent align='end'>
                 {user.role === 'user' ? (
-                  <DropdownMenuItem onClick={() => setShowAdminDialog(true)}>
+                  <DropdownMenuItem
+                    disabled={user.status !== 'active'}
+                    onClick={() => setShowAdminDialog(true)}
+                  >
                     <UserPlus className='w-4 h-4' />
                     Jadikan Admin
                   </DropdownMenuItem>
@@ -140,6 +165,12 @@ export function UserCard({ user, onUserUpdate }: UserCardProps) {
                   <DropdownMenuItem onClick={() => setShowUserDialog(true)}>
                     <UserPlus className='w-4 h-4' />
                     Jadikan User
+                  </DropdownMenuItem>
+                )}
+                {(user.status === 'pending' || user.status === 'scheduled') && (
+                  <DropdownMenuItem onClick={() => setShowResendDialog(true)}>
+                    <Send className='w-4 h-4' />
+                    Kirim Ulang Email Aktivasi
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
@@ -231,6 +262,31 @@ export function UserCard({ user, onUserUpdate }: UserCardProps) {
               {updateUserRoleMutation.isPending
                 ? 'Mengubah ke User...'
                 : 'Jadikan User'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Resend Activation Email Confirmation Dialog */}
+      <AlertDialog open={showResendDialog} onOpenChange={setShowResendDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Kirim Ulang Email Aktivasi</AlertDialogTitle>
+            <AlertDialogDescription>
+              Apakah Anda yakin ingin mengirim ulang email aktivasi kepada{' '}
+              <strong>{user.name || user.fullName || user.email}</strong>? Email
+              aktivasi baru akan dikirim dan token sebelumnya akan diganti.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleResendActivation}
+              disabled={resendActivationMutation.isPending}
+            >
+              {resendActivationMutation.isPending
+                ? 'Mengirim Email...'
+                : 'Kirim Email Aktivasi'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

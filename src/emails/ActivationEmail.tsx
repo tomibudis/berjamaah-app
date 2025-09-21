@@ -119,7 +119,7 @@ const styles: Record<string, React.CSSProperties> = {
     margin: '0 auto',
   },
   appTitle: {
-    margin: 0,
+    margin: '6px 0',
     fontSize: 20,
     fontWeight: 700,
   },

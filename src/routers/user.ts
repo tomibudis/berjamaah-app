@@ -2,6 +2,8 @@ import { z } from 'zod';
 import { protectedProcedure, publicProcedure, router } from '../lib/trpc';
 import prisma from '../../prisma/index';
 import type { Prisma } from '@prisma/client';
+import { Resend } from 'resend';
+import ActivationEmail from '../emails/ActivationEmail';
 
 import { hash } from 'bcryptjs';
 
@@ -413,4 +415,131 @@ export const userRouter = router({
 
       return updatedUser;
     }),
+
+  // Resend activation email (admin only)
+  resendActivationEmail: protectedProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Check if user is admin
+      if (ctx.session.user.role !== 'admin') {
+        throw new Error('Unauthorized');
+      }
+
+      // Get user details
+      const user = await prisma.user.findUnique({
+        where: { id: input.userId },
+        select: {
+          id: true,
+          email: true,
+          status: true,
+          name: true,
+          fullName: true,
+        },
+      });
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      if (!user.email) {
+        throw new Error('User email not found');
+      }
+
+      // Only allow resending for pending or scheduled users
+      if (user.status === 'active') {
+        throw new Error('User is already active');
+      }
+
+      // Generate new activation token
+      const token = generateToken(48);
+      const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 48); // 48 hours
+
+      // Create or update verification record
+      await prisma.verification.upsert({
+        where: {
+          value: token,
+        },
+        update: {
+          identifier: user.email,
+          expiresAt,
+        },
+        create: {
+          identifier: user.email,
+          value: token,
+          expiresAt,
+        },
+      });
+
+      // Generate activation URL
+      const baseUrl =
+        process.env.NEXT_PUBLIC_SERVER_URL || process.env.VERCEL_URL || '';
+      const activationUrl = `${baseUrl}/complete-registration?token=${encodeURIComponent(token)}`;
+
+      // Send activation email
+      await sendActivationEmail(user.email, activationUrl);
+
+      // Update user status to pending if it was scheduled
+      if (user.status === 'scheduled') {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            status: 'pending',
+            updatedAt: new Date(),
+          },
+        });
+      }
+
+      return {
+        success: true,
+        message: 'Activation email sent successfully',
+      };
+    }),
 });
+
+// Helper function to generate token
+function generateToken(length = 48) {
+  const alphabet =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let token = '';
+  for (let i = 0; i < length; i++) {
+    token += alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+  }
+  return token;
+}
+
+// Helper function to send activation email
+async function sendActivationEmail(email: string, activationUrl: string) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.RESEND_FROM || 'noreply@berjamaah.id';
+
+  if (!apiKey) {
+    throw new Error('Email service not configured');
+  }
+
+  const resend = new Resend(apiKey);
+  const appName = process.env.NEXT_PUBLIC_APP_NAME || 'Berjamaah';
+  const logoUrl =
+    process.env.NEXT_PUBLIC_LOGO_URL ||
+    `${process.env.NEXT_PUBLIC_SERVER_URL || ''}/favicon.ico`;
+
+  const { error } = await resend.emails.send({
+    from,
+    to: email,
+    subject: 'Aktivasi Akun Berjamaah',
+    react: ActivationEmail({
+      appName,
+      logoUrl,
+      activationUrl,
+      userName: email.split('@')[0], // Use email prefix as username
+    }),
+  });
+
+  if (error) {
+    console.error('Resend error', error);
+    throw new Error('Failed to send activation email');
+  }
+}
