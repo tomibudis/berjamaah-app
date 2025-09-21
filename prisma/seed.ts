@@ -28,6 +28,7 @@ async function main() {
           password: hashedPassword,
           name: 'Admin User',
           role: 'admin',
+          status: 'active',
         },
       });
 
@@ -56,6 +57,7 @@ async function main() {
           password: hashedPassword,
           name: 'Regular User',
           role: 'user',
+          status: 'active',
         },
       });
 
