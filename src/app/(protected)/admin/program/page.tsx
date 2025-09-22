@@ -415,9 +415,24 @@ function ProgramPageContent() {
                 return (
                   <Card
                     key={program.id}
-                    className='cursor-pointer hover:shadow-md transition-shadow'
+                    className='cursor-pointer hover:shadow-md transition-shadow overflow-hidden'
                     onClick={() => handleProgramSelect(program.id)}
                   >
+                    {/* Banner Image */}
+                    {program.bannerImage && (
+                      <div className='w-full h-32 sm:h-40 overflow-hidden'>
+                        <img
+                          src={program.bannerImage}
+                          alt={`Banner ${program.title}`}
+                          className='w-full object-cover'
+                          onError={e => {
+                            // Hide image if it fails to load
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    )}
+
                     <CardHeader>
                       <div className='flex justify-between items-start'>
                         <div className='flex-1'>

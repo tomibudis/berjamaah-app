@@ -18,7 +18,7 @@ import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import Loader from '@/components/shared/loader';
 import { trpcClient, queryClient } from '@/utils/trpc';
-import { ChevronLeft, X } from 'lucide-react';
+import { ChevronLeft, X, Image as ImageIcon } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -52,6 +52,7 @@ const addProgramSchema = z
       .min(1, { message: 'Kategori program harus diisi.' })
       .min(2, { message: 'Kategori program minimal 2 karakter.' })
       .max(50, { message: 'Kategori program maksimal 50 karakter.' }),
+    bannerImage: z.string().optional(),
     // Optional date and time fields
     startDate: z.string().optional(),
     startTime: z.string().optional(),
@@ -80,6 +81,8 @@ export default function AddProgramForm() {
   const router = useRouter();
   const [newCategory, setNewCategory] = React.useState('');
   const [showNewCategoryInput, setShowNewCategoryInput] = React.useState(false);
+  const [uploading, setUploading] = React.useState(false);
+  const [uploadProgress, setUploadProgress] = React.useState(0);
 
   const form = useForm<AddProgramFormValues>({
     resolver: zodResolver(addProgramSchema),
@@ -88,6 +91,7 @@ export default function AddProgramForm() {
       description: '',
       targetAmount: '',
       category: '',
+      bannerImage: '',
       startDate: '',
       startTime: '00:00',
       endDate: '',
@@ -108,6 +112,7 @@ export default function AddProgramForm() {
         description: formValues.description,
         targetAmount: Number(formValues.targetAmount),
         category: formValues.category,
+        bannerImage: formValues.bannerImage,
       };
 
       // Determine status based on date fields
@@ -217,6 +222,53 @@ export default function AddProgramForm() {
   ) => {
     const numericValue = value.replace(/\D/g, '');
     onChange(numericValue);
+  };
+
+  const handleImageUpload = async (file: File) => {
+    try {
+      setUploading(true);
+      setUploadProgress(0);
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      // Simulate progress
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => Math.min(prev + 10, 90));
+      }, 200);
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Upload failed');
+      }
+
+      const result = await response.json();
+      form.setValue('bannerImage', result.url);
+      toast.success('Gambar berhasil diupload!');
+    } catch (error: unknown) {
+      console.error('Upload error:', error);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Gagal mengupload gambar';
+      toast.error(errorMessage);
+    } finally {
+      setUploading(false);
+      setUploadProgress(0);
+    }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      handleImageUpload(file);
+    }
   };
 
   return (
@@ -393,6 +445,73 @@ export default function AddProgramForm() {
                           </Button>
                         </div>
                       )}
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='bannerImage'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Banner Program (Opsional)</FormLabel>
+                    <FormControl>
+                      <div className='space-y-4'>
+                        {field.value ? (
+                          <div className='relative'>
+                            <img
+                              src={field.value}
+                              alt='Banner preview'
+                              className='w-full object-cover rounded-lg border'
+                            />
+                            <Button
+                              type='button'
+                              variant='destructive'
+                              size='sm'
+                              className='absolute top-2 right-2'
+                              onClick={() => field.onChange('')}
+                            >
+                              <X className='h-4 w-4' />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className='border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:border-gray-400 dark:hover:border-gray-500 transition-colors'>
+                            <input
+                              type='file'
+                              accept='image/*'
+                              onChange={handleFileChange}
+                              className='hidden'
+                              id='banner-upload'
+                              disabled={uploading}
+                            />
+                            <label
+                              htmlFor='banner-upload'
+                              className='cursor-pointer flex flex-col items-center space-y-2'
+                            >
+                              {uploading ? (
+                                <div className='flex flex-col items-center space-y-2'>
+                                  <div className='w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin' />
+                                  <p className='text-sm text-gray-600 dark:text-gray-400'>
+                                    Mengupload... {uploadProgress}%
+                                  </p>
+                                </div>
+                              ) : (
+                                <>
+                                  <ImageIcon className='h-8 w-8 text-gray-400' />
+                                  <div className='text-sm text-gray-600 dark:text-gray-400'>
+                                    <p className='font-medium'>
+                                      Klik untuk upload banner
+                                    </p>
+                                    <p>PNG, JPG, WEBP, GIF (max 5MB)</p>
+                                  </div>
+                                </>
+                              )}
+                            </label>
+                          </div>
+                        )}
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

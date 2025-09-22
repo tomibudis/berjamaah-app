@@ -20,6 +20,7 @@ interface Program {
   donorCount: number;
   endDate: string;
   status: string;
+  bannerImage?: string | null;
 }
 
 interface ProgramCardProps {
@@ -77,7 +78,22 @@ export function ProgramCard({ program, onDonationSubmit }: ProgramCardProps) {
 
   return (
     <>
-      <Card className='border border-gray-200 dark:border-gray-700 shadow-sm py-0'>
+      <Card className='border border-gray-200 dark:border-gray-700 shadow-sm py-0 overflow-hidden'>
+        {/* Banner Image */}
+        {program.bannerImage && (
+          <div className='w-full h-32 sm:h-40 overflow-hidden'>
+            <img
+              src={program.bannerImage}
+              alt={`Banner ${program.title}`}
+              className='w-full object-cover'
+              onError={e => {
+                // Hide image if it fails to load
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+          </div>
+        )}
+
         <CardContent className='p-4'>
           <div className='space-y-4'>
             {/* Program Header */}

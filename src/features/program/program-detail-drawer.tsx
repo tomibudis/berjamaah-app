@@ -233,6 +233,21 @@ export function ProgramDetailDrawer({
         </span>
       </div>
 
+      {/* Banner Image */}
+      {program.bannerImage && (
+        <div className='w-full'>
+          <img
+            src={program.bannerImage}
+            alt={`Banner ${program.title}`}
+            className='w-full object-cover rounded-lg border border-gray-200 dark:border-gray-700'
+            onError={e => {
+              // Hide image if it fails to load
+              e.currentTarget.style.display = 'none';
+            }}
+          />
+        </div>
+      )}
+
       {/* Progress */}
       <div className='space-y-2'>
         <div className='flex justify-between text-sm'>
