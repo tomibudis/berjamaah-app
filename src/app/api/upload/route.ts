@@ -14,6 +14,7 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
+    const folder = (formData.get('folder') as string) || 'programs';
 
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest) {
     const timestamp = Date.now();
     const randomString = Math.random().toString(36).substring(2, 15);
     const fileExtension = file.name.split('.').pop();
-    const fileName = `programs/banner-${timestamp}-${randomString}.${fileExtension}`;
+    const fileName = `${folder.replace(/\/$/, '')}/banner-${timestamp}-${randomString}.${fileExtension}`;
 
     // Convert file to buffer
     const buffer = Buffer.from(await file.arrayBuffer());

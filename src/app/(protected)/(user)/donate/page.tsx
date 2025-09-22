@@ -144,26 +144,8 @@ export default function DonatePage() {
         cycleNumber: 1,
         currentAmount: 75000000,
       },
-      donationProofs: [
-        {
-          id: '1',
-          imagePath:
-            'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop',
-          imageName: 'bukti_transfer_001.jpg',
-          fileSize: 245760,
-          uploadedAt: '2024-01-20T10:05:00Z',
-          isPrimary: true,
-        },
-        {
-          id: '2',
-          imagePath:
-            'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop',
-          imageName: 'screenshot_transfer_001.png',
-          fileSize: 189440,
-          uploadedAt: '2024-01-20T10:06:00Z',
-          isPrimary: false,
-        },
-      ],
+      donationProofImage:
+        'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop',
       verifiedByAdmin: {
         id: 'admin1',
         name: 'Siti Nurhaliza',
@@ -202,17 +184,8 @@ export default function DonatePage() {
         cycleNumber: 1,
         currentAmount: 32000000,
       },
-      donationProofs: [
-        {
-          id: '3',
-          imagePath:
-            'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop',
-          imageName: 'bukti_transfer_002.jpg',
-          fileSize: 198720,
-          uploadedAt: '2024-01-18T14:35:00Z',
-          isPrimary: true,
-        },
-      ],
+      donationProofImage:
+        'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop',
       verifiedByAdmin: {
         id: 'admin2',
         name: 'Budi Santoso',
@@ -252,35 +225,8 @@ export default function DonatePage() {
         cycleNumber: 1,
         currentAmount: 150000000,
       },
-      donationProofs: [
-        {
-          id: '4',
-          imagePath:
-            'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop',
-          imageName: 'bukti_transfer_003.jpg',
-          fileSize: 312480,
-          uploadedAt: '2024-01-15T09:20:00Z',
-          isPrimary: true,
-        },
-        {
-          id: '5',
-          imagePath:
-            'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop',
-          imageName: 'screenshot_mbanking_003.png',
-          fileSize: 156240,
-          uploadedAt: '2024-01-15T09:22:00Z',
-          isPrimary: false,
-        },
-        {
-          id: '6',
-          imagePath:
-            'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop',
-          imageName: 'receipt_transfer_003.jpg',
-          fileSize: 278960,
-          uploadedAt: '2024-01-15T09:25:00Z',
-          isPrimary: false,
-        },
-      ],
+      donationProofImage:
+        'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop',
       verifiedByAdmin: {
         id: 'admin1',
         name: 'Siti Nurhaliza',

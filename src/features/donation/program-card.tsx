@@ -7,6 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Target, Calendar, HandCoins, Users, Clock } from 'lucide-react';
 import { DonationDrawer } from './donation-drawer';
+import { formatPeriodTextForCard } from '@/lib/period-utils';
 
 interface Program {
   id: string;
@@ -19,6 +20,7 @@ interface Program {
   category: string;
   donorCount: number;
   endDate: string;
+  startDate?: string | null;
   status: string;
   bannerImage?: string | null;
 }
@@ -71,9 +73,10 @@ export function ProgramCard({ program, onDonationSubmit }: ProgramCardProps) {
     }
   };
 
-  const daysLeft = Math.ceil(
-    (new Date(program.endDate).getTime() - new Date().getTime()) /
-      (1000 * 60 * 60 * 24)
+  // Use the utility function to get period text
+  const periodText = formatPeriodTextForCard(
+    program.startDate,
+    program.endDate
   );
 
   return (
@@ -136,15 +139,18 @@ export function ProgramCard({ program, onDonationSubmit }: ProgramCardProps) {
               <div className='flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400'>
                 <Calendar className='w-4 h-4' />
                 <span>
-                  Selesai{' '}
-                  {new Date(program.endDate).toLocaleDateString('id-ID')}
+                  {program.startDate &&
+                  !formatPeriodTextForCard(
+                    program.startDate,
+                    program.endDate
+                  ).includes('Selalu Aktif')
+                    ? `Selesai ${new Date(program.endDate).toLocaleDateString('id-ID')}`
+                    : 'Program Berkelanjutan'}
                 </span>
               </div>
               <div className='flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400'>
                 <Clock className='w-4 h-4' />
-                <span>
-                  {daysLeft > 0 ? `${daysLeft} hari lagi` : 'Berakhir'}
-                </span>
+                <span>{periodText}</span>
               </div>
             </div>
 

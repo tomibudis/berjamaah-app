@@ -28,13 +28,7 @@ export const donationRouter = router({
               cycleNumber: true,
             },
           },
-          donationProofs: {
-            select: {
-              id: true,
-              imagePath: true,
-              imageName: true,
-            },
-          },
+          // removed donationProofs in favor of single image string
         },
         orderBy: {
           createdAt: 'desc',
@@ -80,15 +74,7 @@ export const donationRouter = router({
                 currentAmount: true,
               },
             },
-            donationProofs: {
-              select: {
-                id: true,
-                imagePath: true,
-                imageName: true,
-                fileSize: true,
-                uploadedAt: true,
-              },
-            },
+            // single image now stored on donation
             verifiedByAdmin: {
               select: {
                 id: true,
@@ -194,6 +180,7 @@ export const donationRouter = router({
               : 'N/A',
             category: program.category || 'Umum',
             donorCount: uniqueDonors,
+            startDate: activePeriod?.startDate.toISOString() || null,
             endDate:
               activePeriod?.endDate.toISOString() ||
               program.createdAt.toISOString(),
@@ -225,6 +212,7 @@ export const donationRouter = router({
         bankAccountSender: z.string().optional(),
         bankAccountReceiver: z.string().optional(),
         transferDate: z.coerce.date().optional(),
+        donationProofImage: z.string().url('Valid image URL is required'),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -235,30 +223,12 @@ export const donationRouter = router({
             id: input.programId,
             status: 'active',
           },
-          include: {
-            programPeriods: {
-              where: {
-                startDate: { lte: new Date() },
-                endDate: { gte: new Date() },
-              },
-              orderBy: { startDate: 'desc' },
-              take: 1,
-            },
-          },
         });
 
         if (!program) {
           throw new TRPCError({
             code: 'NOT_FOUND',
             message: 'Program not found or not active',
-          });
-        }
-
-        const activePeriod = program.programPeriods[0];
-        if (!activePeriod) {
-          throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: 'No active period found for this program',
           });
         }
 
@@ -273,13 +243,14 @@ export const donationRouter = router({
             donorEmail: input.donorEmail,
             donorPhone: input.donorPhone,
             programId: input.programId,
-            programPeriodId: activePeriod.id,
+            programPeriodId: null,
             amount: input.amount,
             paymentMethod: input.paymentMethod,
             bankAccountSender: input.bankAccountSender,
             bankAccountReceiver: input.bankAccountReceiver,
             donationReferenceNumber,
             status: 'pending_verification',
+            donationProofImage: input.donationProofImage,
             ...(input.transferDate && { verifiedAt: input.transferDate }),
           },
           include: {
@@ -293,20 +264,12 @@ export const donationRouter = router({
                 targetAmount: true,
               },
             },
-            programPeriod: {
-              select: {
-                id: true,
-                startDate: true,
-                endDate: true,
-                cycleNumber: true,
-                currentAmount: true,
-              },
-            },
           },
         });
 
         return donation;
       } catch (error) {
+        console.log('error', error);
         if (error instanceof TRPCError) {
           throw error;
         }
@@ -317,54 +280,7 @@ export const donationRouter = router({
       }
     }),
 
-  // Upload donation proof
-  uploadDonationProof: protectedProcedure
-    .input(
-      z.object({
-        donationId: z.string(),
-        imagePath: z.string(),
-        imageName: z.string(),
-        fileSize: z.number().int().positive(),
-      })
-    )
-    .mutation(async ({ input, ctx }) => {
-      try {
-        // Verify donation belongs to user
-        const donation = await prisma.donation.findFirst({
-          where: {
-            id: input.donationId,
-            userId: ctx.session.user.id,
-          },
-        });
-
-        if (!donation) {
-          throw new TRPCError({
-            code: 'NOT_FOUND',
-            message: 'Donation not found or access denied',
-          });
-        }
-
-        // Create donation proof
-        const donationProof = await prisma.donationProof.create({
-          data: {
-            donationId: input.donationId,
-            imagePath: input.imagePath,
-            imageName: input.imageName,
-            fileSize: input.fileSize,
-          },
-        });
-
-        return donationProof;
-      } catch (error) {
-        if (error instanceof TRPCError) {
-          throw error;
-        }
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to upload donation proof',
-        });
-      }
-    }),
+  // Removed uploadDonationProof in favor of passing image URL during creation
 
   // Get donation statistics for a program
   getProgramDonationStats: publicProcedure

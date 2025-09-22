@@ -59,14 +59,7 @@ export interface DonationDetail {
     cycleNumber: number | null;
     currentAmount: number;
   };
-  donationProofs: Array<{
-    id: string;
-    imagePath: string;
-    imageName: string;
-    fileSize: number;
-    uploadedAt: string;
-    isPrimary: boolean;
-  }>;
+  donationProofImage?: string | null;
   verifiedByAdmin: {
     id: string;
     name: string;
@@ -142,14 +135,6 @@ export function DonationDetailDrawer({
     });
   };
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
-
   const progressPercentage = Math.round(
     (donation.programPeriod.currentAmount / donation.program.targetAmount) * 100
   );
@@ -165,6 +150,21 @@ export function DonationDetailDrawer({
         </DrawerHeader>
 
         <div className='px-4 pb-4 space-y-6 overflow-auto'>
+          {/* Banner Image */}
+          {donation.program.bannerImage && (
+            <div className='w-full h-48 overflow-hidden rounded-lg'>
+              <img
+                src={donation.program.bannerImage}
+                alt={`Banner ${donation.program.title}`}
+                className='w-full h-full object-cover'
+                onError={e => {
+                  // Hide image if it fails to load
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            </div>
+          )}
+
           {/* Status Badge */}
           <div className='flex items-center justify-center'>
             <Badge
@@ -388,8 +388,8 @@ export function DonationDetailDrawer({
             </Card>
           )}
 
-          {/* Donation Proofs */}
-          {donation.donationProofs.length > 0 && (
+          {/* Donation Proof (single image) */}
+          {donation.donationProofImage && (
             <Card>
               <CardHeader>
                 <CardTitle className='text-base flex items-center gap-2'>
@@ -398,35 +398,19 @@ export function DonationDetailDrawer({
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className='grid grid-cols-2 gap-3'>
-                  {donation.donationProofs.map(proof => (
-                    <div key={proof.id} className='space-y-2'>
-                      <div className='relative'>
-                        <img
-                          src={proof.imagePath}
-                          alt={proof.imageName}
-                          className='w-full h-32 object-cover rounded-lg border cursor-pointer hover:opacity-80 transition-opacity'
-                          onClick={() => setSelectedImage(proof.imagePath)}
-                        />
-                        {proof.isPrimary && (
-                          <Badge className='absolute top-2 right-2 text-xs'>
-                            Utama
-                          </Badge>
-                        )}
-                      </div>
-                      <div className='space-y-1'>
-                        <p className='text-xs font-medium truncate'>
-                          {proof.imageName}
-                        </p>
-                        <p className='text-xs text-gray-500'>
-                          {formatFileSize(proof.fileSize)}
-                        </p>
-                        <p className='text-xs text-gray-500'>
-                          {formatDate(proof.uploadedAt)}
-                        </p>
-                      </div>
+                <div className='grid grid-cols-1 gap-3'>
+                  <div className='space-y-2'>
+                    <div className='relative'>
+                      <img
+                        src={donation.donationProofImage}
+                        alt='Bukti Transfer'
+                        className='w-full h-40 object-cover rounded-lg border cursor-pointer hover:opacity-80 transition-opacity'
+                        onClick={() =>
+                          setSelectedImage(donation.donationProofImage!)
+                        }
+                      />
                     </div>
-                  ))}
+                  </div>
                 </div>
               </CardContent>
             </Card>
