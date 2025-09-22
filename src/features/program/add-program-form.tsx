@@ -18,14 +18,7 @@ import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import Loader from '@/components/shared/loader';
 import { trpcClient, queryClient } from '@/utils/trpc';
-import { ChevronLeft, CalendarIcon } from 'lucide-react';
-import { format } from 'date-fns';
-import { Calendar } from '@/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { ChevronLeft, X } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -34,8 +27,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { cn } from '@/lib/utils';
-import { formatCalendarDate, formatInputDate } from '@/utils/dateFormat';
+import { DatePickerField } from '@/components/shared/date-picker';
 
 const addProgramSchema = z
   .object({
@@ -60,150 +52,34 @@ const addProgramSchema = z
       .min(1, { message: 'Kategori program harus diisi.' })
       .min(2, { message: 'Kategori program minimal 2 karakter.' })
       .max(50, { message: 'Kategori program maksimal 50 karakter.' }),
-    programType: z.enum(['one_time', 'multiple', 'selected_date'], {
-      message: 'Tipe program harus dipilih.',
-    }),
-    // One-time program fields
+    // Optional date and time fields
     startDate: z.string().optional(),
     startTime: z.string().optional(),
     endDate: z.string().optional(),
     endTime: z.string().optional(),
-    // Multiple/recurring program fields
-    recurringFrequency: z.string().optional(),
-    recurringDay: z.string().optional(),
-    recurringDurationDays: z.string().optional(),
-    totalCycles: z.string().optional(),
-    // Selected date program fields
-    selectedDates: z.array(z.string()).optional(),
-    selectedDateTimes: z
-      .array(
-        z.object({
-          date: z.string(),
-          startTime: z.string(),
-          endTime: z.string(),
-        })
-      )
-      .optional(),
   })
   .refine(
     data => {
-      if (data.programType === 'one_time') {
-        return data.startDate && data.startDate.trim() !== '';
-      }
-      return true;
-    },
-    {
-      message: 'Tanggal mulai harus diisi untuk program sekali jalan.',
-      path: ['startDate'],
-    }
-  )
-  .refine(
-    data => {
-      if (data.programType === 'one_time') {
-        return data.endDate && data.endDate.trim() !== '';
-      }
-      return true;
-    },
-    {
-      message: 'Tanggal selesai harus diisi untuk program sekali jalan.',
-      path: ['endDate'],
-    }
-  )
-  .refine(
-    data => {
-      if (data.programType === 'one_time' && data.startDate && data.endDate) {
+      // If both dates are provided, end date must be after start date
+      if (data.startDate && data.endDate) {
         const startDate = new Date(data.startDate);
         const endDate = new Date(data.endDate);
-
-        // If dates are the same, check if end time is after start time
-        if (startDate.getTime() === endDate.getTime()) {
-          const startTime = data.startTime || '00:00';
-          const endTime = data.endTime || '23:59';
-          return endTime > startTime;
-        }
-
-        // If dates are different, end date must be after start date
         return startDate < endDate;
       }
       return true;
     },
     {
-      message:
-        'Tanggal selesai harus setelah tanggal mulai, atau waktu selesai harus setelah waktu mulai jika tanggal sama.',
+      message: 'Tanggal selesai harus setelah tanggal mulai.',
       path: ['endDate'],
-    }
-  )
-  .refine(
-    data => {
-      if (
-        data.programType === 'one_time' &&
-        data.startDate &&
-        data.endDate &&
-        data.startTime &&
-        data.endTime
-      ) {
-        const startDate = new Date(data.startDate);
-        const endDate = new Date(data.endDate);
-
-        // If dates are the same, check if end time is after start time
-        if (startDate.getTime() === endDate.getTime()) {
-          return data.endTime > data.startTime;
-        }
-      }
-      return true;
-    },
-    {
-      message:
-        'Waktu selesai harus setelah waktu mulai untuk tanggal yang sama.',
-      path: ['endTime'],
-    }
-  )
-  .refine(
-    data => {
-      if (data.programType === 'selected_date') {
-        return data.selectedDateTimes && data.selectedDateTimes.length > 0;
-      }
-      return true;
-    },
-    {
-      message:
-        'Minimal satu tanggal dan waktu harus dipilih untuk program tanggal terpilih.',
-      path: ['selectedDateTimes'],
-    }
-  )
-  .refine(
-    data => {
-      if (data.programType === 'selected_date' && data.selectedDateTimes) {
-        // Check that all selected date times have valid time ranges
-        return data.selectedDateTimes.every(dateTime => {
-          if (dateTime.startTime === dateTime.endTime) {
-            return false; // Start and end time cannot be the same
-          }
-          return true;
-        });
-      }
-      return true;
-    },
-    {
-      message:
-        'Waktu selesai harus berbeda dari waktu mulai untuk setiap tanggal.',
-      path: ['selectedDateTimes'],
     }
   );
 
 export type AddProgramFormValues = z.infer<typeof addProgramSchema>;
 
-const DEFAULT_START_TIME = '00:00';
-const DEFAULT_END_TIME = '23:59';
-
 export default function AddProgramForm() {
   const router = useRouter();
   const [newCategory, setNewCategory] = React.useState('');
   const [showNewCategoryInput, setShowNewCategoryInput] = React.useState(false);
-  const [newStartDate, setNewStartDate] = React.useState('');
-  const [newEndDate, setNewEndDate] = React.useState('');
-  const [newStartTime, setNewStartTime] = React.useState(DEFAULT_START_TIME);
-  const [newEndTime, setNewEndTime] = React.useState(DEFAULT_END_TIME);
 
   const form = useForm<AddProgramFormValues>({
     resolver: zodResolver(addProgramSchema),
@@ -212,24 +88,18 @@ export default function AddProgramForm() {
       description: '',
       targetAmount: '',
       category: '',
-      programType: 'one_time',
       startDate: '',
-      startTime: DEFAULT_START_TIME,
+      startTime: '00:00',
       endDate: '',
-      endTime: DEFAULT_END_TIME,
-      recurringFrequency: '',
-      recurringDay: '',
-      recurringDurationDays: '',
-      totalCycles: '',
-      selectedDates: [],
-      selectedDateTimes: [],
+      endTime: '23:59',
     },
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
 
-  const programType = form.watch('programType');
   const description = form.watch('description');
+  const startDate = form.watch('startDate');
+  const endDate = form.watch('endDate');
 
   const onSubmitForm = async (formValues: AddProgramFormValues) => {
     try {
@@ -240,64 +110,54 @@ export default function AddProgramForm() {
         category: formValues.category,
       };
 
-      // Use the appropriate tRPC function based on program type
-      if (formValues.programType === 'one_time') {
-        if (!formValues.startDate || !formValues.endDate) {
-          throw new Error(
-            'Start date and end date are required for one-time programs'
-          );
-        }
+      // Determine status based on date fields
+      let status: 'pending' | 'active';
+      let startDate: Date | undefined;
+      let endDate: Date | undefined;
 
-        await trpcClient.program.createOneTime.mutate({
-          ...baseProgramData,
-          startDate: new Date(
-            `${formValues.startDate}T${formValues.startTime || '00:00'}`
-          ),
-          endDate: new Date(
-            `${formValues.endDate}T${formValues.endTime || '23:59'}`
-          ),
-        });
-      } else if (formValues.programType === 'multiple') {
-        if (
-          !formValues.recurringFrequency ||
-          !formValues.recurringDay ||
-          !formValues.recurringDurationDays
-        ) {
-          throw new Error(
-            'Recurring settings are required for multiple programs'
-          );
-        }
-
-        await trpcClient.program.createRecurring.mutate({
-          ...baseProgramData,
-          recurringFrequency: formValues.recurringFrequency as
-            | 'weekly'
-            | 'monthly'
-            | 'quarterly'
-            | 'yearly',
-          recurringDay: Number(formValues.recurringDay),
-          recurringDurationDays: Number(formValues.recurringDurationDays),
-          totalCycles: formValues.totalCycles
-            ? Number(formValues.totalCycles)
-            : undefined,
-        });
-      } else if (formValues.programType === 'selected_date') {
-        if (
-          !formValues.selectedDateTimes ||
-          formValues.selectedDateTimes.length === 0
-        ) {
-          throw new Error(
-            'At least one date and time must be selected for selected date programs'
-          );
-        }
-
-        await trpcClient.program.createSelectedDates.mutate({
-          ...baseProgramData,
-          selectedDateTimes: formValues.selectedDateTimes,
-        });
+      if (formValues.startDate && formValues.endDate) {
+        // Both dates provided - status is pending (scheduled)
+        status = 'pending';
+        startDate = new Date(formValues.startDate);
+        endDate = new Date(formValues.endDate);
+      } else if (formValues.startDate && !formValues.endDate) {
+        // Only start date provided - status is pending (scheduled)
+        status = 'pending';
+        startDate = new Date(formValues.startDate);
+      } else if (!formValues.startDate && formValues.endDate) {
+        // Only end date provided - status is active
+        status = 'active';
+        endDate = new Date(formValues.endDate);
       } else {
-        throw new Error('Invalid program type');
+        // No dates provided - status is active (immediate start)
+        status = 'active';
       }
+
+      await trpcClient.program.create.mutate({
+        ...baseProgramData,
+        status,
+        programType: 'one_time',
+        initialPeriod:
+          startDate || endDate
+            ? {
+                startDate: startDate
+                  ? new Date(
+                      `${formValues.startDate}T${formValues.startTime || '00:00'}`
+                    )
+                  : new Date(),
+                endDate: endDate
+                  ? new Date(
+                      `${formValues.endDate}T${formValues.endTime || '23:59'}`
+                    )
+                  : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+                cycleNumber: 1,
+              }
+            : {
+                startDate: new Date(),
+                endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+                cycleNumber: 1,
+              },
+      });
 
       // Invalidate program queries to refresh the list
       await queryClient.invalidateQueries({
@@ -544,622 +404,179 @@ export default function AddProgramForm() {
           {/* Section Separator */}
           <div className='border-t border-gray-200 dark:border-gray-700'></div>
 
-          {/* Section 2: Program Penayangan */}
+          {/* Section 2: Periode Program */}
           <div className='space-y-6'>
             <div className='flex items-center gap-3'>
               <h2 className='text-lg font-semibold text-gray-900 dark:text-white'>
-                Program Penayangan
+                Periode Program
               </h2>
             </div>
 
             <div className='space-y-6'>
-              <FormField
-                control={form.control}
-                name='programType'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tipe Program</FormLabel>
-                    <FormControl>
-                      <Select
-                        value={field.value}
-                        onValueChange={value => {
-                          field.onChange(value);
-                          // Clear any validation errors when a valid program type is selected
-                          form.clearErrors('programType');
-                        }}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder='Pilih tipe program' />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value='one_time'>Sekali Jalan</SelectItem>
-                          <SelectItem value='multiple'>Berulang</SelectItem>
-                          <SelectItem value='selected_date'>
-                            Tanggal Terpilih
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <Alert>
+                <AlertDescription>
+                  <div className='space-y-2'>
+                    <p className='font-medium'>Status Program:</p>
+                    <ul className='text-sm space-y-1'>
+                      <li>
+                        • <strong>Pending:</strong> Jika hanya tanggal mulai
+                        diisi, atau kedua tanggal diisi
+                      </li>
+                      <li>
+                        • <strong>Active:</strong> Jika hanya tanggal selesai
+                        diisi
+                      </li>
+                    </ul>
+                  </div>
+                </AlertDescription>
+              </Alert>
 
-              {/* One-time program fields */}
-              {programType === 'one_time' && (
+              {/* Date fields */}
+              <div className='space-y-4'>
+                {/* Start Date and Time */}
                 <div className='space-y-4'>
-                  <h3 className='text-sm font-medium text-gray-900 dark:text-white'>
-                    Periode Program
-                  </h3>
-                  <div className='space-y-4'>
-                    {/* Start Date and Time */}
-                    <div className='flex flex-col sm:flex-row gap-4'>
-                      <div className='flex-1'>
-                        <FormField
-                          control={form.control}
-                          name='startDate'
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Tanggal Mulai</FormLabel>
-                              <Popover>
-                                <PopoverTrigger asChild>
-                                  <FormControl>
-                                    <Button
-                                      variant='outline'
-                                      size='lg'
-                                      className={cn(
-                                        'w-full pl-3 text-left font-normal text-sm',
-                                        !field.value && 'text-muted-foreground'
-                                      )}
-                                    >
-                                      {field.value ? (
-                                        format(
-                                          new Date(field.value),
-                                          'MMM dd, yyyy'
-                                        )
-                                      ) : (
-                                        <span>Pilih tanggal</span>
-                                      )}
-                                      <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
-                                    </Button>
-                                  </FormControl>
-                                </PopoverTrigger>
-                                <PopoverContent
-                                  className='w-auto p-0'
-                                  align='start'
-                                >
-                                  <Calendar
-                                    mode='single'
-                                    selected={
-                                      field.value
-                                        ? new Date(field.value)
-                                        : undefined
-                                    }
-                                    onSelect={date => {
-                                      field.onChange(
-                                        date
-                                          ? date.toISOString().split('T')[0]
-                                          : ''
-                                      );
-                                      // Clear validation errors when date is selected
-                                      form.clearErrors('startDate');
-                                    }}
-                                    disabled={date => date < new Date()}
-                                    captionLayout='dropdown'
-                                  />
-                                </PopoverContent>
-                              </Popover>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                      <div className='flex-1'>
-                        <FormField
-                          control={form.control}
-                          name='startTime'
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Waktu Mulai</FormLabel>
-                              <FormControl>
-                                <Input
-                                  type='time'
-                                  {...field}
-                                  className='h-10 bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
+                  <h4 className='text-sm font-medium text-gray-900 dark:text-white'>
+                    Tanggal & Waktu Mulai (Opsional)
+                  </h4>
+                  <div className='flex flex-col sm:flex-row gap-4'>
+                    <div className='flex-1'>
+                      <FormField
+                        control={form.control}
+                        name='startDate'
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Tanggal Mulai</FormLabel>
+                            <FormControl>
+                              <DatePickerField
+                                value={field.value}
+                                onChange={value => {
+                                  field.onChange(value);
+                                  form.clearErrors('startDate');
+                                }}
+                                placeholder='Pilih tanggal'
+                                minDate={new Date()}
+                                error={!!form.formState.errors.startDate}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
-
-                    {/* End Date and Time */}
-                    <div className='flex flex-col sm:flex-row gap-4'>
-                      <div className='flex-1'>
-                        <FormField
-                          control={form.control}
-                          name='endDate'
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Tanggal Selesai</FormLabel>
-                              <Popover>
-                                <PopoverTrigger asChild>
-                                  <FormControl>
-                                    <Button
-                                      variant='outline'
-                                      size='lg'
-                                      className={cn(
-                                        'w-full pl-3 text-left font-normal text-sm',
-                                        !field.value && 'text-muted-foreground'
-                                      )}
-                                    >
-                                      {field.value ? (
-                                        format(
-                                          new Date(field.value),
-                                          'MMM dd, yyyy'
-                                        )
-                                      ) : (
-                                        <span>Pilih tanggal</span>
-                                      )}
-                                      <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
-                                    </Button>
-                                  </FormControl>
-                                </PopoverTrigger>
-                                <PopoverContent
-                                  className='w-auto p-0'
-                                  align='start'
-                                >
-                                  <Calendar
-                                    mode='single'
-                                    selected={
-                                      field.value
-                                        ? new Date(field.value)
-                                        : undefined
-                                    }
-                                    onSelect={date => {
-                                      field.onChange(
-                                        date
-                                          ? date.toISOString().split('T')[0]
-                                          : ''
-                                      );
-                                      // Clear validation errors when date is selected
-                                      form.clearErrors('endDate');
-                                    }}
-                                    disabled={date => {
-                                      const startDate =
-                                        form.getValues('startDate');
-                                      return (
-                                        date < new Date() ||
-                                        (startDate
-                                          ? date < new Date(startDate)
-                                          : false)
-                                      );
-                                    }}
-                                    captionLayout='dropdown'
-                                  />
-                                </PopoverContent>
-                              </Popover>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                      <div className='flex-1'>
-                        <FormField
-                          control={form.control}
-                          name='endTime'
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Waktu Selesai</FormLabel>
-                              <FormControl>
+                    <div className='flex-1'>
+                      <FormField
+                        control={form.control}
+                        name='startTime'
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Waktu Mulai</FormLabel>
+                            <FormControl>
+                              <div className='relative'>
                                 <Input
                                   type='time'
                                   {...field}
-                                  className='h-10 bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
+                                  className='h-10 bg-background pr-8'
                                 />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
+                                {field.value && field.value !== '00:00' && (
+                                  <X
+                                    className='absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground hover:text-foreground cursor-pointer'
+                                    onClick={() => {
+                                      field.onChange('00:00');
+                                    }}
+                                  />
+                                )}
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
                   </div>
                 </div>
-              )}
 
-              {/* Multiple/recurring program fields */}
-              {programType === 'multiple' && (
+                {/* End Date and Time */}
                 <div className='space-y-4'>
-                  <h3 className='text-sm font-medium text-gray-900 dark:text-white'>
-                    Pengaturan Program Berulang
-                  </h3>
-
-                  <Alert variant='info'>
-                    <AlertDescription>
-                      <div className='space-y-2'>
-                        <p>
-                          Program berulang akan dimulai dan berakhir pada pukul
-                          00.00 WIB setiap hari yang ditentukan.
-                        </p>
-                        <div className='text-sm'>
-                          <p className='font-medium'>Contoh pengaturan:</p>
-                          <ul className='list-disc list-inside space-y-1 text-muted-foreground'>
-                            <li>
-                              Frekuensi: Mingguan, Hari: 1 (Senin), Durasi: 3
-                              hari
-                            </li>
-                            <li>
-                              Artinya: Program akan aktif setiap Senin selama 3
-                              hari berturut-turut
-                            </li>
-                            <li>
-                              Total Siklus: 4 (program akan berjalan 4 kali)
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                    </AlertDescription>
-                  </Alert>
-
-                  <FormField
-                    control={form.control}
-                    name='recurringFrequency'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Frekuensi Berulang</FormLabel>
-                        <FormControl>
-                          <Select
-                            value={field.value}
-                            onValueChange={field.onChange}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder='Pilih frekuensi' />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value='weekly'>Mingguan</SelectItem>
-                              <SelectItem value='monthly'>Bulanan</SelectItem>
-                              <SelectItem value='quarterly'>
-                                Triwulanan
-                              </SelectItem>
-                              <SelectItem value='yearly'>Tahunan</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name='recurringDay'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Hari Berulang</FormLabel>
-                        <FormControl>
-                          <Input
-                            type='number'
-                            placeholder='Hari dalam minggu (1-7) atau bulan (1-31)'
-                            min='1'
-                            max='31'
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name='recurringDurationDays'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Durasi Setiap Aktivasi (Hari)</FormLabel>
-                        <FormControl>
-                          <Input
-                            type='number'
-                            placeholder='Berapa hari program aktif setiap kali'
-                            min='1'
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name='totalCycles'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Total Siklus (Opsional)</FormLabel>
-                        <FormControl>
-                          <Input
-                            type='number'
-                            placeholder='Kosongkan untuk berulang tanpa batas'
-                            min='1'
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <h4 className='text-sm font-medium text-gray-900 dark:text-white'>
+                    Tanggal & Waktu Selesai (Opsional)
+                  </h4>
+                  <div className='flex flex-col sm:flex-row gap-4'>
+                    <div className='flex-1'>
+                      <FormField
+                        control={form.control}
+                        name='endDate'
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Tanggal Selesai</FormLabel>
+                            <FormControl>
+                              <DatePickerField
+                                value={field.value}
+                                onChange={value => {
+                                  field.onChange(value);
+                                  form.clearErrors('endDate');
+                                }}
+                                placeholder='Pilih tanggal'
+                                minDate={
+                                  form.getValues('startDate')
+                                    ? new Date(form.getValues('startDate')!)
+                                    : new Date()
+                                }
+                                error={!!form.formState.errors.endDate}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className='flex-1'>
+                      <FormField
+                        control={form.control}
+                        name='endTime'
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Waktu Selesai</FormLabel>
+                            <FormControl>
+                              <div className='relative'>
+                                <Input
+                                  type='time'
+                                  {...field}
+                                  className='h-10 bg-background pr-8'
+                                />
+                                {field.value && field.value !== '23:59' && (
+                                  <X
+                                    className='absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground hover:text-foreground cursor-pointer'
+                                    onClick={() => {
+                                      field.onChange('23:59');
+                                    }}
+                                  />
+                                )}
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
                 </div>
-              )}
 
-              {/* Selected date program fields */}
-              {programType === 'selected_date' && (
-                <div className='space-y-4'>
-                  <h3 className='text-sm font-medium text-gray-900 dark:text-white'>
-                    Pilih Tanggal Program
-                  </h3>
-
-                  <FormField
-                    control={form.control}
-                    name='selectedDateTimes'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Tanggal dan Waktu Program</FormLabel>
-                        <FormControl>
-                          <div className='space-y-3'>
-                            <div className='space-y-4'>
-                              {/* Start Date and Time */}
-                              <div className='flex flex-col sm:flex-row gap-4'>
-                                <div className='flex-1'>
-                                  <div className='space-y-2'>
-                                    <label className='text-sm font-medium'>
-                                      Tanggal Mulai
-                                    </label>
-                                    <Popover>
-                                      <PopoverTrigger asChild>
-                                        <Button
-                                          variant='outline'
-                                          size='lg'
-                                          className={cn(
-                                            'w-full pl-3 text-left font-normal text-sm',
-                                            !newStartDate &&
-                                              'text-muted-foreground'
-                                          )}
-                                        >
-                                          {newStartDate ? (
-                                            formatCalendarDate(newStartDate)
-                                          ) : (
-                                            <span>Pilih tanggal</span>
-                                          )}
-                                          <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
-                                        </Button>
-                                      </PopoverTrigger>
-                                      <PopoverContent
-                                        className='w-auto p-0'
-                                        align='start'
-                                      >
-                                        <Calendar
-                                          mode='single'
-                                          selected={
-                                            newStartDate
-                                              ? new Date(newStartDate)
-                                              : undefined
-                                          }
-                                          onSelect={date => {
-                                            setNewStartDate(
-                                              date ? formatInputDate(date) : ''
-                                            );
-                                          }}
-                                          disabled={date => date < new Date()}
-                                          captionLayout='dropdown'
-                                        />
-                                      </PopoverContent>
-                                    </Popover>
-                                  </div>
-                                </div>
-                                <div className='flex-1'>
-                                  <div className='space-y-2'>
-                                    <label className='text-sm font-medium'>
-                                      Waktu Mulai
-                                    </label>
-                                    <Input
-                                      type='time'
-                                      placeholder='Waktu mulai'
-                                      value={newStartTime}
-                                      onChange={e =>
-                                        setNewStartTime(e.target.value)
-                                      }
-                                      className='h-10 bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* End Date and Time */}
-                              <div className='flex flex-col sm:flex-row gap-4'>
-                                <div className='flex-1'>
-                                  <div className='space-y-2'>
-                                    <label className='text-sm font-medium'>
-                                      Tanggal Selesai
-                                    </label>
-                                    <Popover>
-                                      <PopoverTrigger asChild>
-                                        <Button
-                                          variant='outline'
-                                          size='lg'
-                                          className={cn(
-                                            'w-full pl-3 text-left font-normal text-sm',
-                                            !newEndDate &&
-                                              'text-muted-foreground'
-                                          )}
-                                        >
-                                          {newEndDate ? (
-                                            formatCalendarDate(newEndDate)
-                                          ) : (
-                                            <span>Pilih tanggal</span>
-                                          )}
-                                          <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
-                                        </Button>
-                                      </PopoverTrigger>
-                                      <PopoverContent
-                                        className='w-auto p-0'
-                                        align='start'
-                                      >
-                                        <Calendar
-                                          mode='single'
-                                          selected={
-                                            newEndDate
-                                              ? new Date(newEndDate)
-                                              : undefined
-                                          }
-                                          onSelect={date => {
-                                            setNewEndDate(
-                                              date ? formatInputDate(date) : ''
-                                            );
-                                          }}
-                                          disabled={date => {
-                                            return (
-                                              date < new Date() ||
-                                              (newStartDate
-                                                ? date < new Date(newStartDate)
-                                                : false)
-                                            );
-                                          }}
-                                          captionLayout='dropdown'
-                                        />
-                                      </PopoverContent>
-                                    </Popover>
-                                  </div>
-                                </div>
-                                <div className='flex-1'>
-                                  <div className='space-y-2'>
-                                    <label className='text-sm font-medium'>
-                                      Waktu Selesai
-                                    </label>
-                                    <Input
-                                      type='time'
-                                      placeholder='Waktu selesai'
-                                      value={newEndTime}
-                                      onChange={e =>
-                                        setNewEndTime(e.target.value)
-                                      }
-                                      className='h-10 bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Add Button */}
-                              <div className='flex justify-start'>
-                                <Button
-                                  type='button'
-                                  variant='outline'
-                                  size='sm'
-                                  onClick={() => {
-                                    if (
-                                      newStartDate &&
-                                      newEndDate &&
-                                      newStartTime &&
-                                      newEndTime
-                                    ) {
-                                      // Validate that end time is after start time for same date
-                                      if (
-                                        newStartDate === newEndDate &&
-                                        newEndTime <= newStartTime
-                                      ) {
-                                        toast.error(
-                                          'Waktu selesai harus setelah waktu mulai untuk tanggal yang sama'
-                                        );
-                                        return;
-                                      }
-
-                                      const newDateTime = {
-                                        date: newStartDate,
-                                        startTime: newStartTime,
-                                        endTime: newEndTime,
-                                      };
-
-                                      // Check if this exact combination already exists
-                                      const exists = field.value?.some(
-                                        item =>
-                                          item.date === newStartDate &&
-                                          item.startTime === newStartTime &&
-                                          item.endTime === newEndTime
-                                      );
-
-                                      if (!exists) {
-                                        field.onChange([
-                                          ...(field.value || []),
-                                          newDateTime,
-                                        ]);
-                                        setNewStartDate('');
-                                        setNewEndDate('');
-                                        setNewStartTime(DEFAULT_START_TIME);
-                                        setNewEndTime(DEFAULT_END_TIME);
-                                      }
-                                    }
-                                  }}
-                                  disabled={
-                                    !newStartDate ||
-                                    !newEndDate ||
-                                    !newStartTime ||
-                                    !newEndTime ||
-                                    field.value?.some(
-                                      item =>
-                                        item.date === newStartDate &&
-                                        item.startTime === newStartTime &&
-                                        item.endTime === newEndTime
-                                    )
-                                  }
-                                >
-                                  Tambah
-                                </Button>
-                              </div>
-                            </div>
-
-                            {field.value && field.value.length > 0 && (
-                              <div className='space-y-2'>
-                                <p className='text-sm text-muted-foreground'>
-                                  Tanggal dan waktu yang dipilih:
-                                </p>
-                                <div className='flex flex-wrap gap-2'>
-                                  {field.value.map((dateTime, index) => (
-                                    <div
-                                      key={index}
-                                      className='flex items-center gap-2 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-md text-sm'
-                                    >
-                                      <span>
-                                        {formatCalendarDate(dateTime.date)}{' '}
-                                        {dateTime.startTime} -{' '}
-                                        {dateTime.endTime}
-                                      </span>
-                                      <button
-                                        type='button'
-                                        onClick={() => {
-                                          const newDateTimes =
-                                            field.value?.filter(
-                                              (_, i) => i !== index
-                                            ) || [];
-                                          field.onChange(newDateTimes);
-                                        }}
-                                        className='text-red-500 hover:text-red-700 text-lg font-bold leading-none'
-                                      >
-                                        ×
-                                      </button>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              )}
+                {/* Status indicator */}
+                {(startDate || endDate) && (
+                  <div className='p-3 bg-blue-50 dark:bg-blue-950 rounded-md'>
+                    <p className='text-sm text-blue-800 dark:text-blue-200'>
+                      <strong>Status Program:</strong>{' '}
+                      {startDate && !endDate
+                        ? 'Pending (akan aktif pada tanggal mulai)'
+                        : !startDate && endDate
+                          ? 'Active (aktif sekarang, berakhir pada tanggal selesai)'
+                          : startDate && endDate
+                            ? 'Pending (akan aktif pada tanggal mulai, berakhir pada tanggal selesai)'
+                            : ''}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 

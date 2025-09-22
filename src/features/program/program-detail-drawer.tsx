@@ -33,6 +33,13 @@ interface Program {
   createdAt: string;
   updatedAt: string;
   createdBy: string;
+  createdByUser?: {
+    id: string;
+    name: string | null;
+    fullName: string | null;
+    firstName: string | null;
+    lastName: string | null;
+  } | null;
   programPeriods: Array<{
     id: string;
     startDate: string;
@@ -110,11 +117,13 @@ export function ProgramDetailDrawer({
     }).format(amount);
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('id-ID', {
+  const formatDateTime = (dateString: string) => {
+    return new Date(dateString).toLocaleString('id-ID', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
     });
   };
 
@@ -152,27 +161,18 @@ export function ProgramDetailDrawer({
     }
   };
 
-  const formatRecurringSchedule = (period: Program['programPeriods'][0]) => {
-    if (!period.recurringFrequency) return '';
+  const getCreatorDisplayName = (program: Program) => {
+    if (!program.createdByUser) return 'Tidak diketahui';
 
-    const frequencyText = {
-      weekly: 'Mingguan',
-      monthly: 'Bulanan',
-      quarterly: 'Triwulan',
-      yearly: 'Tahunan',
-    };
+    const { name, fullName, firstName, lastName } = program.createdByUser;
 
-    const dayText = period.recurringDay
-      ? ` pada hari ke-${period.recurringDay}`
-      : '';
-    const durationText = period.recurringDurationDays
-      ? ` selama ${period.recurringDurationDays} hari`
-      : '';
-    const cyclesText = period.totalCycles
-      ? ` (${period.totalCycles} siklus)`
-      : ' (tanpa batas)';
+    // Priority: fullName > name > firstName + lastName > firstName > 'Tidak diketahui'
+    if (fullName) return fullName;
+    if (name) return name;
+    if (firstName && lastName) return `${firstName} ${lastName}`;
+    if (firstName) return firstName;
 
-    return `Berulang ${frequencyText[period.recurringFrequency as keyof typeof frequencyText] || period.recurringFrequency}${dayText}${durationText}${cyclesText}`;
+    return 'Tidak diketahui';
   };
 
   if (!isOpen) return null;
@@ -278,30 +278,13 @@ export function ProgramDetailDrawer({
               {program.category}
             </p>
           </div>
-          <div>
-            <h4 className='font-medium text-gray-900 dark:text-white text-sm'>
-              Tipe Program
-            </h4>
-            <p className='text-sm text-gray-600 dark:text-gray-400'>
-              {program.programType === 'one_time' && 'Sekali Jalan'}
-              {program.programType === 'multiple' && 'Berulang'}
-              {program.programType === 'selected_date' && 'Tanggal Terpilih'}
-            </p>
-          </div>
+
           <div>
             <h4 className='font-medium text-gray-900 dark:text-white text-sm'>
               Donatur
             </h4>
             <p className='text-sm text-gray-600 dark:text-gray-400'>
               {program._count.donations} orang
-            </p>
-          </div>
-          <div>
-            <h4 className='font-medium text-gray-900 dark:text-white text-sm'>
-              Periode
-            </h4>
-            <p className='text-sm text-gray-600 dark:text-gray-400'>
-              {program.programPeriods.length} periode
             </p>
           </div>
         </div>
@@ -324,7 +307,7 @@ export function ProgramDetailDrawer({
                 Tanggal Mulai
               </h4>
               <p className='text-sm text-gray-600 dark:text-gray-400'>
-                {formatDate(latestPeriod.startDate)}
+                {formatDateTime(latestPeriod.startDate)}
               </p>
             </div>
             <div>
@@ -332,7 +315,7 @@ export function ProgramDetailDrawer({
                 Tanggal Selesai
               </h4>
               <p className='text-sm text-gray-600 dark:text-gray-400'>
-                {formatDate(latestPeriod.endDate)}
+                {formatDateTime(latestPeriod.endDate)}
               </p>
             </div>
           </div>
@@ -343,103 +326,11 @@ export function ProgramDetailDrawer({
             Dibuat
           </h4>
           <p className='text-sm text-gray-600 dark:text-gray-400'>
-            {formatDate(program.createdAt)}
+            {getCreatorDisplayName(program)} |{' '}
+            {formatDateTime(program.createdAt)}
           </p>
         </div>
       </div>
-
-      {/* Program Periods */}
-      {program.programPeriods.length > 0 && (
-        <div>
-          <h3 className='font-semibold text-gray-900 dark:text-white mb-3'>
-            Periode Program
-          </h3>
-          <div className='space-y-3'>
-            {program.programType === 'one_time' &&
-              // One-time program: display period as current
-              program.programPeriods.map(
-                (period: Program['programPeriods'][0]) => (
-                  <div
-                    key={period.id}
-                    className='border-l-2 border-green-500 pl-4'
-                  >
-                    <div className='flex justify-between items-start mb-1'>
-                      <h4 className='font-medium text-gray-900 dark:text-white text-sm'>
-                        Periode Program
-                      </h4>
-                      <span className='text-xs text-gray-500 dark:text-gray-400'>
-                        {formatCurrency(Number(period.currentAmount))}
-                      </span>
-                    </div>
-                    <p className='text-sm text-gray-600 dark:text-gray-400'>
-                      {formatDate(period.startDate)} -{' '}
-                      {formatDate(period.endDate)}
-                    </p>
-                  </div>
-                )
-              )}
-
-            {program.programType === 'selected_date' &&
-              // Selected date program: display all selected dates
-              program.programPeriods.map(
-                (period: Program['programPeriods'][0], index: number) => (
-                  <div
-                    key={period.id}
-                    className='border-l-2 border-blue-500 pl-4'
-                  >
-                    <div className='flex justify-between items-start mb-1'>
-                      <h4 className='font-medium text-gray-900 dark:text-white text-sm'>
-                        Periode {index + 1}
-                      </h4>
-                      <span className='text-xs text-gray-500 dark:text-gray-400'>
-                        {formatCurrency(Number(period.currentAmount))}
-                      </span>
-                    </div>
-                    <p className='text-sm text-gray-600 dark:text-gray-400'>
-                      {formatDate(period.startDate)} -{' '}
-                      {formatDate(period.endDate)}
-                    </p>
-                  </div>
-                )
-              )}
-
-            {program.programType === 'multiple' &&
-              // Recurring program: display descriptive text about schedule
-              program.programPeriods.map(
-                (period: Program['programPeriods'][0]) => (
-                  <div
-                    key={period.id}
-                    className='border-l-2 border-purple-500 pl-4'
-                  >
-                    <div className='flex justify-between items-start mb-1'>
-                      <h4 className='font-medium text-gray-900 dark:text-white text-sm'>
-                        Penjadwalan
-                      </h4>
-                      <span className='text-xs text-gray-500 dark:text-gray-400'>
-                        {formatCurrency(Number(period.currentAmount))}
-                      </span>
-                    </div>
-                    <div className='space-y-2'>
-                      <p className='text-sm text-gray-600 dark:text-gray-400'>
-                        {formatRecurringSchedule(period)}
-                      </p>
-                      {period.nextActivationDate && (
-                        <p className='text-xs text-gray-500 dark:text-gray-400'>
-                          Aktivasi berikutnya:{' '}
-                          {formatDate(period.nextActivationDate)}
-                        </p>
-                      )}
-                      <p className='text-xs text-gray-500 dark:text-gray-400'>
-                        Periode saat ini: {formatDate(period.startDate)} -{' '}
-                        {formatDate(period.endDate)}
-                      </p>
-                    </div>
-                  </div>
-                )
-              )}
-          </div>
-        </div>
-      )}
 
       {/* Delete Button - Only show if user is the creator */}
       {session?.user?.id === program?.createdBy && (

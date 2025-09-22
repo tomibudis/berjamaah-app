@@ -184,6 +184,15 @@ export const programRouter = router({
               },
               take: 10, // Limit recent donations
             },
+            createdByUser: {
+              select: {
+                id: true,
+                name: true,
+                fullName: true,
+                firstName: true,
+                lastName: true,
+              },
+            },
             _count: {
               select: {
                 donations: true,
@@ -230,7 +239,6 @@ export const programRouter = router({
             ...programData,
             targetAmount: programData.targetAmount,
             createdBy: ctx.session.user.id,
-            status: 'draft',
             ...(initialPeriod
               ? {
                   programPeriods: {

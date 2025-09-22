@@ -43,6 +43,7 @@ model User {
   verifiedDonations Donation[] @relation("VerifiedByAdmin")
   approvedPrograms  Program[]  @relation("ApprovedPrograms")
   rejectedPrograms  Program[]  @relation("RejectedPrograms")
+  createdPrograms   Program[]  @relation("CreatedPrograms")
 
   @@map("user")
   @@index([status, createdAt])
@@ -156,6 +157,7 @@ model Program {
   rejectionReason String?         @map("rejection_reason")
   donations       Donation[]
   programPeriods  ProgramPeriod[]
+  createdByUser   User?           @relation("CreatedPrograms", fields: [createdBy], references: [id])
   approvedByUser  User?           @relation("ApprovedPrograms", fields: [approvedBy], references: [id])
   rejectedByUser  User?           @relation("RejectedPrograms", fields: [rejectedBy], references: [id])
 
