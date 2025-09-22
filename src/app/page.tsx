@@ -3,9 +3,20 @@
 import { ProgramCard } from '@/features/donation/program-card';
 import { useSession } from 'next-auth/react';
 import BottomNavigationUser from '@/components/layout/bottom-navigation-user';
+import { useCallback } from 'react';
+import { useTRPCClient, queryClient } from '@/utils/trpc';
+import PullToRefresh from '@/components/shared/pull-to-refresh';
+import { ListCard, ListCardContent } from '@/components/shared/list-card';
+import { useInfiniteQuery } from '@tanstack/react-query';
 
 export default function Home() {
   const { data: session, status } = useSession();
+  const trpcClient = useTRPCClient();
+
+  type ProgramCardModel = Parameters<typeof ProgramCard>[0]['program'];
+
+  const limit = 10;
+  // sentinel handled in ListCardContent
 
   const handleDonationSubmit = (programId: string, amount: string) => {
     // TODO: Implement actual donation submission
@@ -15,79 +26,136 @@ export default function Home() {
     });
   };
 
-  // Mock programs data
-  const programs = [
-    {
-      id: '1',
-      title: 'Bantu Pendidikan Anak',
-      description:
-        'Program beasiswa untuk anak kurang mampu. Donasi Anda membantu biaya buku, seragam, dan uang sekolah.',
-      target: 50000000,
-      collected: 26500000,
-      progress: 53,
-      period: 'Sep-Nov 2025',
-      category: 'Pendidikan',
-      donorCount: 156,
-      endDate: '2025-11-30',
-      status: 'active',
+  // Map API program to ProgramCard props
+  const mapToProgramCardModel = useCallback(
+    (p: {
+      id: string;
+      title: string;
+      description: string;
+      targetAmount: number | string | null;
+      bannerImage?: string | null;
+      category?: string | null;
+      status?: string | null;
+      programPeriods?: Array<{
+        id: string;
+        startDate: string | Date;
+        endDate: string | Date;
+        currentAmount?: number | string | null;
+        cycleNumber?: number | null;
+      }>;
+      _count?: { donations?: number };
+    }): ProgramCardModel => {
+      const latestPeriod =
+        Array.isArray(p.programPeriods) && p.programPeriods.length > 0
+          ? p.programPeriods[0]
+          : null;
+      const targetAmount = Number(p.targetAmount || 0);
+      const collected = Number(latestPeriod?.currentAmount || 0);
+      const progress =
+        targetAmount > 0
+          ? Math.min(100, Math.round((collected / targetAmount) * 100))
+          : 0;
+      return {
+        id: p.id,
+        title: p.title,
+        description: p.description,
+        target: targetAmount,
+        collected,
+        progress,
+        period: latestPeriod
+          ? `${new Date(latestPeriod.startDate).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })} - ${new Date(latestPeriod.endDate).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}`
+          : '-',
+        category: p.category || 'Lainnya',
+        donorCount: Number(p._count?.donations ?? 0),
+        endDate: latestPeriod
+          ? new Date(latestPeriod.endDate).toISOString()
+          : new Date().toISOString(),
+        status: p.status || 'active',
+        bannerImage: p.bannerImage ?? undefined,
+      } satisfies ProgramCardModel;
     },
-    {
-      id: '2',
-      title: 'Bantuan Makanan Lansia',
-      description:
-        'Program donasi untuk menyediakan makanan bergizi bagi lansia yang membutuhkan di panti jompo.',
-      target: 30000000,
-      collected: 12000000,
-      progress: 40,
-      period: 'Okt-Des 2025',
-      category: 'Kesehatan',
-      donorCount: 89,
-      endDate: '2025-12-15',
-      status: 'active',
+    []
+  );
+
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    refetch,
+  } = useInfiniteQuery({
+    queryKey: ['programs', 'active', limit],
+    initialPageParam: 0,
+    queryFn: async ({ pageParam }) => {
+      return trpcClient.program.getAll.query({
+        status: 'active',
+        limit,
+        offset: typeof pageParam === 'number' ? pageParam : 0,
+      });
     },
-    {
-      id: '3',
-      title: 'Bantuan Korban Bencana',
-      description:
-        'Program donasi untuk membantu korban bencana alam dengan kebutuhan dasar seperti makanan dan pakaian.',
-      target: 100000000,
-      collected: 35000000,
-      progress: 35,
-      period: 'Nov 2025 - Jan 2026',
-      category: 'Bencana',
-      donorCount: 234,
-      endDate: '2026-01-31',
-      status: 'active',
+    getNextPageParam: (lastPage, allPages) => {
+      if (!lastPage?.hasMore) return undefined;
+      const loaded = allPages.reduce(
+        (sum, p) => sum + (p?.programs?.length ?? 0),
+        0
+      );
+      return loaded;
     },
-  ];
+  });
+
+  const items: ProgramCardModel[] = (
+    data?.pages.flatMap(p => p?.programs ?? []) ?? []
+  ).map(mapToProgramCardModel);
+
+  // IntersectionObserver handled inside ListCardContent now
+
+  const handleRefresh = useCallback(async () => {
+    await queryClient.invalidateQueries({
+      queryKey: ['programs', 'active', limit],
+    });
+    await refetch();
+  }, [refetch, limit]);
 
   return (
     <div>
       <div
         className={`${session && status === 'authenticated' ? 'pb-20' : ''}`}
       >
-        <div className='space-y-6'>
-          {/* Daftar Program Aktif Section */}
-          <div>
-            <h2 className='text-lg font-semibold text-gray-900 dark:text-white mb-2'>
-              Daftar Program Aktif
-            </h2>
-            <p className='text-sm text-gray-600 dark:text-gray-400 mb-4'>
-              Pilih program yang diminati lalu lakukan donasi.
-            </p>
-
-            {/* Program Cards */}
-            <div className='space-y-4'>
-              {programs.map(program => (
-                <ProgramCard
-                  key={program.id}
-                  program={program}
-                  onDonationSubmit={handleDonationSubmit}
-                />
-              ))}
-            </div>
+        <PullToRefresh onRefreshAction={handleRefresh}>
+          <div className='space-y-6'>
+            {/* Daftar Program Aktif Section */}
+            <ListCard
+              onLoadMore={() => {
+                if (hasNextPage && !isFetchingNextPage) {
+                  fetchNextPage();
+                }
+              }}
+            >
+              <ListCardContent>
+                <div className='space-y-4'>
+                  {items.map(program => (
+                    <ProgramCard
+                      key={program.id}
+                      program={program}
+                      onDonationSubmit={handleDonationSubmit}
+                    />
+                  ))}
+                  {isLoading && (
+                    <div className='text-center text-sm text-gray-500 py-4'>
+                      Memuat…
+                    </div>
+                  )}
+                  {!isLoading && items.length === 0 && (
+                    <div className='text-center text-sm text-gray-500 py-8'>
+                      Belum ada program aktif.
+                    </div>
+                  )}
+                </div>
+              </ListCardContent>
+            </ListCard>
           </div>
-        </div>
+        </PullToRefresh>
       </div>
 
       {/* Bottom Navigation - Only show if user is logged in */}

@@ -10,7 +10,7 @@ export default function Header() {
   const isAdminRoute = pathname.startsWith('/admin');
 
   return (
-    <header className='bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50'>
+    <header className='bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 fixed w-full top-0 z-50'>
       <div className='mx-auto max-w-sm px-4 py-3 sm:max-w-md md:max-w-lg lg:max-w-md xl:max-w-lg'>
         <div className='flex items-center justify-between'>
           {/* Left side - Logo with appropriate icon */}
