@@ -219,6 +219,12 @@ export function ProgramDetailDrawer({
   // Get the latest period for date information
   const latestPeriod = program.programPeriods[0];
 
+  const displayPeriodDate = (date: string | null) => {
+    if (date !== '1970-01-01T00:00:00.000Z' && date !== null)
+      return formatDateTime(date);
+    return '~';
+  };
+
   return (
     <div className='space-y-6'>
       {/* Header */}
@@ -330,7 +336,7 @@ export function ProgramDetailDrawer({
                 Tanggal Mulai
               </h4>
               <p className='text-sm text-gray-600 dark:text-gray-400'>
-                {formatDateTime(latestPeriod.startDate)}
+                {displayPeriodDate(latestPeriod.startDate)}
               </p>
             </div>
             <div>
@@ -338,7 +344,7 @@ export function ProgramDetailDrawer({
                 Tanggal Selesai
               </h4>
               <p className='text-sm text-gray-600 dark:text-gray-400'>
-                {formatDateTime(latestPeriod.endDate)}
+                {displayPeriodDate(latestPeriod.endDate)}
               </p>
             </div>
           </div>

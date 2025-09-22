@@ -8,7 +8,7 @@ const createProgramSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().min(1, 'Description is required'),
   targetAmount: z.number().positive('Target amount must be positive'),
-  bannerImage: z.string().url().optional(),
+  bannerImage: z.string().url().optional().or(z.literal('')),
   category: z.string().optional(),
   status: z
     .enum(['draft', 'pending', 'active', 'paused', 'ended'])
@@ -20,8 +20,8 @@ const createProgramSchema = z.object({
   details: z.string().optional(),
   initialPeriod: z
     .object({
-      startDate: z.coerce.date(),
-      endDate: z.coerce.date(),
+      startDate: z.coerce.date().optional(),
+      endDate: z.coerce.date().optional(),
       cycleNumber: z.number().int().positive().optional(),
       recurringFrequency: z
         .enum(['weekly', 'monthly', 'quarterly', 'yearly'])
@@ -39,7 +39,7 @@ const updateProgramSchema = z.object({
   title: z.string().min(1).optional(),
   description: z.string().min(1).optional(),
   targetAmount: z.number().positive().optional(),
-  bannerImage: z.string().url().optional(),
+  bannerImage: z.string().url().optional().or(z.literal('')),
   category: z.string().optional(),
   status: z.enum(['draft', 'pending', 'active', 'paused', 'ended']).optional(),
   programType: z.enum(['one_time', 'multiple', 'selected_date']).optional(),
@@ -227,7 +227,16 @@ export const programRouter = router({
         const { initialPeriod, ...programData } = input;
 
         // Validate initial period date range when provided
-        if (initialPeriod && initialPeriod.endDate < initialPeriod.startDate) {
+        if (
+          initialPeriod &&
+          initialPeriod.startDate &&
+          initialPeriod.endDate &&
+          initialPeriod.endDate instanceof Date &&
+          initialPeriod.startDate instanceof Date &&
+          initialPeriod.endDate.getTime() !==
+            new Date('1970-01-01T00:00:00.000Z').getTime() &&
+          initialPeriod.endDate < initialPeriod.startDate
+        ) {
           throw new TRPCError({
             code: 'BAD_REQUEST',
             message: 'End date must be after or equal to start date',
@@ -239,12 +248,13 @@ export const programRouter = router({
             ...programData,
             targetAmount: programData.targetAmount,
             createdBy: ctx.session.user.id,
-            ...(initialPeriod
+            ...(initialPeriod &&
+            (initialPeriod.startDate || initialPeriod.endDate)
               ? {
                   programPeriods: {
                     create: {
-                      startDate: initialPeriod.startDate,
-                      endDate: initialPeriod.endDate,
+                      startDate: initialPeriod.startDate || null,
+                      endDate: initialPeriod.endDate || null,
                       cycleNumber: initialPeriod.cycleNumber,
                       recurringFrequency: initialPeriod.recurringFrequency,
                       recurringDay: initialPeriod.recurringDay,
@@ -268,8 +278,8 @@ export const programRouter = router({
         });
 
         return program;
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
+        console.log('error adsf', error);
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: 'Failed to create program',
@@ -584,7 +594,7 @@ export const programRouter = router({
         title: z.string().min(1, 'Title is required'),
         description: z.string().min(1, 'Description is required'),
         targetAmount: z.number().positive('Target amount must be positive'),
-        bannerImage: z.string().url().optional(),
+        bannerImage: z.string().url().optional().or(z.literal('')),
         category: z.string().optional(),
         contact: z.string().optional(),
         details: z.string().optional(),
@@ -646,7 +656,7 @@ export const programRouter = router({
         title: z.string().min(1, 'Title is required'),
         description: z.string().min(1, 'Description is required'),
         targetAmount: z.number().positive('Target amount must be positive'),
-        bannerImage: z.string().url().optional(),
+        bannerImage: z.string().url().optional().or(z.literal('')),
         category: z.string().optional(),
         contact: z.string().optional(),
         details: z.string().optional(),
@@ -715,7 +725,7 @@ export const programRouter = router({
         title: z.string().min(1, 'Title is required'),
         description: z.string().min(1, 'Description is required'),
         targetAmount: z.number().positive('Target amount must be positive'),
-        bannerImage: z.string().url().optional(),
+        bannerImage: z.string().url().optional().or(z.literal('')),
         category: z.string().optional(),
         contact: z.string().optional(),
         details: z.string().optional(),

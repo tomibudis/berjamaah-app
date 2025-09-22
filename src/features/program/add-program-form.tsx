@@ -52,7 +52,11 @@ const addProgramSchema = z
       .min(1, { message: 'Kategori program harus diisi.' })
       .min(2, { message: 'Kategori program minimal 2 karakter.' })
       .max(50, { message: 'Kategori program maksimal 50 karakter.' }),
-    bannerImage: z.string().optional(),
+    bannerImage: z
+      .string()
+      .url('Format URL tidak valid')
+      .optional()
+      .or(z.literal('')),
     // Optional date and time fields
     startDate: z.string().optional(),
     startTime: z.string().optional(),
@@ -112,7 +116,10 @@ export default function AddProgramForm() {
         description: formValues.description,
         targetAmount: Number(formValues.targetAmount),
         category: formValues.category,
-        bannerImage: formValues.bannerImage,
+        bannerImage:
+          formValues.bannerImage && formValues.bannerImage.trim() !== ''
+            ? formValues.bannerImage
+            : undefined,
       };
 
       // Determine status based on date fields
@@ -149,17 +156,17 @@ export default function AddProgramForm() {
                   ? new Date(
                       `${formValues.startDate}T${formValues.startTime || '00:00'}`
                     )
-                  : new Date(),
+                  : null,
                 endDate: endDate
                   ? new Date(
                       `${formValues.endDate}T${formValues.endTime || '23:59'}`
                     )
-                  : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+                  : null,
                 cycleNumber: 1,
               }
             : {
-                startDate: new Date(),
-                endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+                startDate: null,
+                endDate: null,
                 cycleNumber: 1,
               },
       });
