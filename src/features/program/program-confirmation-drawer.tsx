@@ -30,8 +30,8 @@ interface Program {
   rejectionReason?: string | null;
   programPeriods: Array<{
     id: string;
-    startDate: string;
-    endDate: string;
+    startDate: string | null;
+    endDate: string | null;
     currentAmount: string;
     cycleNumber?: number | null;
     recurringFrequency?: string | null;
@@ -116,7 +116,8 @@ export function ProgramConfirmationDrawer({
     }).format(amount);
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return '-';
     return new Date(dateString).toLocaleDateString('id-ID', {
       year: 'numeric',
       month: 'long',
@@ -216,8 +217,7 @@ export function ProgramConfirmationDrawer({
 
   // Calculate current amount from all periods
   const currentAmount = program.programPeriods.reduce(
-    (sum: number, period: Program['programPeriods'][0]) =>
-      sum + Number(period.currentAmount),
+    (sum: number, period) => sum + Number(period.currentAmount),
     0
   );
 

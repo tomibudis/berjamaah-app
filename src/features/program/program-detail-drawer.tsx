@@ -42,8 +42,8 @@ interface Program {
   } | null;
   programPeriods: Array<{
     id: string;
-    startDate: string;
-    endDate: string;
+    startDate: string | null;
+    endDate: string | null;
     currentAmount: string; // Changed from number to string to match database
     cycleNumber?: number | null;
     recurringFrequency?: string | null;
@@ -125,7 +125,8 @@ export function ProgramDetailDrawer({
     }).format(amount);
   };
 
-  const formatDateTime = (dateString: string) => {
+  const formatDateTime = (dateString: string | null) => {
+    if (!dateString) return '-';
     return new Date(dateString).toLocaleString('id-ID', {
       year: 'numeric',
       month: 'long',
@@ -211,7 +212,7 @@ export function ProgramDetailDrawer({
 
   // Calculate current amount from all periods
   const currentAmount = program.programPeriods.reduce(
-    (sum: number, period: Program['programPeriods'][0]) =>
+    (sum: number, period: Program['programPeriods'][number]) =>
       sum + Number(period.currentAmount),
     0
   );

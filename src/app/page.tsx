@@ -38,8 +38,8 @@ export default function Home() {
       status?: string | null;
       programPeriods?: Array<{
         id: string;
-        startDate: string | Date;
-        endDate: string | Date;
+        startDate: string | Date | null;
+        endDate: string | Date | null;
         currentAmount?: number | string | null;
         cycleNumber?: number | null;
       }>;
@@ -55,6 +55,11 @@ export default function Home() {
         targetAmount > 0
           ? Math.min(100, Math.round((collected / targetAmount) * 100))
           : 0;
+      const start = latestPeriod?.startDate
+        ? new Date(latestPeriod.startDate)
+        : null;
+      const end = latestPeriod?.endDate ? new Date(latestPeriod.endDate) : null;
+
       return {
         id: p.id,
         title: p.title,
@@ -62,14 +67,13 @@ export default function Home() {
         target: targetAmount,
         collected,
         progress,
-        period: latestPeriod
-          ? `${new Date(latestPeriod.startDate).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })} - ${new Date(latestPeriod.endDate).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}`
-          : '-',
+        period:
+          start && end
+            ? `${start.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })} - ${end.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}`
+            : '-',
         category: p.category || 'Lainnya',
         donorCount: Number(p._count?.donations ?? 0),
-        endDate: latestPeriod
-          ? new Date(latestPeriod.endDate).toISOString()
-          : new Date().toISOString(),
+        endDate: end ? end.toISOString() : new Date().toISOString(),
         status: p.status || 'active',
         bannerImage: p.bannerImage ?? undefined,
       } satisfies ProgramCardModel;

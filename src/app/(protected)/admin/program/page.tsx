@@ -43,8 +43,8 @@ interface Program {
   updatedAt: string;
   programPeriods: Array<{
     id: string;
-    startDate: string;
-    endDate: string;
+    startDate: string | null;
+    endDate: string | null;
     currentAmount: string; // Changed from number to string to match database
     cycleNumber?: number | null;
     recurringFrequency?: 'weekly' | 'monthly' | 'quarterly' | 'yearly' | null;

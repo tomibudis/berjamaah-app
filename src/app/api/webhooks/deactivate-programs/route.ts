@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
 
       // Update the relevant program period
       const expiredPeriod = program.programPeriods.find(
-        period => period.endDate <= currentDate
+        period => period.endDate !== null && period.endDate <= currentDate
       );
 
       if (expiredPeriod) {
