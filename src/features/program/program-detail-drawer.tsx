@@ -25,8 +25,8 @@ interface Program {
   description: string;
   targetAmount: string; // Changed from number to string to match database
   category: string | null;
-  status: 'draft' | 'pending' | 'active' | 'paused' | 'ended';
-  programType: 'one_time' | 'multiple' | 'selected_date';
+  status: string; // Changed to string to match database return type
+  programType: string; // Changed to string to match database return type
   contact?: string | null;
   details?: string | null;
   bannerImage?: string | null;
@@ -51,6 +51,14 @@ interface Program {
     recurringDurationDays?: number | null;
     totalCycles?: number | null;
     nextActivationDate?: string | null;
+  }>;
+  donations: Array<{
+    id: string;
+    amount: string;
+    status: string;
+    createdAt: string;
+    donorName?: string | null;
+    donorEmail?: string | null;
   }>;
   _count: {
     donations: number;
