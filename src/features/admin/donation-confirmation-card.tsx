@@ -328,7 +328,7 @@ export function DonationConfirmationCard({
       <AdminDonationDetailDrawer
         donation={donation as AdminDonationDetail}
         isOpen={isDetailDrawerOpen}
-        onClose={() => setIsDetailDrawerOpen(false)}
+        onCloseAction={() => setIsDetailDrawerOpen(false)}
         onVerify={handleVerifyFromDrawer}
         onReject={handleRejectFromDrawer}
         onConfirm={handleConfirmFromDrawer}

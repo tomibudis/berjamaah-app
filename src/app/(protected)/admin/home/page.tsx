@@ -73,16 +73,14 @@ export default function AdminDashboard() {
   ) {
     return (
       <div className='bg-white dark:bg-gray-900'>
-        <div className='mx-auto max-w-sm px-4 py-6 sm:max-w-md md:max-w-lg lg:max-w-md xl:max-w-lg'>
-          <div className='space-y-6'>
-            <Skeleton className='h-6 w-3/4' />
-            <div className='grid grid-cols-1 gap-4'>
-              {[...Array(4)].map((_, i) => (
-                <Skeleton key={i} className='h-24 w-full' />
-              ))}
-            </div>
-            <Skeleton className='h-64 w-full' />
+        <div className='space-y-6'>
+          <Skeleton className='h-6 w-3/4' />
+          <div className='grid grid-cols-1 gap-4'>
+            {[...Array(4)].map((_, i) => (
+              <Skeleton key={i} className='h-24 w-full' />
+            ))}
           </div>
+          <Skeleton className='h-64 w-full' />
         </div>
       </div>
     );

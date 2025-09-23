@@ -68,7 +68,7 @@ export interface AdminDonationDetail {
 interface AdminDonationDetailDrawerProps {
   donation: AdminDonationDetail | null;
   isOpen: boolean;
-  onClose: () => void;
+  onCloseAction: () => void;
   onVerify?: (donationId: string) => void;
   onReject?: (donationId: string) => void;
   onConfirm?: (donationId: string) => void;
@@ -77,7 +77,7 @@ interface AdminDonationDetailDrawerProps {
 export function AdminDonationDetailDrawer({
   donation,
   isOpen,
-  onClose,
+  onCloseAction,
   onVerify,
   onReject,
   onConfirm,
@@ -157,7 +157,7 @@ export function AdminDonationDetailDrawer({
   };
 
   return (
-    <Drawer open={isOpen} onOpenChange={onClose}>
+    <Drawer open={isOpen} onOpenChange={onCloseAction}>
       <DrawerContent className='max-h-[85vh] flex flex-col'>
         <div className='max-w-2xl mx-auto w-full px-4 flex-1 flex flex-col min-h-0'>
           <DrawerHeader className='pb-4 flex-shrink-0'>

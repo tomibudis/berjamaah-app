@@ -300,7 +300,7 @@ function ProgramPageContent() {
                 <ProgramDetailDrawer
                   programId={selectedProgramId}
                   isOpen={isDrawerOpen}
-                  onClose={handleDrawerClose}
+                  onCloseAction={handleDrawerClose}
                   onDelete={handleProgramDelete}
                 />
               </div>

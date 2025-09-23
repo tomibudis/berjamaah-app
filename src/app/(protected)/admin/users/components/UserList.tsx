@@ -9,7 +9,6 @@ interface UserListProps {
   search?: string;
   status?: 'all' | 'scheduled' | 'pending' | 'active';
   role?: 'all' | 'admin' | 'user';
-  onUserSelect?: (userId: string) => void;
   className?: string;
 }
 
@@ -17,7 +16,6 @@ export function UserList({
   search,
   status = 'all',
   role = 'all',
-  onUserSelect,
   className,
 }: UserListProps) {
   const queryClient = useQueryClient();
@@ -35,7 +33,6 @@ export function UserList({
         search={search}
         status={status}
         role={role}
-        onUserSelect={onUserSelect}
         className={className}
       />
     </PullToRefresh>

@@ -113,10 +113,6 @@ function UsersPageContent() {
             search={queryParams.search}
             status={queryParams.status}
             role={queryParams.role}
-            onUserSelect={userId => {
-              // Handle user selection if needed
-              console.log('Selected user:', userId);
-            }}
           />
         )}
       </div>

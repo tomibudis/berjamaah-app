@@ -65,14 +65,14 @@ interface Program {
 interface ProgramDetailDrawerProps {
   programId: string;
   isOpen: boolean;
-  onClose: () => void;
+  onCloseAction: () => void;
   onDelete?: () => void;
 }
 
 export function ProgramDetailDrawer({
   programId,
   isOpen,
-  onClose,
+  onCloseAction,
   onDelete,
 }: ProgramDetailDrawerProps) {
   const {
@@ -99,7 +99,7 @@ export function ProgramDetailDrawer({
       toast.success('Program berhasil dihapus');
       queryClient.invalidateQueries({ queryKey: ['programs'] });
       setIsDeleteDialogOpen(false);
-      onClose();
+      onCloseAction();
       onDelete?.();
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
