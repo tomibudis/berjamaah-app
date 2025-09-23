@@ -72,7 +72,7 @@ export function DonationHistoryCard({
 
   return (
     <Card
-      className={`border border-gray-200 dark:border-gray-700 shadow-sm bg-gray-50 dark:bg-gray-800 py-0 ${
+      className={`border px-0 border-gray-200 dark:border-gray-700 shadow-sm bg-gray-50 dark:bg-gray-800 py-0 ${
         onViewDetails ? 'cursor-pointer hover:shadow-md transition-shadow' : ''
       }`}
       onClick={() => onViewDetails?.(donation.id)}

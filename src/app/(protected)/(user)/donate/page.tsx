@@ -10,10 +10,29 @@ import {
   DonationHistoryCard,
   type DonationHistoryItem,
 } from '@/features/donation/donation-history-card';
-import {
-  DonationDetailDrawer,
-  type DonationDetail,
-} from '@/features/donation/donation-detail-drawer';
+import { DonationDetailDrawer } from '@/features/donation/donation-detail-drawer';
+import { ListCard, ListCardContent } from '@/components/shared/list-card';
+import { PullToRefresh } from '@/components/shared/pull-to-refresh';
+
+type DonationFromAPI = {
+  id: string;
+  amount: string;
+  status: string;
+  donationReferenceNumber: string;
+  createdAt: string;
+  program: {
+    id: string;
+    title: string;
+    category: string | null;
+    bannerImage: string | null;
+  };
+  programPeriod: {
+    id: string;
+    startDate: string | null;
+    endDate: string | null;
+    cycleNumber: number | null;
+  } | null;
+} & Record<string, unknown>;
 
 export default function DonatePage() {
   const { status } = useSession();
@@ -21,7 +40,52 @@ export default function DonatePage() {
     null
   );
 
-  const donationsQuery = trpc.donation.getUserDonations.useQuery();
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    refetch,
+  } = trpc.donation.getUserDonations.useInfiniteQuery(
+    {
+      limit: 10,
+    },
+    {
+      getNextPageParam: lastPage => lastPage.nextCursor,
+    }
+  );
+
+  const donations =
+    data?.pages.flatMap(page =>
+      page.donations.map((donation: DonationFromAPI) => ({
+        ...donation,
+        amount: Number(donation.amount),
+        status: donation.status as
+          | 'pending_verification'
+          | 'verified'
+          | 'confirmed'
+          | 'rejected',
+        programPeriod: donation.programPeriod
+          ? {
+              ...donation.programPeriod,
+              startDate: donation.programPeriod.startDate || '',
+              endDate: donation.programPeriod.endDate || '',
+            }
+          : {
+              id: 'no-period',
+              startDate: '',
+              endDate: '',
+              cycleNumber: null,
+            },
+      }))
+    ) ?? [];
+
+  // Debug logging
+  console.log('Raw data:', data);
+  console.log('Processed donations:', donations);
+  console.log('isLoading:', isLoading);
+  console.log('donations.length:', donations.length);
 
   const handleViewDetails = (donationId: string) => {
     setSelectedDonationId(donationId);
@@ -31,270 +95,96 @@ export default function DonatePage() {
     setSelectedDonationId(null);
   };
 
+  const handleRefresh = async () => {
+    await refetch();
+  };
+
+  const handleLoadMore = async () => {
+    if (hasNextPage && !isFetchingNextPage) {
+      await fetchNextPage();
+    }
+  };
+
   if (status === 'loading') {
     return (
       <div className='bg-white dark:bg-gray-900'>
-        <div className='mx-auto max-w-sm px-4 py-6 sm:max-w-md md:max-w-lg lg:max-w-md xl:max-w-lg'>
-          <div className='space-y-6'>
-            <Skeleton className='h-6 w-3/4' />
-            <div className='grid grid-cols-1 gap-4'>
-              {[...Array(3)].map((_, i) => (
-                <Skeleton key={i} className='h-32 w-full' />
-              ))}
-            </div>
+        <div className='space-y-6 px-4'>
+          <Skeleton className='h-6 w-3/4' />
+          <div className='grid grid-cols-1 gap-4'>
+            {[...Array(3)].map((_, i) => (
+              <Skeleton key={i} className='h-32 w-full' />
+            ))}
           </div>
         </div>
       </div>
     );
   }
 
-  // Mock data for testing - remove when real data is available
-  const mockDonations: DonationHistoryItem[] = [
-    {
-      id: '1',
-      amount: 500000,
-      status: 'confirmed',
-      donationReferenceNumber: 'REF001',
-      createdAt: '2024-01-20T10:00:00Z',
-      program: {
-        id: '1',
-        title: 'Bantu Pendidikan Anak',
-        category: 'Pendidikan',
-        bannerImage: null,
-      },
-      programPeriod: {
-        id: '1',
-        startDate: '2024-01-01',
-        endDate: '2024-12-31',
-        cycleNumber: 1,
-      },
-    },
-    {
-      id: '2',
-      amount: 300000,
-      status: 'confirmed',
-      donationReferenceNumber: 'REF002',
-      createdAt: '2024-01-18T14:30:00Z',
-      program: {
-        id: '2',
-        title: 'Bantuan Makanan untuk Lansia',
-        category: 'Sosial',
-        bannerImage: null,
-      },
-      programPeriod: {
-        id: '2',
-        startDate: '2024-01-01',
-        endDate: '2024-12-31',
-        cycleNumber: 1,
-      },
-    },
-    {
-      id: '3',
-      amount: 1000000,
-      status: 'confirmed',
-      donationReferenceNumber: 'REF003',
-      createdAt: '2024-01-15T09:15:00Z',
-      program: {
-        id: '3',
-        title: 'Renovasi Masjid',
-        category: 'Infrastruktur',
-        bannerImage: null,
-      },
-      programPeriod: {
-        id: '3',
-        startDate: '2024-01-01',
-        endDate: '2024-12-31',
-        cycleNumber: 1,
-      },
-    },
-  ];
-
-  // Mock detailed donation data for drawer
-  const mockDonationDetails: Record<string, DonationDetail> = {
-    '1': {
-      id: '1',
-      donorName: 'Ahmad Budiman',
-      donorEmail: 'ahmad.budiman@email.com',
-      donorPhone: '+6281234567890',
-      amount: 500000,
-      status: 'confirmed',
-      donationReferenceNumber: 'REF001',
-      bankAccountSender: '1234567890',
-      bankAccountReceiver: '0987654321',
-      transferDate: '2024-01-20T10:00:00Z',
-      transferReference: 'TRF20240120001',
-      adminNotes:
-        'Donasi telah diverifikasi dan dikonfirmasi. Terima kasih atas partisipasinya.',
-      verificationAttempts: 1,
-      verifiedAt: '2024-01-20T11:30:00Z',
-      createdAt: '2024-01-20T10:00:00Z',
-      program: {
-        id: '1',
-        title: 'Bantu Pendidikan Anak',
-        description:
-          'Program untuk membantu pendidikan anak-anak yang kurang mampu dengan menyediakan beasiswa, buku, dan perlengkapan sekolah.',
-        category: 'Pendidikan',
-        bannerImage: null,
-        targetAmount: 100000000,
-      },
-      programPeriod: {
-        id: '1',
-        startDate: '2024-01-01',
-        endDate: '2024-12-31',
-        cycleNumber: 1,
-        currentAmount: 75000000,
-      },
-      donationProofImage:
-        'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop',
-      verifiedByAdmin: {
-        id: 'admin1',
-        name: 'Siti Nurhaliza',
-        email: 'siti.nurhaliza@berjamaah.org',
-      },
-    },
-    '2': {
-      id: '2',
-      donorName: 'Ahmad Budiman',
-      donorEmail: 'ahmad.budiman@email.com',
-      donorPhone: '+6281234567890',
-      amount: 300000,
-      status: 'confirmed',
-      donationReferenceNumber: 'REF002',
-      bankAccountSender: '1234567890',
-      bankAccountReceiver: '0987654321',
-      transferDate: '2024-01-18T14:30:00Z',
-      transferReference: 'TRF20240118002',
-      adminNotes: null,
-      verificationAttempts: 1,
-      verifiedAt: '2024-01-18T15:45:00Z',
-      createdAt: '2024-01-18T14:30:00Z',
-      program: {
-        id: '2',
-        title: 'Bantuan Makanan untuk Lansia',
-        description:
-          'Program pemberian bantuan makanan bergizi untuk lansia yang membutuhkan di berbagai panti jompo dan komunitas.',
-        category: 'Sosial',
-        bannerImage: null,
-        targetAmount: 50000000,
-      },
-      programPeriod: {
-        id: '2',
-        startDate: '2024-01-01',
-        endDate: '2024-12-31',
-        cycleNumber: 1,
-        currentAmount: 32000000,
-      },
-      donationProofImage:
-        'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop',
-      verifiedByAdmin: {
-        id: 'admin2',
-        name: 'Budi Santoso',
-        email: 'budi.santoso@berjamaah.org',
-      },
-    },
-    '3': {
-      id: '3',
-      donorName: 'Ahmad Budiman',
-      donorEmail: 'ahmad.budiman@email.com',
-      donorPhone: '+6281234567890',
-      amount: 1000000,
-      status: 'confirmed',
-      donationReferenceNumber: 'REF003',
-      bankAccountSender: '1234567890',
-      bankAccountReceiver: '0987654321',
-      transferDate: '2024-01-15T09:15:00Z',
-      transferReference: 'TRF20240115003',
-      adminNotes:
-        'Donasi besar untuk renovasi masjid. Proses verifikasi membutuhkan waktu lebih lama karena nominal yang besar.',
-      verificationAttempts: 2,
-      verifiedAt: '2024-01-15T16:20:00Z',
-      createdAt: '2024-01-15T09:15:00Z',
-      program: {
-        id: '3',
-        title: 'Renovasi Masjid',
-        description:
-          'Program renovasi dan perbaikan masjid-masjid yang membutuhkan perbaikan infrastruktur, penambahan fasilitas, dan pemeliharaan.',
-        category: 'Infrastruktur',
-        bannerImage: null,
-        targetAmount: 200000000,
-      },
-      programPeriod: {
-        id: '3',
-        startDate: '2024-01-01',
-        endDate: '2024-12-31',
-        cycleNumber: 1,
-        currentAmount: 150000000,
-      },
-      donationProofImage:
-        'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop',
-      verifiedByAdmin: {
-        id: 'admin1',
-        name: 'Siti Nurhaliza',
-        email: 'siti.nurhaliza@berjamaah.org',
-      },
-    },
-  };
-
-  const donations = mockDonations;
-
   return (
-    <div>
-      <div className='space-y-6'>
-        {/* Header */}
-        <div>
-          <h1 className='text-lg font-semibold text-gray-900 dark:text-white mb-2'>
-            Riwayat Donasi
-          </h1>
-          <p className='text-sm text-gray-600 dark:text-gray-400'>
-            Lihat riwayat donasi Anda dan status verifikasinya.
-          </p>
+    <PullToRefresh onRefreshAction={handleRefresh}>
+      <div>
+        <div className='space-y-6 px-4'>
+          {/* Header */}
+          <div>
+            <h1 className='text-lg font-semibold text-gray-900 dark:text-white mb-2'>
+              Riwayat Donasi
+            </h1>
+            <p className='text-sm text-gray-600 dark:text-gray-400'>
+              Lihat riwayat donasi Anda dan status verifikasinya.
+            </p>
+          </div>
+
+          {/* Donation History List */}
+          {isLoading ? (
+            <div className='space-y-4'>
+              {[...Array(3)].map((_, i) => (
+                <Skeleton key={i} className='h-32 w-full' />
+              ))}
+            </div>
+          ) : donations.length === 0 ? (
+            <Card className='border border-gray-200 dark:border-gray-700 shadow-sm py-0'>
+              <CardContent className='p-8 text-center'>
+                <History className='w-12 h-12 text-gray-400 mx-auto mb-4' />
+                <h3 className='text-lg font-semibold text-gray-900 dark:text-white mb-2'>
+                  Belum Ada Donasi
+                </h3>
+                <p className='text-sm text-gray-600 dark:text-gray-400 mb-4'>
+                  Anda belum melakukan donasi apapun. Mulai donasi pertama Anda
+                  sekarang!
+                </p>
+                <Button className='bg-green-500 hover:bg-green-600 text-white'>
+                  <Plus className='w-4 h-4 mr-2' />
+                  Mulai Donasi
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <ListCard onLoadMore={hasNextPage ? handleLoadMore : undefined}>
+              <ListCardContent className='px-0'>
+                {donations.map(donation => (
+                  <DonationHistoryCard
+                    key={donation.id}
+                    donation={donation as DonationHistoryItem}
+                    onViewDetails={handleViewDetails}
+                  />
+                ))}
+                {isFetchingNextPage && (
+                  <div className='flex justify-center py-4'>
+                    <Skeleton className='h-32 w-full' />
+                  </div>
+                )}
+              </ListCardContent>
+            </ListCard>
+          )}
         </div>
 
-        {/* Donation History List */}
-        {donationsQuery.isLoading ? (
-          <div className='space-y-4'>
-            {[...Array(3)].map((_, i) => (
-              <Skeleton key={i} className='h-32 w-full' />
-            ))}
-          </div>
-        ) : donations.length === 0 ? (
-          <Card className='border border-gray-200 dark:border-gray-700 shadow-sm py-0'>
-            <CardContent className='p-8 text-center'>
-              <History className='w-12 h-12 text-gray-400 mx-auto mb-4' />
-              <h3 className='text-lg font-semibold text-gray-900 dark:text-white mb-2'>
-                Belum Ada Donasi
-              </h3>
-              <p className='text-sm text-gray-600 dark:text-gray-400 mb-4'>
-                Anda belum melakukan donasi apapun. Mulai donasi pertama Anda
-                sekarang!
-              </p>
-              <Button className='bg-green-500 hover:bg-green-600 text-white'>
-                <Plus className='w-4 h-4 mr-2' />
-                Mulai Donasi
-              </Button>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className='space-y-4'>
-            {donations.map((donation: DonationHistoryItem) => (
-              <DonationHistoryCard
-                key={donation.id}
-                donation={donation}
-                onViewDetails={handleViewDetails}
-              />
-            ))}
-          </div>
-        )}
+        {/* Donation Detail Drawer */}
+        <DonationDetailDrawer
+          donationId={selectedDonationId}
+          isOpen={!!selectedDonationId}
+          onCloseAction={handleCloseDrawer}
+        />
       </div>
-
-      {/* Donation Detail Drawer */}
-      <DonationDetailDrawer
-        donation={
-          selectedDonationId ? mockDonationDetails[selectedDonationId] : null
-        }
-        isOpen={!!selectedDonationId}
-        onClose={handleCloseDrawer}
-      />
-    </div>
+    </PullToRefresh>
   );
 }

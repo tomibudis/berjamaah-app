@@ -13,14 +13,12 @@ export default function ProfilePage() {
   if (status === 'loading') {
     return (
       <div className='bg-white dark:bg-gray-900'>
-        <div className='mx-auto max-w-sm px-4 py-6 sm:max-w-md md:max-w-lg lg:max-w-md xl:max-w-lg'>
-          <div className='space-y-6'>
-            <Skeleton className='h-32 w-full' />
-            <div className='space-y-4'>
-              {[...Array(4)].map((_, i) => (
-                <Skeleton key={i} className='h-16 w-full' />
-              ))}
-            </div>
+        <div className='space-y-6'>
+          <Skeleton className='h-32 w-full' />
+          <div className='space-y-4'>
+            {[...Array(4)].map((_, i) => (
+              <Skeleton key={i} className='h-16 w-full' />
+            ))}
           </div>
         </div>
       </div>
@@ -41,7 +39,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className='space-y-6'>
+    <div className='space-y-6 px-4'>
       {/* Profile Header */}
       <Card className='border border-gray-200 dark:border-gray-700 shadow-sm py-0'>
         <CardContent className='p-6'>

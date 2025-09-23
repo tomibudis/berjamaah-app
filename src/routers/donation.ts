@@ -4,46 +4,72 @@ import prisma from '../../prisma/index';
 import { protectedProcedure, publicProcedure, router } from '../lib/trpc';
 
 export const donationRouter = router({
-  getUserDonations: protectedProcedure.query(async ({ ctx }) => {
-    try {
-      const donations = await prisma.donation.findMany({
-        where: {
-          userId: ctx.session.user.id,
-        },
-        include: {
-          program: {
-            select: {
-              id: true,
-              title: true,
-              description: true,
-              category: true,
-              bannerImage: true,
-            },
-          },
-          programPeriod: {
-            select: {
-              id: true,
-              startDate: true,
-              endDate: true,
-              cycleNumber: true,
-            },
-          },
-          // removed donationProofs in favor of single image string
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-      });
+  getUserDonations: protectedProcedure
+    .input(
+      z.object({
+        limit: z.number().int().positive().optional().default(10),
+        cursor: z.string().optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const { limit, cursor } = input;
 
-      return donations;
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'Failed to fetch user donations',
-      });
-    }
-  }),
+        const donations = await prisma.donation.findMany({
+          where: {
+            userId: ctx.session.user.id,
+          },
+          include: {
+            program: {
+              select: {
+                id: true,
+                title: true,
+                description: true,
+                category: true,
+                bannerImage: true,
+              },
+            },
+            programPeriod: {
+              select: {
+                id: true,
+                startDate: true,
+                endDate: true,
+                cycleNumber: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+          take: limit + 1,
+          ...(cursor && {
+            cursor: {
+              id: cursor,
+            },
+            skip: 1,
+          }),
+        });
+
+        let nextCursor: string | undefined = undefined;
+        if (donations.length > limit) {
+          const nextItem = donations.pop();
+          nextCursor = nextItem!.id;
+        }
+
+        console.log('Router - Found donations:', donations.length);
+        console.log('Router - First donation:', donations[0]);
+
+        return {
+          donations,
+          nextCursor,
+        };
+      } catch {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to fetch user donations',
+        });
+      }
+    }),
 
   getDonationById: protectedProcedure
     .input(z.object({ id: z.string() }))
