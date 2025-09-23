@@ -21,12 +21,13 @@ export function UsersHeader({
   return (
     <div className='flex flex-col gap-4'>
       <div className='flex items-center justify-between'>
+        {/* Header */}
         <div>
-          <h1 className='text-2xl font-bold text-gray-900 dark:text-white'>
-            Users Management
+          <h1 className='text-lg font-semibold text-gray-900 dark:text-white'>
+            Daftar Pengguna
           </h1>
           <p className='text-sm text-gray-600 dark:text-gray-400'>
-            Manage user accounts and permissions
+            Kelola akun dan izin pengguna
           </p>
         </div>
         <Button
@@ -34,7 +35,7 @@ export function UsersHeader({
           className='flex items-center gap-2'
         >
           <Plus className='w-4 h-4' />
-          Create User
+          Tambah Pengguna
         </Button>
       </div>
 
@@ -57,7 +58,7 @@ export function UsersHeader({
               </svg>
             </div>
             <div className='ml-4'>
-              <p className='text-sm font-medium text-gray-600 dark:text-gray-400'>
+              <p className='text-xs font-medium text-gray-600 dark:text-gray-400'>
                 Total Users
               </p>
               <p className='text-2xl font-bold text-gray-900 dark:text-white'>
@@ -85,7 +86,7 @@ export function UsersHeader({
               </svg>
             </div>
             <div className='ml-4'>
-              <p className='text-sm font-medium text-gray-600 dark:text-gray-400'>
+              <p className='text-xs font-medium text-gray-600 dark:text-gray-400'>
                 Active Users
               </p>
               <p className='text-2xl font-bold text-gray-900 dark:text-white'>
@@ -113,7 +114,7 @@ export function UsersHeader({
               </svg>
             </div>
             <div className='ml-4'>
-              <p className='text-sm font-medium text-gray-600 dark:text-gray-400'>
+              <p className='text-xs font-medium text-gray-600 dark:text-gray-400'>
                 Pending Users
               </p>
               <p className='text-2xl font-bold text-gray-900 dark:text-white'>
@@ -141,7 +142,7 @@ export function UsersHeader({
               </svg>
             </div>
             <div className='ml-4'>
-              <p className='text-sm font-medium text-gray-600 dark:text-gray-400'>
+              <p className='text-xs font-medium text-gray-600 dark:text-gray-400'>
                 Scheduled Users
               </p>
               <p className='text-2xl font-bold text-gray-900 dark:text-white'>

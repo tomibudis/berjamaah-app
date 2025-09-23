@@ -19,7 +19,6 @@ export interface UserFilters extends Record<string, unknown> {
   search: string;
   status: 'all' | 'scheduled' | 'pending' | 'active';
   role: 'all' | 'admin' | 'user';
-  page: string;
 }
 
 export interface CreateUserData {

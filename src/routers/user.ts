@@ -178,7 +178,30 @@ export const userRouter = router({
       return user;
     }),
 
-  // Get all users with pagination and filtering (admin only)
+  // Get user statistics (admin only)
+  getUserStats: protectedProcedure.query(async ({ ctx }) => {
+    // Check if user is admin
+    if (ctx.session.user.role !== 'admin') {
+      throw new Error('Unauthorized');
+    }
+
+    // Get user statistics
+    const [total, active, pending, scheduled] = await Promise.all([
+      prisma.user.count(),
+      prisma.user.count({ where: { status: 'active' } }),
+      prisma.user.count({ where: { status: 'pending' } }),
+      prisma.user.count({ where: { status: 'scheduled' } }),
+    ]);
+
+    return {
+      total,
+      active,
+      pending,
+      scheduled,
+    };
+  }),
+
+  // Get all users with infinite scroll support (admin only)
   getAllUsers: protectedProcedure
     .input(
       z.object({
@@ -254,42 +277,16 @@ export const userRouter = router({
         prisma.user.count({ where }),
       ]);
 
-      // Calculate total pages
-      const totalPages = Math.ceil(totalCount / limit);
-
-      // Get user statistics
-      const [activeCount, pendingCount, scheduledCount] = await Promise.all([
-        prisma.user.count({ where: { status: 'active' } }),
-        prisma.user.count({ where: { status: 'pending' } }),
-        prisma.user.count({ where: { status: 'scheduled' } }),
-      ]);
-
-      const statusStats = {
-        active: activeCount,
-        pending: pendingCount,
-        scheduled: scheduledCount,
-      };
+      // Check if there are more users
+      const hasMore = skip + limit < totalCount;
 
       return {
         users: users.map(user => ({
           ...user,
-          totalDonations: user._count.verifiedDonations,
+          totalDonations: user._count?.verifiedDonations || 0,
           totalAmount: 0, // This would need to be calculated from donations if needed
         })),
-        pagination: {
-          page,
-          limit,
-          totalCount,
-          totalPages,
-          hasNextPage: page < totalPages,
-          hasPrevPage: page > 1,
-        },
-        stats: {
-          total: totalCount,
-          active: statusStats.active || 0,
-          pending: statusStats.pending || 0,
-          scheduled: statusStats.scheduled || 0,
-        },
+        hasMore,
       };
     }),
 

@@ -112,7 +112,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Stats Cards */}
-        <div className='grid grid-cols-3 gap-4'>
+        <div className='grid grid-cols-1 gap-4'>
           <Card className='border border-gray-200 dark:border-gray-700 shadow-sm py-2'>
             <CardContent className='p-4'>
               <div className='text-center'>

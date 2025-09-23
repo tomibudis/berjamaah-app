@@ -9,12 +9,11 @@ import { trpc } from '@/utils/trpc';
 import { UserFilters } from './types';
 import {
   UsersHeader,
-  UsersGrid,
-  UsersPagination,
   SearchInput,
   StatusSelect,
   RoleSelect,
 } from './components';
+import { UserList } from './components/UserList';
 import Loader from '@/components/shared/loader';
 
 function UsersPageContent() {
@@ -24,47 +23,34 @@ function UsersPageContent() {
     search: '',
     status: 'all',
     role: 'all',
-    page: '1',
   });
 
-  // tRPC query for users data
+  // tRPC query for users stats only
   const {
-    data: usersData,
-    isLoading,
-    error,
-  } = trpc.user.getAllUsers.useQuery({
-    page: parseInt(queryParams.page) || 1,
-    limit: 12,
-    search: queryParams.search || undefined,
-    status: queryParams.status as 'all' | 'scheduled' | 'pending' | 'active',
-    role: queryParams.role as 'all' | 'admin' | 'user',
-  });
+    data: statsData,
+    isLoading: isStatsLoading,
+    error: statsError,
+  } = trpc.user.getUserStats.useQuery();
 
-  // Extract data with fallbacks
-  const users = usersData?.users || [];
-  const totalUsers = usersData?.stats?.total || 0;
-  const activeUsers = usersData?.stats?.active || 0;
-  const pendingUsers = usersData?.stats?.pending || 0;
-  const scheduledUsers = usersData?.stats?.scheduled || 0;
+  // Extract stats with fallbacks
+  const totalUsers = statsData?.total || 0;
+  const activeUsers = statsData?.active || 0;
+  const pendingUsers = statsData?.pending || 0;
+  const scheduledUsers = statsData?.scheduled || 0;
 
   // Filter handlers
   const handleSearch = (value: string) => {
-    setQueryParams({ search: value, page: '1' });
+    setQueryParams({ search: value });
   };
 
   const handleStatusFilter = (value: string) => {
     setQueryParams({
       status: value as 'all' | 'scheduled' | 'pending' | 'active',
-      page: '1',
     });
   };
 
   const handleRoleFilter = (value: string) => {
-    setQueryParams({ role: value as 'all' | 'admin' | 'user', page: '1' });
-  };
-
-  const handlePageChange = (page: number) => {
-    setQueryParams({ page: page.toString() });
+    setQueryParams({ role: value as 'all' | 'admin' | 'user' });
   };
 
   // User actions
@@ -73,15 +59,16 @@ function UsersPageContent() {
   };
 
   // Handle error state
-  if (error) {
+  if (statsError) {
     return (
       <div className='flex flex-1 flex-col items-center justify-center'>
         <div className='text-center'>
           <h2 className='text-2xl font-bold text-gray-900 dark:text-white mb-2'>
-            Error Loading Users
+            Error Loading User Stats
           </h2>
           <p className='text-gray-600 dark:text-gray-400 mb-4'>
-            {error.message || 'Something went wrong while loading users.'}
+            {statsError.message ||
+              'Something went wrong while loading user statistics.'}
           </p>
           <button
             onClick={() => window.location.reload()}
@@ -119,21 +106,18 @@ function UsersPageContent() {
         </div>
       </div>
       <div className='flex-1'>
-        {isLoading && <Loader />}
+        {isStatsLoading && <Loader />}
 
-        {!isLoading && (
-          <>
-            <UsersGrid users={users} onUserUpdate={() => {}} />
-            {usersData?.pagination && (
-              <UsersPagination
-                currentPage={usersData.pagination.page}
-                totalPages={usersData.pagination.totalPages}
-                hasNextPage={usersData.pagination.hasNextPage}
-                hasPrevPage={usersData.pagination.hasPrevPage}
-                onPageChange={handlePageChange}
-              />
-            )}
-          </>
+        {!isStatsLoading && (
+          <UserList
+            search={queryParams.search}
+            status={queryParams.status}
+            role={queryParams.role}
+            onUserSelect={userId => {
+              // Handle user selection if needed
+              console.log('Selected user:', userId);
+            }}
+          />
         )}
       </div>
     </div>
