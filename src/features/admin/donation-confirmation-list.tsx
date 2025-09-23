@@ -5,6 +5,7 @@ import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useTRPCClient } from '@/utils/trpc';
 import { DonationConfirmationCard } from './donation-confirmation-card';
 import { ListCard, ListCardContent } from '@/components/shared/list-card';
+import { PullToRefresh } from '@/components/shared/pull-to-refresh';
 import { Badge } from '@/components/ui/badge';
 import { AlertCircle } from 'lucide-react';
 
@@ -99,6 +100,13 @@ export function DonationConfirmationList({
     });
   }, [queryClient, status, search, limit]);
 
+  const handleRefresh = useCallback(async () => {
+    // Invalidate and refetch the query to refresh data
+    await queryClient.invalidateQueries({
+      queryKey: ['admin-donations', status, search, limit],
+    });
+  }, [queryClient, status, search, limit]);
+
   const handleLoadMore = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
@@ -143,42 +151,44 @@ export function DonationConfirmationList({
         </Badge>
       </div>
 
-      <ListCard onLoadMore={handleLoadMore}>
-        <ListCardContent className='px-0'>
-          <div className='space-y-3'>
-            {donations.map(donation => (
-              <DonationConfirmationCard
-                key={donation.id}
-                donation={donation}
-                onStatusChange={handleStatusChange}
-              />
-            ))}
+      <PullToRefresh onRefreshAction={handleRefresh}>
+        <ListCard onLoadMore={handleLoadMore}>
+          <ListCardContent className='px-0'>
+            <div className='space-y-3'>
+              {donations.map(donation => (
+                <DonationConfirmationCard
+                  key={donation.id}
+                  donation={donation}
+                  onStatusChange={handleStatusChange}
+                />
+              ))}
 
-            {isLoading && (
-              <div className='text-center text-sm text-gray-500 py-4'>
-                Memuat donasi...
-              </div>
-            )}
+              {isLoading && (
+                <div className='text-center text-sm text-gray-500 py-4'>
+                  Memuat donasi...
+                </div>
+              )}
 
-            {!isLoading && donations.length === 0 && (
-              <div className='text-center py-8'>
-                <AlertCircle className='w-12 h-12 text-gray-400 mx-auto mb-4' />
-                <p className='text-sm text-gray-500'>
-                  {status === 'pending_verification'
-                    ? 'Belum ada donasi yang menunggu verifikasi'
-                    : 'Belum ada donasi dengan status ini'}
-                </p>
-              </div>
-            )}
+              {!isLoading && donations.length === 0 && (
+                <div className='text-center py-8'>
+                  <AlertCircle className='w-12 h-12 text-gray-400 mx-auto mb-4' />
+                  <p className='text-sm text-gray-500'>
+                    {status === 'pending_verification'
+                      ? 'Belum ada donasi yang menunggu verifikasi'
+                      : 'Belum ada donasi dengan status ini'}
+                  </p>
+                </div>
+              )}
 
-            {isFetchingNextPage && (
-              <div className='text-center text-sm text-gray-500 py-4'>
-                Memuat lebih banyak...
-              </div>
-            )}
-          </div>
-        </ListCardContent>
-      </ListCard>
+              {isFetchingNextPage && (
+                <div className='text-center text-sm text-gray-500 py-4'>
+                  Memuat lebih banyak...
+                </div>
+              )}
+            </div>
+          </ListCardContent>
+        </ListCard>
+      </PullToRefresh>
     </div>
   );
 }

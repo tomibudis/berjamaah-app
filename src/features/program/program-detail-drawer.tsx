@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface Program {
   id: string;
@@ -274,6 +275,40 @@ export function ProgramDetailDrawer({
     return '~';
   };
 
+  const getDateAlertInfo = (
+    startDate: string | null,
+    endDate: string | null
+  ) => {
+    const isStartEmpty = !startDate || startDate === '1970-01-01T00:00:00.000Z';
+    const isEndEmpty = !endDate || endDate === '1970-01-01T00:00:00.000Z';
+
+    if (isStartEmpty && isEndEmpty) {
+      return {
+        type: 'warning' as const,
+        message:
+          '⚠️ Tanggal mulai dan selesai belum ditentukan. Program dapat berjalan tanpa batas waktu.',
+      };
+    } else if (isStartEmpty) {
+      return {
+        type: 'info' as const,
+        message:
+          'ℹ️ Tanggal mulai belum ditentukan. Program akan dimulai kapan saja.',
+      };
+    } else if (isEndEmpty) {
+      return {
+        type: 'info' as const,
+        message:
+          'ℹ️ Tanggal selesai belum ditentukan. Program akan berjalan tanpa batas waktu.',
+      };
+    } else {
+      return {
+        type: 'success' as const,
+        message:
+          '✅ Program memiliki jadwal yang jelas dengan tanggal mulai dan selesai.',
+      };
+    }
+  };
+
   return (
     <div className='space-y-6'>
       {/* Header */}
@@ -379,22 +414,46 @@ export function ProgramDetailDrawer({
         )}
 
         {latestPeriod && (
-          <div className='grid grid-cols-2 gap-4'>
-            <div>
-              <h4 className='font-medium text-gray-900 dark:text-white text-sm'>
-                Tanggal Mulai
-              </h4>
-              <p className='text-sm text-gray-600 dark:text-gray-400'>
-                {displayPeriodDate(latestPeriod.startDate)}
-              </p>
-            </div>
-            <div>
-              <h4 className='font-medium text-gray-900 dark:text-white text-sm'>
-                Tanggal Selesai
-              </h4>
-              <p className='text-sm text-gray-600 dark:text-gray-400'>
-                {displayPeriodDate(latestPeriod.endDate)}
-              </p>
+          <div className='space-y-3'>
+            {/* Date Alert Information */}
+            <Alert
+              className={`${
+                getDateAlertInfo(latestPeriod.startDate, latestPeriod.endDate)
+                  .type === 'warning'
+                  ? 'border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-900/20'
+                  : getDateAlertInfo(
+                        latestPeriod.startDate,
+                        latestPeriod.endDate
+                      ).type === 'info'
+                    ? 'border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-900/20'
+                    : 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20'
+              }`}
+            >
+              <AlertDescription className='text-sm'>
+                {
+                  getDateAlertInfo(latestPeriod.startDate, latestPeriod.endDate)
+                    .message
+                }
+              </AlertDescription>
+            </Alert>
+
+            <div className='grid grid-cols-2 gap-4'>
+              <div>
+                <h4 className='font-medium text-gray-900 dark:text-white text-sm'>
+                  Tanggal Mulai
+                </h4>
+                <p className='text-sm text-gray-600 dark:text-gray-400'>
+                  {displayPeriodDate(latestPeriod.startDate)}
+                </p>
+              </div>
+              <div>
+                <h4 className='font-medium text-gray-900 dark:text-white text-sm'>
+                  Tanggal Selesai
+                </h4>
+                <p className='text-sm text-gray-600 dark:text-gray-400'>
+                  {displayPeriodDate(latestPeriod.endDate)}
+                </p>
+              </div>
             </div>
           </div>
         )}
