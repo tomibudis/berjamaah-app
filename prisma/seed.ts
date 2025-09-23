@@ -29,6 +29,9 @@ async function main() {
           name: 'Admin User',
           role: 'admin',
           status: 'active',
+          fullName: 'Admin User',
+          phone: '081234567890',
+          bio: 'Hari yang indah',
         },
       });
 
@@ -58,6 +61,9 @@ async function main() {
           name: 'Regular User',
           role: 'user',
           status: 'active',
+          fullName: 'Regular User',
+          phone: '081234567890',
+          bio: 'Hari yang',
         },
       });
 
