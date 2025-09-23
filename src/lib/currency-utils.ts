@@ -28,6 +28,28 @@ export function formatCurrencyWithDecimals(amount: number | string): string {
   }).format(numAmount);
 }
 
+export function formatCurrencyCompact(amount: number | string): string {
+  const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
+
+  if (isNaN(numAmount)) {
+    return 'Rp 0';
+  }
+
+  const absAmount = Math.abs(numAmount);
+
+  if (absAmount >= 1e12) {
+    return `Rp ${(numAmount / 1e12).toFixed(1)}T`;
+  } else if (absAmount >= 1e9) {
+    return `Rp ${(numAmount / 1e9).toFixed(1)}B`;
+  } else if (absAmount >= 1e6) {
+    return `Rp ${(numAmount / 1e6).toFixed(1)}M`;
+  } else if (absAmount >= 1e3) {
+    return `Rp ${(numAmount / 1e3).toFixed(0)}K`;
+  } else {
+    return `Rp ${Math.round(numAmount).toLocaleString('id-ID')}`;
+  }
+}
+
 export function parseCurrency(currencyString: string): number {
   // Remove currency symbols and spaces, then parse
   const cleanString = currencyString.replace(/[Rp\s.,]/g, '');

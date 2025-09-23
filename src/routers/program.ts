@@ -1028,86 +1028,61 @@ export const programRouter = router({
     }),
 
   // Additional utility queries
-  getProgramStats: publicProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
-      try {
-        const program = await prisma.program.findUnique({
-          where: { id: input.id },
-          select: {
-            id: true,
-            title: true,
-            targetAmount: true,
-            status: true,
-            programPeriods: {
-              select: {
-                currentAmount: true,
-                startDate: true,
-                endDate: true,
-              },
-            },
-            donations: {
-              select: {
-                amount: true,
-                status: true,
-              },
-            },
+  getProgramStats: publicProcedure.query(async () => {
+    try {
+      // Execute all queries in parallel for better performance
+      const [
+        totalActivePrograms,
+        totalEndedPrograms,
+        totalDonators,
+        totalDonationAmount,
+      ] = await Promise.all([
+        // Total active programs
+        prisma.program.count({
+          where: {
+            status: 'active',
           },
-        });
+        }),
+        // Total ended programs
+        prisma.program.count({
+          where: {
+            status: 'ended',
+          },
+        }),
+        // Total unique donators (users who made verified donations)
+        prisma.donation
+          .findMany({
+            where: {
+              status: 'verified',
+            },
+            select: {
+              donorEmail: true,
+            },
+            distinct: ['donorEmail'],
+          })
+          .then(donations => donations.length),
+        // Total amount of verified donations
+        prisma.donation.aggregate({
+          where: {
+            status: 'verified',
+          },
+          _sum: {
+            amount: true,
+          },
+        }),
+      ]);
 
-        if (!program) {
-          throw new TRPCError({
-            code: 'NOT_FOUND',
-            message: 'Program not found',
-          });
-        }
-
-        const totalDonations = program.donations
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .filter((d: any) => d.status === 'completed')
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .reduce((sum: number, d: any) => sum + Number(d.amount), 0);
-
-        const totalPeriodAmount = program.programPeriods.reduce(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (sum: number, p: any) => sum + Number(p.currentAmount),
-          0
-        );
-
-        // Since we removed status from programPeriods, we'll use date-based logic
-        const now = new Date();
-        const activePeriods = program.programPeriods.filter(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (p: any) => p.startDate <= now && p.endDate >= now
-        ).length;
-        const completedPeriods = program.programPeriods.filter(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (p: any) => p.endDate < now
-        ).length;
-
-        return {
-          programId: program.id,
-          programTitle: program.title,
-          targetAmount: Number(program.targetAmount),
-          totalDonations,
-          totalPeriodAmount,
-          progressPercentage:
-            Number(program.targetAmount) > 0
-              ? (totalDonations / Number(program.targetAmount)) * 100
-              : 0,
-          activePeriods,
-          completedPeriods,
-          totalPeriods: program.programPeriods.length,
-          status: program.status,
-        };
-      } catch (error) {
-        if (error instanceof TRPCError) {
-          throw error;
-        }
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to fetch program statistics',
-        });
-      }
-    }),
+      return {
+        totalActivePrograms,
+        totalEndedPrograms,
+        totalDonators,
+        totalDonationAmount: Number(totalDonationAmount._sum.amount || 0),
+      };
+    } catch {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to fetch program statistics',
+      });
+    }
+  }),
 });

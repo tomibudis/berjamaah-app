@@ -26,6 +26,7 @@ import { useQuery } from '@tanstack/react-query';
 import { ProgramDetailDrawer } from '@/features/program/program-detail-drawer';
 import { ProgramFilterDrawer } from '@/features/program/program-filter-drawer';
 import { useQueryParams } from '@/hooks/use-query-params';
+import { formatCurrencyCompact } from '@/lib/currency-utils';
 
 // Types for program data
 interface Program {
@@ -103,6 +104,18 @@ function ProgramPageContent() {
     },
   });
 
+  // TRPC query for program statistics
+  const {
+    data: statsData,
+    isLoading: isStatsLoading,
+    error: statsError,
+  } = useQuery({
+    queryKey: ['programStats'],
+    queryFn: async () => {
+      return await trpcClient.program.getProgramStats.query();
+    },
+  });
+
   // Load more programs
   const loadMore = useCallback(async () => {
     if (programsData && programsData.hasMore && !isLoading) {
@@ -137,11 +150,7 @@ function ProgramPageContent() {
   }, [handleScroll]);
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0,
-    }).format(amount);
+    return formatCurrencyCompact(amount);
   };
 
   const getStatusColor = (status: string) => {
@@ -198,14 +207,6 @@ function ProgramPageContent() {
     refetch();
   };
 
-  // Calculate current amount for a program
-  const getCurrentAmount = (program: Program) => {
-    return program.programPeriods.reduce(
-      (sum, period) => sum + Number(period.currentAmount),
-      0
-    );
-  };
-
   // Handle program selection
   const handleProgramSelect = (programId: string) => {
     setSelectedProgramId(programId);
@@ -241,7 +242,13 @@ function ProgramPageContent() {
                   Sedang berjalan
                 </p>
                 <div className='text-2xl font-bold text-gray-900 dark:text-white'>
-                  {allPrograms.filter(p => p.status === 'active').length}
+                  {isStatsLoading ? (
+                    <div className='animate-pulse bg-gray-300 dark:bg-gray-600 h-8 w-12 mx-auto rounded'></div>
+                  ) : statsError ? (
+                    <span className='text-red-500 text-sm'>Error</span>
+                  ) : (
+                    statsData?.totalActivePrograms || 0
+                  )}
                 </div>
               </div>
             </div>
@@ -255,7 +262,13 @@ function ProgramPageContent() {
                   Semua program
                 </p>
                 <div className='text-2xl font-bold text-gray-900 dark:text-white'>
-                  {allPrograms.reduce((sum, p) => sum + p._count.donations, 0)}
+                  {isStatsLoading ? (
+                    <div className='animate-pulse bg-gray-300 dark:bg-gray-600 h-8 w-12 mx-auto rounded'></div>
+                  ) : statsError ? (
+                    <span className='text-red-500 text-sm'>Error</span>
+                  ) : (
+                    statsData?.totalDonators || 0
+                  )}
                 </div>
               </div>
             </div>
@@ -269,7 +282,13 @@ function ProgramPageContent() {
                   Berhasil diselesaikan
                 </p>
                 <div className='text-2xl font-bold text-gray-900 dark:text-white'>
-                  {allPrograms.filter(p => p.status === 'ended').length}
+                  {isStatsLoading ? (
+                    <div className='animate-pulse bg-gray-300 dark:bg-gray-600 h-8 w-12 mx-auto rounded'></div>
+                  ) : statsError ? (
+                    <span className='text-red-500 text-sm'>Error</span>
+                  ) : (
+                    statsData?.totalEndedPrograms || 0
+                  )}
                 </div>
               </div>
             </div>
@@ -283,8 +302,12 @@ function ProgramPageContent() {
                   Sepanjang waktu
                 </p>
                 <div className='text-2xl font-bold text-gray-900 dark:text-white'>
-                  {formatCurrency(
-                    allPrograms.reduce((sum, p) => sum + getCurrentAmount(p), 0)
+                  {isStatsLoading ? (
+                    <div className='animate-pulse bg-gray-300 dark:bg-gray-600 h-8 w-20 mx-auto rounded'></div>
+                  ) : statsError ? (
+                    <span className='text-red-500 text-sm'>Error</span>
+                  ) : (
+                    formatCurrency(statsData?.totalDonationAmount || 0)
                   )}
                 </div>
               </div>
