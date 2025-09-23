@@ -1,4 +1,4 @@
-name: Process Scheduled Activation Users
+name: Deactivate Programs
 
 on:
   schedule:
@@ -7,16 +7,16 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  process-scheduled-activation-users:
+  deactivate-programs:
     runs-on: ubuntu-latest
     steps:
-      - name: Process Scheduled Activation Users Webhook
+      - name: Deactivate Programs Webhook
         env:
-          WEBHOOK_URL: ${{ secrets.PROCESS_SCHEDULED_ACTIVATION_USERS_WEBHOOK_URL }}
+          WEBHOOK_URL: ${{ secrets.DEACTIVATE_PROGRAMS_WEBHOOK_URL }}
           WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
         run: |
           if [ -z "$WEBHOOK_URL" ]; then
-            echo "PROCESS_SCHEDULED_ACTIVATION_USERS_WEBHOOK_URL not set in repo secrets" >&2
+            echo "DEACTIVATE_PROGRAMS_WEBHOOK_URL not set in repo secrets" >&2
             exit 1
           fi
           if [ -z "$WEBHOOK_SECRET" ]; then
@@ -24,7 +24,7 @@ jobs:
             exit 1
           fi
 
-          echo "Calling process scheduled activation users webhook..."
+          echo "Calling deactivate programs webhook..."
           response=$(curl -sS -w "\n%{http_code}" -X POST "$WEBHOOK_URL" \
             -H "x-webhook-secret: $WEBHOOK_SECRET" \
             -H "Content-Type: application/json" \
@@ -38,8 +38,8 @@ jobs:
           echo "Response: $body"
 
           if [ "$http_code" -ge 200 ] && [ "$http_code" -lt 300 ]; then
-            echo "✅ Process scheduled activation users webhook called successfully"
+            echo "✅ Programs deactivation webhook called successfully"
           else
-            echo "❌ Process scheduled activation users webhook failed with status $http_code"
+            echo "❌ Programs deactivation webhook failed with status $http_code"
             exit 1
           fi
