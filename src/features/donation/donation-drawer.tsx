@@ -48,6 +48,8 @@ interface Program {
   category: string;
   startDate?: string | null;
   endDate?: string | null;
+  totalRaisedAmount?: number;
+  progressPercentage?: number;
 }
 
 interface DonationDrawerProps {
@@ -377,14 +379,17 @@ export function DonationDrawer({
 
                     {/* Progress Bar */}
                     <div className='space-y-2'>
-                      <Progress value={program.progress} className='h-2' />
+                      <Progress
+                        value={program.progressPercentage}
+                        className='h-2'
+                      />
                       <div className='flex justify-between text-sm'>
                         <span className='text-gray-600 dark:text-gray-400'>
                           Terkumpul Rp{' '}
-                          {program.collected.toLocaleString('id-ID')}
+                          {program.totalRaisedAmount?.toLocaleString('id-ID')}
                         </span>
                         <span className='font-medium text-gray-900 dark:text-white'>
-                          {program.progress}%
+                          {program.progressPercentage?.toFixed(2)}%
                         </span>
                       </div>
                     </div>

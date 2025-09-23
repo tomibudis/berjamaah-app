@@ -23,6 +23,8 @@ interface Program {
   startDate?: string | null;
   status: string;
   bannerImage?: string | null;
+  totalRaisedAmount?: number;
+  progressPercentage?: number;
 }
 
 interface ProgramCardProps {
@@ -156,13 +158,19 @@ export function ProgramCard({ program, onDonationSubmit }: ProgramCardProps) {
 
             {/* Progress Bar */}
             <div className='space-y-2'>
-              <Progress value={program.progress} className='h-2' />
+              <Progress
+                value={program.progressPercentage || program.progress}
+                className='h-2'
+              />
               <div className='flex justify-between text-sm'>
                 <span className='text-gray-600 dark:text-gray-400'>
-                  Terkumpul Rp {program.collected.toLocaleString('id-ID')}
+                  Terkumpul Rp{' '}
+                  {(
+                    program.totalRaisedAmount || program.collected
+                  ).toLocaleString('id-ID')}
                 </span>
                 <span className='font-medium text-gray-900 dark:text-white'>
-                  {program.progress}%
+                  {program.progressPercentage?.toFixed(2)}%
                 </span>
               </div>
             </div>

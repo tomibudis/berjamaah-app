@@ -118,7 +118,27 @@ export const donationRouter = router({
           });
         }
 
-        return donation;
+        // Calculate total raised amount for the program
+        const donationTotals = await prisma.donation.aggregate({
+          where: {
+            programId: donation.programId,
+            status: 'verified',
+          },
+          _sum: { amount: true },
+          _count: true,
+        });
+
+        const totalRaisedAmount = Number(donationTotals._sum.amount || 0);
+        const progressPercentage =
+          donation.program && Number(donation.program.targetAmount) > 0
+            ? (totalRaisedAmount / Number(donation.program.targetAmount)) * 100
+            : 0;
+
+        return {
+          ...donation,
+          totalRaisedAmount,
+          progressPercentage,
+        };
       } catch (error) {
         if (error instanceof TRPCError) {
           throw error;

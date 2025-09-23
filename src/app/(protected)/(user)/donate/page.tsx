@@ -81,12 +81,6 @@ export default function DonatePage() {
       }))
     ) ?? [];
 
-  // Debug logging
-  console.log('Raw data:', data);
-  console.log('Processed donations:', donations);
-  console.log('isLoading:', isLoading);
-  console.log('donations.length:', donations.length);
-
   const handleViewDetails = (donationId: string) => {
     setSelectedDonationId(donationId);
   };

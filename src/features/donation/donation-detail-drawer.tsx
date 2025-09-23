@@ -187,13 +187,6 @@ export function DonationDetailDrawer({
     });
   };
 
-  const progressPercentage = donation
-    ? Math.round(
-        (donation.programPeriod.currentAmount / donation.program.targetAmount) *
-          100
-      )
-    : 0;
-
   return (
     <Drawer open={isOpen} onOpenChange={onCloseAction}>
       <DrawerContent className='max-h-[90vh]'>
@@ -271,20 +264,6 @@ export function DonationDetailDrawer({
                       <span className='font-medium'>
                         {formatCurrency(donation.program.targetAmount)}
                       </span>
-                    </div>
-                    <div className='flex justify-between text-sm'>
-                      <span className='text-gray-600 dark:text-gray-400'>
-                        Terkumpul:
-                      </span>
-                      <span className='font-medium'>
-                        {formatCurrency(donation.programPeriod.currentAmount)}
-                      </span>
-                    </div>
-                    <div className='flex justify-between text-sm'>
-                      <span className='text-gray-600 dark:text-gray-400'>
-                        Progress:
-                      </span>
-                      <span className='font-medium'>{progressPercentage}%</span>
                     </div>
                   </div>
                 </CardContent>
@@ -421,39 +400,6 @@ export function DonationDetailDrawer({
                       <AlertCircle className='h-4 w-4' />
                       <AlertDescription>{donation.adminNotes}</AlertDescription>
                     </Alert>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Verification Information */}
-              {donation.verifiedByAdmin && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className='text-base'>Verifikasi</CardTitle>
-                  </CardHeader>
-                  <CardContent className='space-y-2'>
-                    <div>
-                      <span className='text-sm text-gray-600 dark:text-gray-400'>
-                        Diverifikasi oleh:
-                      </span>
-                      <p className='text-sm font-medium'>
-                        {donation.verifiedByAdmin.name}
-                      </p>
-                    </div>
-                    <div>
-                      <span className='text-sm text-gray-600 dark:text-gray-400'>
-                        Email:
-                      </span>
-                      <p className='text-sm'>
-                        {donation.verifiedByAdmin.email}
-                      </p>
-                    </div>
-                    <div>
-                      <span className='text-sm text-gray-600 dark:text-gray-400'>
-                        Percobaan Verifikasi:
-                      </span>
-                      <p className='text-sm'>{donation.verificationAttempts}</p>
-                    </div>
                   </CardContent>
                 </Card>
               )}
