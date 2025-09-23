@@ -1027,6 +1027,81 @@ export const programRouter = router({
       }
     }),
 
+  // Update program status
+  updateProgramStatus: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        status: z.enum(['draft', 'pending', 'active', 'paused', 'ended']),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      try {
+        // Check if user is the creator of the program
+        const existingProgram = await prisma.program.findUnique({
+          where: { id: input.id },
+          select: { createdBy: true, status: true },
+        });
+
+        if (!existingProgram) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Program not found',
+          });
+        }
+
+        if (existingProgram.createdBy !== ctx.session.user.id) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'You can only update programs you created',
+          });
+        }
+
+        // Validate status transitions
+        const currentStatus = existingProgram.status;
+        const newStatus = input.status;
+
+        // Define valid status transitions
+        const validTransitions: Record<string, string[]> = {
+          draft: ['pending', 'active'],
+          pending: ['active', 'draft'],
+          active: ['paused', 'ended'],
+          paused: ['active', 'ended'],
+          ended: ['active'], // Allow re-opening ended programs
+        };
+
+        if (!validTransitions[currentStatus]?.includes(newStatus)) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: `Cannot change status from ${currentStatus} to ${newStatus}`,
+          });
+        }
+
+        const updatedProgram = await prisma.program.update({
+          where: { id: input.id },
+          data: { status: newStatus },
+          include: {
+            programPeriods: true,
+            _count: {
+              select: {
+                donations: true,
+              },
+            },
+          },
+        });
+
+        return updatedProgram;
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to update program status',
+        });
+      }
+    }),
+
   // Additional utility queries
   getProgramStats: publicProcedure.query(async () => {
     try {

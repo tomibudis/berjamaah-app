@@ -107,10 +107,69 @@ export function ProgramDetailDrawer({
     },
   });
 
+  const updateStatusMutation = useMutation({
+    mutationFn: async ({
+      programId,
+      status,
+    }: {
+      programId: string;
+      status: string;
+    }) => {
+      return await trpcClient.program.updateProgramStatus.mutate({
+        id: programId,
+        status: status as 'draft' | 'pending' | 'active' | 'paused' | 'ended',
+      });
+    },
+    onSuccess: () => {
+      toast.success('Status program berhasil diperbarui');
+      // Invalidate all relevant queries to refresh the data
+      queryClient.invalidateQueries({ queryKey: ['programs'] });
+      queryClient.invalidateQueries({ queryKey: ['program', programId] });
+      queryClient.invalidateQueries({ queryKey: ['programStats'] });
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      toast.error(error.message || 'Gagal memperbarui status program');
+    },
+  });
+
   const handleDeleteProgram = () => {
     if (program) {
       deleteProgramMutation.mutate(program.id);
     }
+  };
+
+  const handleUpdateStatus = (newStatus: string) => {
+    if (program) {
+      updateStatusMutation.mutate({ programId: program.id, status: newStatus });
+    }
+  };
+
+  const getAvailableStatusActions = (currentStatus: string) => {
+    const statusActions: Record<
+      string,
+      Array<{ status: string; label: string; variant: string }>
+    > = {
+      draft: [
+        { status: 'pending', label: 'Ajukan untuk Review', variant: 'default' },
+        { status: 'active', label: 'Aktifkan', variant: 'default' },
+      ],
+      pending: [
+        { status: 'active', label: 'Aktifkan', variant: 'default' },
+        { status: 'draft', label: 'Kembali ke Draft', variant: 'outline' },
+      ],
+      active: [
+        { status: 'paused', label: 'Jeda Program', variant: 'outline' },
+        { status: 'ended', label: 'Akhiri Program', variant: 'destructive' },
+      ],
+      paused: [
+        { status: 'active', label: 'Lanjutkan Program', variant: 'default' },
+        { status: 'ended', label: 'Akhiri Program', variant: 'destructive' },
+      ],
+      ended: [{ status: 'active', label: 'Buka Kembali', variant: 'default' }],
+    };
+
+    return statusActions[currentStatus] || [];
   };
 
   const formatCurrency = (amount: number) => {
@@ -350,6 +409,40 @@ export function ProgramDetailDrawer({
           </p>
         </div>
       </div>
+
+      {/* Status Update Buttons - Only show if user is the creator */}
+      {session?.user?.id === program?.createdBy && (
+        <div className='pt-4 border-t border-gray-200 dark:border-gray-700'>
+          <h3 className='font-semibold text-gray-900 dark:text-white mb-3'>
+            Kelola Status Program
+          </h3>
+          <div className='space-y-2'>
+            {getAvailableStatusActions(program.status).map(action => (
+              <Button
+                key={action.status}
+                variant={
+                  action.variant as 'default' | 'outline' | 'destructive'
+                }
+                size='sm'
+                className='w-full'
+                onClick={() => handleUpdateStatus(action.status)}
+                disabled={updateStatusMutation.isPending}
+              >
+                {updateStatusMutation.isPending ? (
+                  <>
+                    <div className='w-4 h-4 mr-2'>
+                      <Loader />
+                    </div>
+                    Memproses...
+                  </>
+                ) : (
+                  action.label
+                )}
+              </Button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Delete Button - Only show if user is the creator */}
       {session?.user?.id === program?.createdBy && (
