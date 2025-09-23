@@ -340,4 +340,344 @@ export const donationRouter = router({
         });
       }
     }),
+
+  // Admin endpoints for donation management
+  // Get pending donations for admin verification
+  getPendingDonations: protectedProcedure
+    .input(
+      z.object({
+        limit: z.number().int().positive().optional().default(10),
+        offset: z.number().int().min(0).optional().default(0),
+        search: z.string().optional(),
+        status: z
+          .enum(['pending_verification', 'verified', 'confirmed', 'rejected'])
+          .optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      // Check if user is admin
+      if (ctx.session.user.role !== 'admin') {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'Unauthorized access',
+        });
+      }
+
+      try {
+        const { limit, offset, search, status } = input;
+
+        // Build where clause
+        const where: {
+          status?: string;
+          OR?: Array<{
+            donorName?: { contains: string; mode: 'insensitive' };
+            donorEmail?: { contains: string; mode: 'insensitive' };
+            donationReferenceNumber?: { contains: string; mode: 'insensitive' };
+            program?: { title: { contains: string; mode: 'insensitive' } };
+          }>;
+        } = {};
+
+        if (status) {
+          where.status = status;
+        } else {
+          // Default to pending verification if no status specified
+          where.status = 'pending_verification';
+        }
+
+        if (search) {
+          where.OR = [
+            { donorName: { contains: search, mode: 'insensitive' } },
+            { donorEmail: { contains: search, mode: 'insensitive' } },
+            {
+              donationReferenceNumber: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+            { program: { title: { contains: search, mode: 'insensitive' } } },
+          ];
+        }
+
+        const [donations, totalCount] = await Promise.all([
+          prisma.donation.findMany({
+            where,
+            include: {
+              program: {
+                select: {
+                  id: true,
+                  title: true,
+                  description: true,
+                  category: true,
+                  bannerImage: true,
+                },
+              },
+              programPeriod: {
+                select: {
+                  id: true,
+                  startDate: true,
+                  endDate: true,
+                  cycleNumber: true,
+                },
+              },
+              verifiedByAdmin: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                },
+              },
+            },
+            orderBy: { createdAt: 'desc' },
+            take: limit,
+            skip: offset,
+          }),
+          prisma.donation.count({ where }),
+        ]);
+
+        return {
+          donations,
+          pagination: {
+            totalCount,
+            hasMore: offset + limit < totalCount,
+          },
+        };
+      } catch {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to fetch pending donations',
+        });
+      }
+    }),
+
+  // Verify donation (admin only)
+  verifyDonation: protectedProcedure
+    .input(
+      z.object({
+        donationId: z.string(),
+        action: z.enum(['verify', 'reject']),
+        notes: z.string().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Check if user is admin
+      if (ctx.session.user.role !== 'admin') {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'Unauthorized access',
+        });
+      }
+
+      try {
+        const { donationId, action, notes } = input;
+
+        // Find the donation
+        const donation = await prisma.donation.findUnique({
+          where: { id: donationId },
+          include: {
+            program: {
+              select: {
+                id: true,
+                title: true,
+              },
+            },
+          },
+        });
+
+        if (!donation) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Donation not found',
+          });
+        }
+
+        if (donation.status !== 'pending_verification') {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Donation is not in pending verification status',
+          });
+        }
+
+        // Update donation status
+        const newStatus = action === 'verify' ? 'verified' : 'rejected';
+        const updateData: {
+          status: string;
+          verifiedByAdminId: string;
+          verifiedAt: Date;
+          updatedAt: Date;
+        } = {
+          status: newStatus,
+          verifiedByAdminId: ctx.session.user.id,
+          verifiedAt: new Date(),
+          updatedAt: new Date(),
+        };
+
+        if (notes) {
+          // Add notes to the donation record (you might want to create a separate notes field)
+          // For now, we'll use a generic approach
+        }
+
+        const updatedDonation = await prisma.donation.update({
+          where: { id: donationId },
+          data: updateData,
+          include: {
+            program: {
+              select: {
+                id: true,
+                title: true,
+                description: true,
+                category: true,
+                bannerImage: true,
+              },
+            },
+            programPeriod: {
+              select: {
+                id: true,
+                startDate: true,
+                endDate: true,
+                cycleNumber: true,
+              },
+            },
+            verifiedByAdmin: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        });
+
+        return {
+          success: true,
+          donation: updatedDonation,
+          message: `Donation ${action === 'verify' ? 'verified' : 'rejected'} successfully`,
+        };
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to update donation status',
+        });
+      }
+    }),
+
+  // Confirm verified donation (admin only)
+  confirmDonation: protectedProcedure
+    .input(
+      z.object({
+        donationId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Check if user is admin
+      if (ctx.session.user.role !== 'admin') {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'Unauthorized access',
+        });
+      }
+
+      try {
+        const { donationId } = input;
+
+        // Find the donation
+        const donation = await prisma.donation.findUnique({
+          where: { id: donationId },
+          include: {
+            program: {
+              select: {
+                id: true,
+                title: true,
+              },
+            },
+            programPeriod: {
+              select: {
+                id: true,
+                currentAmount: true,
+              },
+            },
+          },
+        });
+
+        if (!donation) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Donation not found',
+          });
+        }
+
+        if (donation.status !== 'verified') {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Donation must be verified before confirmation',
+          });
+        }
+
+        // Update donation status to confirmed
+        const updatedDonation = await prisma.donation.update({
+          where: { id: donationId },
+          data: {
+            status: 'confirmed',
+            updatedAt: new Date(),
+          },
+          include: {
+            program: {
+              select: {
+                id: true,
+                title: true,
+                description: true,
+                category: true,
+                bannerImage: true,
+              },
+            },
+            programPeriod: {
+              select: {
+                id: true,
+                startDate: true,
+                endDate: true,
+                cycleNumber: true,
+                currentAmount: true,
+              },
+            },
+            verifiedByAdmin: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        });
+
+        // Update program period current amount if applicable
+        if (donation.programPeriodId && donation.programPeriod) {
+          const currentAmount = Number(donation.programPeriod.currentAmount);
+          const donationAmount = Number(donation.amount);
+
+          await prisma.programPeriod.update({
+            where: { id: donation.programPeriodId },
+            data: {
+              currentAmount: currentAmount + donationAmount,
+              updatedAt: new Date(),
+            },
+          });
+        }
+
+        return {
+          success: true,
+          donation: updatedDonation,
+          message: 'Donation confirmed successfully',
+        };
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to confirm donation',
+        });
+      }
+    }),
 });

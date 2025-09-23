@@ -56,6 +56,9 @@ interface Program {
   _count: {
     donations: number;
   };
+  progressPercentage: number;
+  totalRaisedAmount: number;
+  totalDonationCount: number;
 }
 
 function ProgramPageContent() {
@@ -201,12 +204,6 @@ function ProgramPageContent() {
       (sum, period) => sum + Number(period.currentAmount),
       0
     );
-  };
-
-  // Get progress percentage for a program
-  const getProgressPercentage = (program: Program) => {
-    const currentAmount = getCurrentAmount(program);
-    return Math.round((currentAmount / Number(program.targetAmount)) * 100);
   };
 
   // Handle program selection
@@ -409,9 +406,6 @@ function ProgramPageContent() {
               </div>
             ) : (
               allPrograms.map(program => {
-                const currentAmount = getCurrentAmount(program);
-                const progressPercentage = getProgressPercentage(program);
-
                 return (
                   <Card
                     key={program.id}
@@ -459,20 +453,21 @@ function ProgramPageContent() {
                               Progress
                             </span>
                             <span className='text-gray-900 dark:text-white font-medium'>
-                              {progressPercentage}%
+                              {program.progressPercentage?.toFixed(2)}%
                             </span>
                           </div>
                           <div className='w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2'>
                             <div
                               className='bg-green-600 h-2 rounded-full transition-all duration-300'
                               style={{
-                                width: `${progressPercentage}%`,
+                                width: `${program.progressPercentage?.toFixed(2)}%`,
                               }}
                             ></div>
                           </div>
                           <div className='flex justify-between text-xs text-gray-600 dark:text-gray-400 mt-1'>
                             <span>
-                              Terkumpul: {formatCurrency(currentAmount)}
+                              Terkumpul:{' '}
+                              {formatCurrency(program.totalRaisedAmount)}
                             </span>
                             <span>
                               Target:{' '}

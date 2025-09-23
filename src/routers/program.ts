@@ -132,8 +132,36 @@ export const programRouter = router({
           prisma.program.count({ where }),
         ]);
 
+        // Calculate progress percentage for each program
+        const programsWithProgress = await Promise.all(
+          programs.map(async program => {
+            const donationTotals = await prisma.donation.aggregate({
+              where: {
+                programId: program.id,
+                status: 'verified',
+              },
+              _sum: { amount: true },
+              _count: true,
+            });
+
+            const totalRaisedAmount = Number(donationTotals._sum.amount || 0);
+            const totalDonationCount = donationTotals._count;
+            const progressPercentage =
+              program && Number(program.targetAmount) > 0
+                ? (totalRaisedAmount / Number(program.targetAmount)) * 100
+                : 0;
+
+            return {
+              ...program,
+              totalRaisedAmount,
+              totalDonationCount,
+              progressPercentage,
+            };
+          })
+        );
+
         return {
-          programs,
+          programs: programsWithProgress,
           total,
           hasMore: input.offset + input.limit < total,
         };
@@ -150,56 +178,52 @@ export const programRouter = router({
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
       try {
-        const program = await prisma.program.findUnique({
-          where: { id: input.id },
-          include: {
-            programPeriods: {
-              select: {
-                id: true,
-                startDate: true,
-                endDate: true,
-                currentAmount: true,
-                cycleNumber: true,
-                recurringFrequency: true,
-                recurringDay: true,
-                recurringDurationDays: true,
-                totalCycles: true,
-                nextActivationDate: true,
+        const [program, donationTotals] = await Promise.all([
+          prisma.program.findUnique({
+            where: { id: input.id },
+            include: {
+              programPeriods: {
+                select: {
+                  id: true,
+                  startDate: true,
+                  endDate: true,
+                  currentAmount: true,
+                  cycleNumber: true,
+                  recurringFrequency: true,
+                  recurringDay: true,
+                  recurringDurationDays: true,
+                  totalCycles: true,
+                  nextActivationDate: true,
+                },
+                orderBy: {
+                  startDate: 'desc',
+                },
               },
-              orderBy: {
-                startDate: 'desc',
+              createdByUser: {
+                select: {
+                  id: true,
+                  name: true,
+                  fullName: true,
+                  firstName: true,
+                  lastName: true,
+                },
               },
-            },
-            donations: {
-              select: {
-                id: true,
-                amount: true,
-                status: true,
-                createdAt: true,
-                donorName: true,
-                donorEmail: true,
-              },
-              orderBy: {
-                createdAt: 'desc',
-              },
-              take: 10, // Limit recent donations
-            },
-            createdByUser: {
-              select: {
-                id: true,
-                name: true,
-                fullName: true,
-                firstName: true,
-                lastName: true,
+              _count: {
+                select: {
+                  donations: true,
+                },
               },
             },
-            _count: {
-              select: {
-                donations: true,
-              },
+          }),
+          prisma.donation.aggregate({
+            where: {
+              programId: input.id,
+              status: 'verified',
             },
-          },
-        });
+            _sum: { amount: true },
+            _count: true,
+          }),
+        ]);
 
         if (!program) {
           throw new TRPCError({
@@ -208,7 +232,19 @@ export const programRouter = router({
           });
         }
 
-        return program;
+        const totalRaisedAmount = Number(donationTotals._sum.amount || 0);
+        const totalDonationCount = donationTotals._count;
+        const progressPercentage =
+          program && Number(program.targetAmount) > 0
+            ? (totalRaisedAmount / Number(program.targetAmount)) * 100
+            : 0;
+
+        return {
+          ...program,
+          totalRaisedAmount,
+          totalDonationCount,
+          progressPercentage,
+        };
       } catch (error) {
         if (error instanceof TRPCError) {
           throw error;

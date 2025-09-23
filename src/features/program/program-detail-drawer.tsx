@@ -52,17 +52,13 @@ interface Program {
     totalCycles?: number | null;
     nextActivationDate?: string | null;
   }>;
-  donations: Array<{
-    id: string;
-    amount: string;
-    status: string;
-    createdAt: string;
-    donorName?: string | null;
-    donorEmail?: string | null;
-  }>;
+  // donations array is not included in getById query, only _count.donations
   _count: {
     donations: number;
   };
+  totalRaisedAmount: number;
+  totalDonationCount: number;
+  progressPercentage: number;
 }
 
 interface ProgramDetailDrawerProps {
@@ -210,13 +206,6 @@ export function ProgramDetailDrawer({
     );
   }
 
-  // Calculate current amount from all periods
-  const currentAmount = program.programPeriods.reduce(
-    (sum: number, period: Program['programPeriods'][number]) =>
-      sum + Number(period.currentAmount),
-    0
-  );
-
   // Get the latest period for date information
   const latestPeriod = program.programPeriods[0];
 
@@ -260,19 +249,19 @@ export function ProgramDetailDrawer({
         <div className='flex justify-between text-sm'>
           <span className='text-gray-600 dark:text-gray-400'>Progress</span>
           <span className='text-gray-900 dark:text-white font-medium'>
-            {Math.round((currentAmount / Number(program.targetAmount)) * 100)}%
+            {program.progressPercentage?.toFixed(2)}%
           </span>
         </div>
         <div className='w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3'>
           <div
             className='bg-green-600 h-3 rounded-full transition-all duration-300'
             style={{
-              width: `${(currentAmount / Number(program.targetAmount)) * 100}%`,
+              width: `${program.progressPercentage?.toFixed(2)}%`,
             }}
           ></div>
         </div>
         <div className='flex justify-between text-sm text-gray-600 dark:text-gray-400'>
-          <span>Terkumpul: {formatCurrency(currentAmount)}</span>
+          <span>Terkumpul: {formatCurrency(program.totalRaisedAmount)}</span>
           <span>Target: {formatCurrency(Number(program.targetAmount))}</span>
         </div>
       </div>

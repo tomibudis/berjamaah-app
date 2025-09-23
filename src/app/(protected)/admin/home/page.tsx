@@ -1,65 +1,76 @@
 'use client';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { Shield, Eye } from 'lucide-react';
-import { formatCurrency } from '@/lib/currency-utils';
-import { trpcClient } from '@/utils/trpc';
+import { Shield } from 'lucide-react';
+import { DonationConfirmationList } from '@/features/admin/donation-confirmation-list';
+import { useQuery } from '@tanstack/react-query';
+import { useTRPCClient } from '@/utils/trpc';
 
 export default function AdminDashboard() {
   const router = useRouter();
   const { data: session, status } = useSession();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [users, setUsers] = useState<any[]>([]);
-  const [, setIsLoadingUsers] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [programs, setPrograms] = useState<any[]>([]);
-  const [, setIsLoadingPrograms] = useState(false);
+  const trpcClient = useTRPCClient();
 
   // Check if user is admin
   const isAdmin = session?.user?.role === 'admin';
 
-  const loadUsers = async () => {
-    setIsLoadingUsers(true);
-    try {
-      // TODO: Implement user listing with tRPC
-      console.log('Loading users...');
-      setUsers([]);
-    } catch (error) {
-      console.error('Error loading users:', error);
-    } finally {
-      setIsLoadingUsers(false);
-    }
-  };
+  // Use TanStack Query for users data
+  const { data: usersData, isLoading: isLoadingUsers } = useQuery({
+    queryKey: ['admin-users'],
+    queryFn: async () => {
+      if (!isAdmin)
+        return {
+          users: [],
+          stats: { total: 0, active: 0, pending: 0, scheduled: 0 },
+        };
 
-  const loadPrograms = async () => {
-    setIsLoadingPrograms(true);
-    try {
-      const data = await trpcClient.program.getAll.query({
-        limit: 50,
-        offset: 0,
-      });
+      try {
+        return await trpcClient.user.getAllUsers.query({
+          page: 1,
+          limit: 100,
+          status: 'all',
+          role: 'all',
+        });
+      } catch (error) {
+        console.error('Error loading users:', error);
+        return {
+          users: [],
+          stats: { total: 0, active: 0, pending: 0, scheduled: 0 },
+        };
+      }
+    },
+    enabled: isAdmin,
+  });
 
-      setPrograms(data.programs || []);
-    } catch (error) {
-      console.error('Error loading programs:', error);
-    } finally {
-      setIsLoadingPrograms(false);
-    }
-  };
+  // Use TanStack Query for programs data
+  const { data: programsData, isLoading: isLoadingPrograms } = useQuery({
+    queryKey: ['admin-programs'],
+    queryFn: async () => {
+      if (!isAdmin) return { programs: [] };
 
-  useEffect(() => {
-    if (isAdmin) {
-      loadUsers();
-      loadPrograms();
-    }
-  }, [isAdmin]);
+      try {
+        return await trpcClient.program.getAll.query({
+          limit: 50,
+          offset: 0,
+        });
+      } catch (error) {
+        console.error('Error loading programs:', error);
+        return { programs: [] };
+      }
+    },
+    enabled: isAdmin,
+  });
 
-  if (status === 'loading') {
+  const users = usersData?.users || [];
+  const programs = programsData?.programs || [];
+
+  if (
+    status === 'loading' ||
+    (isAdmin && (isLoadingUsers || isLoadingPrograms))
+  ) {
     return (
       <div className='bg-white dark:bg-gray-900'>
         <div className='mx-auto max-w-sm px-4 py-6 sm:max-w-md md:max-w-lg lg:max-w-md xl:max-w-lg'>
@@ -128,7 +139,11 @@ export default function AdminDashboard() {
                   Pengguna admin
                 </p>
                 <div className='text-2xl font-bold text-gray-900 dark:text-white'>
-                  {users.filter(user => user.role === 'admin').length}
+                  {
+                    users.filter(
+                      (user: { role: string }) => user.role === 'admin'
+                    ).length
+                  }
                 </div>
               </div>
             </CardContent>
@@ -151,122 +166,8 @@ export default function AdminDashboard() {
           </Card>
         </div>
 
-        {/* Fund Confirmation Management */}
-        <div>
-          <div className='flex items-center justify-between mb-4'>
-            <div>
-              <h2 className='text-lg font-semibold text-gray-900 dark:text-white mb-1'>
-                Konfirmasi Dana
-              </h2>
-              <p className='text-sm text-gray-600 dark:text-gray-400'>
-                Kelola konfirmasi dana yang memerlukan persetujuan
-              </p>
-            </div>
-            <Badge
-              variant='secondary'
-              className='h-6 w-6 rounded-full p-0 text-xs flex items-center justify-center'
-            >
-              3
-            </Badge>
-          </div>
-
-          <div className='space-y-3'>
-            {/* Mock donor payment data */}
-            {[
-              {
-                id: '1',
-                donorName: 'Ahmad Fauzi',
-                programTitle: 'Bantu Pendidikan Anak',
-                amount: 500000,
-                paymentMethod: 'Bank Transfer',
-                paymentDate: '2024-01-15',
-                status: 'pending',
-              },
-              {
-                id: '2',
-                donorName: 'Siti Nurhaliza',
-                programTitle: 'Bantuan Makanan untuk Lansia',
-                amount: 250000,
-                paymentMethod: 'E-Wallet',
-                paymentDate: '2024-01-14',
-                status: 'pending',
-              },
-              {
-                id: '3',
-                donorName: 'Budi Santoso',
-                programTitle: 'Renovasi Masjid',
-                amount: 1000000,
-                paymentMethod: 'Bank Transfer',
-                paymentDate: '2024-01-13',
-                status: 'pending',
-              },
-            ].map(payment => (
-              <Card
-                key={payment.id}
-                className='border border-gray-200 dark:border-gray-700 py-0'
-              >
-                <CardContent className='p-4'>
-                  <div className='space-y-3'>
-                    <div className='flex items-center justify-between'>
-                      <div>
-                        <h3 className='font-semibold text-gray-900 dark:text-white text-base'>
-                          {payment.donorName}
-                        </h3>
-                        <p className='text-sm text-gray-600 dark:text-gray-400'>
-                          Program: {payment.programTitle}
-                        </p>
-                      </div>
-                      <Badge variant='outline' className='text-xs'>
-                        {payment.status}
-                      </Badge>
-                    </div>
-
-                    <div className='space-y-2'>
-                      <div className='flex justify-between text-sm'>
-                        <span className='text-gray-600 dark:text-gray-400'>
-                          Jumlah: {formatCurrency(payment.amount)}
-                        </span>
-                        <span className='text-gray-600 dark:text-gray-400'>
-                          Metode: {payment.paymentMethod}
-                        </span>
-                      </div>
-                      <div className='text-sm text-gray-600 dark:text-gray-400'>
-                        Tanggal:{' '}
-                        {new Date(payment.paymentDate).toLocaleDateString(
-                          'id-ID'
-                        )}
-                      </div>
-                    </div>
-
-                    <div className='flex gap-2'>
-                      <Button
-                        size='sm'
-                        className='text-xs px-3 py-1 h-auto bg-green-500 hover:bg-green-600'
-                      >
-                        Konfirmasi
-                      </Button>
-                      <Button
-                        size='sm'
-                        variant='outline'
-                        className='text-xs px-3 py-1 h-auto'
-                      >
-                        Tolak
-                      </Button>
-                      <Button
-                        size='sm'
-                        variant='outline'
-                        className='text-xs px-3 py-1 h-auto'
-                      >
-                        <Eye className='w-3 h-3 mr-1' />
-                        Detail
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
+        {/* Donation Confirmation Management */}
+        <DonationConfirmationList status='pending_verification' />
       </div>
     </div>
   );

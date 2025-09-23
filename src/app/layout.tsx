@@ -30,7 +30,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
-          <div className='grid grid-rows-[auto_1fr] h-svh'>
+          <div className='grid grid-rows-[auto_1fr] h-svh dark:bg-gray-900'>
             <Header />
             <div className='bg-white dark:bg-gray-900 mt-16'>
               <div className='mx-auto max-w-sm px-0 py-4 sm:max-w-md md:max-w-lg lg:max-w-md xl:max-w-lg'>
