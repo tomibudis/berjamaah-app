@@ -1,15 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import {
   Drawer,
   DrawerClose,
@@ -20,47 +13,14 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer';
-import { trpcClient } from '@/utils/trpc';
 import Loader from '@/components/shared/loader';
 import { useQuery } from '@tanstack/react-query';
 import { ProgramDetailDrawer } from '@/features/program/program-detail-drawer';
 import { ProgramFilterDrawer } from '@/features/program/program-filter-drawer';
+import { ProgramList } from '@/features/program/program-list';
 import { useQueryParams } from '@/hooks/use-query-params';
 import { formatCurrencyCompact } from '@/lib/currency-utils';
-
-// Types for program data
-interface Program {
-  id: string;
-  title: string;
-  description: string;
-  targetAmount: string; // Changed from number to string to match database
-  category: string | null;
-  status: string;
-  programType: string;
-  contact?: string | null;
-  details?: string | null;
-  bannerImage?: string | null;
-  createdAt: string;
-  updatedAt: string;
-  programPeriods: Array<{
-    id: string;
-    startDate: string | null;
-    endDate: string | null;
-    currentAmount: string; // Changed from number to string to match database
-    cycleNumber?: number | null;
-    recurringFrequency?: 'weekly' | 'monthly' | 'quarterly' | 'yearly' | null;
-    recurringDay?: number | null;
-    recurringDurationDays?: number | null;
-    totalCycles?: number | null;
-    nextActivationDate?: string | null;
-  }>;
-  _count: {
-    donations: number;
-  };
-  progressPercentage: number;
-  totalRaisedAmount: number;
-  totalDonationCount: number;
-}
+import { trpcClient } from '@/utils/trpc';
 
 function ProgramPageContent() {
   const [selectedProgramId, setSelectedProgramId] = useState<string | null>(
@@ -68,40 +28,11 @@ function ProgramPageContent() {
   );
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
-  const [offset, setOffset] = useState(0);
-  const [allPrograms, setAllPrograms] = useState<Program[]>([]);
 
   // Use query params for filters
-  const [filters] = useQueryParams({
+  const [filters, setFilters] = useQueryParams({
     status: 'all',
     category: 'all',
-  });
-
-  const LIMIT = 10;
-  // TRPC query for programs with pagination
-  const {
-    data: programsData,
-    isLoading,
-    error,
-    refetch,
-  } = useQuery({
-    queryKey: ['programs', filters.status, filters.category, offset],
-    queryFn: async () => {
-      return await trpcClient.program.getAll.query({
-        status:
-          filters.status !== 'all'
-            ? (filters.status as
-                | 'draft'
-                | 'pending'
-                | 'active'
-                | 'paused'
-                | 'ended')
-            : undefined,
-        category: filters.category !== 'all' ? filters.category : undefined,
-        limit: LIMIT,
-        offset: offset,
-      });
-    },
   });
 
   // TRPC query for program statistics
@@ -116,95 +47,20 @@ function ProgramPageContent() {
     },
   });
 
-  // Load more programs
-  const loadMore = useCallback(async () => {
-    if (programsData && programsData.hasMore && !isLoading) {
-      setOffset(prev => prev + LIMIT);
-    }
-  }, [programsData, isLoading]);
-
-  // Update programs when data changes
-  useEffect(() => {
-    if (programsData) {
-      if (offset === 0) {
-        setAllPrograms(programsData.programs);
-      } else {
-        setAllPrograms(prev => [...prev, ...programsData.programs]);
-      }
-    }
-  }, [programsData, offset]);
-
-  // Infinite scroll handler
-  const handleScroll = useCallback(() => {
-    if (
-      window.innerHeight + document.documentElement.scrollTop >=
-      document.documentElement.offsetHeight - 1000
-    ) {
-      loadMore();
-    }
-  }, [loadMore]);
-
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [handleScroll]);
-
   const formatCurrency = (amount: number) => {
     return formatCurrencyCompact(amount);
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-      case 'ended':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-      case 'paused':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
-      case 'draft':
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
-      case 'pending':
-        return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
-      default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'active':
-        return 'Aktif';
-      case 'ended':
-        return 'Selesai';
-      case 'paused':
-        return 'Dijeda';
-      case 'draft':
-        return 'Draft';
-      case 'pending':
-        return 'Menunggu';
-      default:
-        return 'Tidak Diketahui';
-    }
-  };
-
   const handleApplyFilters = () => {
-    // Reset pagination when filters change
-    setOffset(0);
-    setAllPrograms([]);
     // Close the filter drawer
     setIsFilterDrawerOpen(false);
-    // Refetch the query
-    refetch();
   };
 
   const handleResetFilters = () => {
-    // Reset pagination when filters change
-    setOffset(0);
-    setAllPrograms([]);
+    // Reset filters to default
+    setFilters({ status: 'all', category: 'all' });
     // Close the filter drawer
     setIsFilterDrawerOpen(false);
-    // Refetch the query
-    refetch();
   };
 
   // Handle program selection
@@ -221,10 +77,9 @@ function ProgramPageContent() {
 
   // Handle program deletion
   const handleProgramDelete = () => {
-    // Reset pagination and refetch programs
-    setOffset(0);
-    setAllPrograms([]);
-    refetch();
+    // Close drawer and let the ProgramList component handle refetching
+    setIsDrawerOpen(false);
+    setSelectedProgramId(null);
   };
 
   return (
@@ -397,6 +252,8 @@ function ProgramPageContent() {
                   </DrawerHeader>
                   <div className='flex-1 px-4 pb-4'>
                     <ProgramFilterDrawer
+                      filters={filters}
+                      onFiltersChange={setFilters}
                       onApply={handleApplyFilters}
                       onReset={handleResetFilters}
                     />
@@ -411,107 +268,20 @@ function ProgramPageContent() {
             </Drawer>
           </div>
 
-          {/* Program Cards */}
-          <div className='space-y-4'>
-            {isLoading ? (
-              <div className='flex justify-center py-8'>
-                <Loader />
-              </div>
-            ) : error ? (
-              <div className='text-center py-8'>
-                <p className='text-red-500'>
-                  Error loading programs: {error.message}
-                </p>
-              </div>
-            ) : allPrograms.length === 0 ? (
-              <div className='text-center py-8'>
-                <p className='text-gray-500'>No programs found</p>
-              </div>
-            ) : (
-              allPrograms.map(program => {
-                return (
-                  <Card
-                    key={program.id}
-                    className='cursor-pointer hover:shadow-md transition-shadow overflow-hidden'
-                    onClick={() => handleProgramSelect(program.id)}
-                  >
-                    {/* Banner Image */}
-                    {program.bannerImage && (
-                      <div className='w-full h-32 sm:h-40 overflow-hidden'>
-                        <img
-                          src={program.bannerImage}
-                          alt={`Banner ${program.title}`}
-                          className='w-full object-cover'
-                          onError={e => {
-                            // Hide image if it fails to load
-                            e.currentTarget.style.display = 'none';
-                          }}
-                        />
-                      </div>
-                    )}
-
-                    <CardHeader>
-                      <div className='flex justify-between items-start'>
-                        <div className='flex-1'>
-                          <CardTitle className='text-base font-semibold text-gray-900 dark:text-white'>
-                            {program.title}
-                          </CardTitle>
-                        </div>
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(program.status)}`}
-                        >
-                          {getStatusText(program.status)}
-                        </span>
-                      </div>
-                      <CardDescription className='text-sm text-gray-600 dark:text-gray-400 mt-1 truncate'>
-                        {program.description}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className='space-y-3'>
-                        {/* Progress Bar */}
-                        <div>
-                          <div className='flex justify-between text-sm mb-1'>
-                            <span className='text-gray-600 dark:text-gray-400'>
-                              Progress
-                            </span>
-                            <span className='text-gray-900 dark:text-white font-medium'>
-                              {program.progressPercentage?.toFixed(2)}%
-                            </span>
-                          </div>
-                          <div className='w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2'>
-                            <div
-                              className='bg-green-600 h-2 rounded-full transition-all duration-300'
-                              style={{
-                                width: `${program.progressPercentage?.toFixed(2)}%`,
-                              }}
-                            ></div>
-                          </div>
-                          <div className='flex justify-between text-xs text-gray-600 dark:text-gray-400 mt-1'>
-                            <span>
-                              Terkumpul:{' '}
-                              {formatCurrency(program.totalRaisedAmount)}
-                            </span>
-                            <span>
-                              Target:{' '}
-                              {formatCurrency(Number(program.targetAmount))}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })
-            )}
-
-            {/* Loading indicator for infinite scroll */}
-            {isLoading && offset > 0 && (
-              <div className='flex justify-center py-4'>
-                <Loader />
-              </div>
-            )}
-          </div>
+          {/* Program List */}
+          <ProgramList
+            status={
+              filters.status as
+                | 'all'
+                | 'draft'
+                | 'pending'
+                | 'active'
+                | 'paused'
+                | 'ended'
+            }
+            category={filters.category}
+            onProgramSelect={handleProgramSelect}
+          />
         </div>
       </div>
 

@@ -20,8 +20,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { useQueryParams } from '@/hooks/use-query-params';
-
 const filterSchema = z.object({
   status: z.string(),
   category: z.string(),
@@ -35,19 +33,18 @@ interface FilterValues extends Record<string, unknown> {
 }
 
 interface ProgramFilterDrawerProps {
+  filters: FilterValues;
+  onFiltersChange: (filters: FilterValues) => void;
   onApply: () => void;
   onReset: () => void;
 }
 
 export function ProgramFilterDrawer({
+  filters,
+  onFiltersChange,
   onApply,
   onReset,
 }: ProgramFilterDrawerProps) {
-  const [filters, setFilters] = useQueryParams<FilterValues>({
-    status: 'all',
-    category: 'all',
-  });
-
   const form = useForm<FilterFormValues>({
     resolver: zodResolver(filterSchema),
     defaultValues: {
@@ -58,7 +55,7 @@ export function ProgramFilterDrawer({
   });
 
   const handleApply = (formValues: FilterFormValues) => {
-    setFilters(formValues);
+    onFiltersChange(formValues);
     onApply();
   };
 
@@ -68,7 +65,7 @@ export function ProgramFilterDrawer({
       category: 'all',
     };
     form.reset(resetValues);
-    setFilters(resetValues);
+    onFiltersChange(resetValues);
     onReset();
   };
 
