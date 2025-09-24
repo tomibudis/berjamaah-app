@@ -14,6 +14,11 @@ export default withAuth(
       return NextResponse.redirect(new URL('/signin', req.url));
     }
 
+    // Check if user has token and trying to access signin page then redirect to home
+    if (pathname.startsWith('/signin') && !!token) {
+      return NextResponse.redirect(new URL('/', req.url));
+    }
+
     return res;
   },
   {
