@@ -12,10 +12,10 @@ export default function ForgotPasswordPage() {
   return (
     <Card className='w-full shadow-lg'>
       <CardHeader className='text-center'>
-        <CardTitle className='text-2xl font-bold'>Reset Password</CardTitle>
+        <CardTitle className='text-2xl font-bold'>Reset Kata Sandi</CardTitle>
         <CardDescription>
-          Enter your email address and we'll send you a link to reset your
-          password.
+          Masukkan alamat email Anda dan kami akan mengirimkan link untuk
+          mereset kata sandi Anda.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -25,7 +25,7 @@ export default function ForgotPasswordPage() {
             href='/signin'
             className='text-sm text-green-600 hover:text-green-500 font-medium'
           >
-            Back to Sign In
+            Kembali ke Masuk
           </Link>
         </div>
       </CardContent>

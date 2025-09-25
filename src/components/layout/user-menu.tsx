@@ -145,7 +145,7 @@ export default function UserMenu() {
             >
               <Link href='/'>
                 <Home className='w-4 h-4' />
-                Back to Homepage
+                Kembali ke Beranda
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />

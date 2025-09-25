@@ -6,7 +6,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
 import { PasswordInput } from '@/components/ui/password-input';
 import {
   Form,
@@ -30,10 +29,10 @@ import {
 } from '@/components/ui/card';
 
 const signInSchema = z.object({
-  email: z.string().email({ message: 'Please enter a valid email address.' }),
+  email: z.string().email({ message: 'Masukkan alamat email yang valid.' }),
   password: z
     .string()
-    .min(6, { message: 'Password must be at least 6 characters.' }),
+    .min(6, { message: 'Password harus minimal 6 karakter.' }),
   rememberMe: z.boolean().optional(),
 });
 
@@ -58,9 +57,9 @@ export default function SignInForm() {
     });
 
     if (result?.error) {
-      toast.error('Invalid credentials');
+      toast.error('Kredensial tidak valid');
     } else if (result?.ok) {
-      toast.success('Sign in successful');
+      toast.success('Berhasil masuk');
       const session = await getSession();
 
       // Check if user is admin and redirect accordingly
@@ -79,10 +78,10 @@ export default function SignInForm() {
   return (
     <Card className='w-full shadow-lg'>
       <CardHeader className='text-center'>
-        <CardTitle className='text-2xl font-bold'>Welcome Back</CardTitle>
-        <CardDescription>
-          Sign in to your Berjamaah donor account
-        </CardDescription>
+        <CardTitle className='text-2xl font-bold'>
+          Selamat Datang Kembali
+        </CardTitle>
+        <CardDescription>Masuk ke akun donor Berjamaah Anda</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -99,7 +98,7 @@ export default function SignInForm() {
                   <FormControl>
                     <Input
                       type='email'
-                      placeholder='Enter your email'
+                      placeholder='Masukkan email...'
                       {...field}
                     />
                   </FormControl>
@@ -115,41 +114,11 @@ export default function SignInForm() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <PasswordInput placeholder='••••••••' {...field} />
+                    <PasswordInput
+                      placeholder='Masukan password...'
+                      {...field}
+                    />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name='rememberMe'
-              render={({ field }) => (
-                <FormItem>
-                  <div className='flex items-center justify-between'>
-                    <div className='flex items-center space-x-2'>
-                      <FormControl>
-                        <Checkbox
-                          id='remember-me'
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                      <FormLabel
-                        htmlFor='remember-me'
-                        className='text-sm text-gray-600 font-normal cursor-pointer'
-                      >
-                        Remember for 30 days
-                      </FormLabel>
-                    </div>
-                    <Link
-                      href='/forgot-password'
-                      className='text-sm text-green-600 hover:text-green-500 font-medium'
-                    >
-                      Forgot password
-                    </Link>
-                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -160,8 +129,17 @@ export default function SignInForm() {
               className='w-full'
               disabled={form.formState.isSubmitting}
             >
-              {form.formState.isSubmitting ? 'Signing In...' : 'Sign in'}
+              {form.formState.isSubmitting ? 'Sedang masuk...' : 'Masuk'}
             </Button>
+
+            <div className='flex items-center justify-center'>
+              <Link
+                href='/forgot-password'
+                className='text-sm text-green-600 hover:text-green-500 font-medium'
+              >
+                Lupa password
+              </Link>
+            </div>
           </form>
         </Form>
       </CardContent>

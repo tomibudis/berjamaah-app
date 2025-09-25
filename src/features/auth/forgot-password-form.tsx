@@ -19,7 +19,9 @@ import { useState } from 'react';
 import { trpcClient } from '@/utils/trpc';
 
 const forgotPasswordSchema = z.object({
-  email: z.string().email({ message: 'Please enter a valid email address.' }),
+  email: z
+    .string()
+    .email({ message: 'Silakan masukkan alamat email yang valid.' }),
 });
 
 export type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
@@ -38,13 +40,13 @@ export default function ForgotPasswordForm() {
     try {
       await trpcClient.user.forgotPassword.mutate({ email: formValues.email });
       setIsSubmitted(true);
-      toast.success('Password reset link sent to your email!');
+      toast.success('Link reset password telah dikirim ke email Anda!');
     } catch (error) {
-      console.error('Password reset error:', error);
+      console.error('Error reset password:', error);
       toast.error(
         error instanceof Error
           ? error.message
-          : 'Failed to send password reset email. Please try again.'
+          : 'Gagal mengirim email reset password. Silakan coba lagi.'
       );
     }
   };
@@ -69,10 +71,10 @@ export default function ForgotPasswordForm() {
         </div>
         <div>
           <h3 className='text-lg font-medium text-gray-900'>
-            Check your email
+            Periksa Email Anda
           </h3>
           <p className='text-sm text-gray-600 mt-2'>
-            We've sent a password reset link to{' '}
+            Kami telah mengirim link reset password ke{' '}
             <strong>{form.getValues('email')}</strong>
           </p>
         </div>
@@ -88,9 +90,13 @@ export default function ForgotPasswordForm() {
           name='email'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email Address</FormLabel>
+              <FormLabel>Alamat Email</FormLabel>
               <FormControl>
-                <Input type='email' placeholder='Enter your email' {...field} />
+                <Input
+                  type='email'
+                  placeholder='Masukkan email Anda'
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -102,7 +108,7 @@ export default function ForgotPasswordForm() {
           className='w-full'
           disabled={form.formState.isSubmitting}
         >
-          {form.formState.isSubmitting ? 'Sending...' : 'Send Reset Link'}
+          {form.formState.isSubmitting ? 'Mengirim...' : 'Kirim Link Reset'}
         </Button>
       </form>
     </Form>

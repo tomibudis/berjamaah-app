@@ -3,9 +3,8 @@ import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { trpc } from '@/utils/trpc';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { History, Plus } from 'lucide-react';
+import { History } from 'lucide-react';
 import {
   DonationHistoryCard,
   type DonationHistoryItem,
@@ -136,7 +135,7 @@ export default function DonatePage() {
               ))}
             </div>
           ) : donations.length === 0 ? (
-            <Card className='border border-gray-200 dark:border-gray-700 shadow-sm py-0'>
+            <Card className='border border-gray-200 dark:border-gray-700 py-0'>
               <CardContent className='p-8 text-center'>
                 <History className='w-12 h-12 text-gray-400 mx-auto mb-4' />
                 <h3 className='text-lg font-semibold text-gray-900 dark:text-white mb-2'>
@@ -146,10 +145,6 @@ export default function DonatePage() {
                   Anda belum melakukan donasi apapun. Mulai donasi pertama Anda
                   sekarang!
                 </p>
-                <Button className='bg-green-500 hover:bg-green-600 text-white'>
-                  <Plus className='w-4 h-4 mr-2' />
-                  Mulai Donasi
-                </Button>
               </CardContent>
             </Card>
           ) : (

@@ -126,7 +126,7 @@ export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
               <FormLabel>Password Baru</FormLabel>
               <FormControl>
                 <PasswordInput
-                  placeholder='Masukkan password baru Anda'
+                  placeholder='Masukkan password baru...'
                   {...field}
                 />
               </FormControl>
@@ -143,7 +143,7 @@ export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
               <FormLabel>Konfirmasi Password Baru</FormLabel>
               <FormControl>
                 <PasswordInput
-                  placeholder='Konfirmasi password baru Anda'
+                  placeholder='Konfirmasi password baru...'
                   {...field}
                 />
               </FormControl>

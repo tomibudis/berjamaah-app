@@ -111,7 +111,13 @@ export function ProgramCard({ program, onDonationSubmit }: ProgramCardProps) {
                   <Badge
                     className={`text-xs ${getStatusColor(program.status)}`}
                   >
-                    {program.status}
+                    {{
+                      active: 'Aktif',
+                      completed: 'Selesai',
+                      inactive: 'Tidak Aktif',
+                      pending: 'Menunggu',
+                      cancelled: 'Dibatalkan',
+                    }[program.status] || program.status}
                   </Badge>
                 </div>
                 <Badge
