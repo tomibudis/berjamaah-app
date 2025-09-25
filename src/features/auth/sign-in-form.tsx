@@ -16,7 +16,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { signIn, useSession } from 'next-auth/react';
+import { signIn, useSession, getSession } from 'next-auth/react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -41,7 +41,7 @@ export type SignInFormValues = z.infer<typeof signInSchema>;
 
 export default function SignInForm() {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { status } = useSession();
 
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
@@ -61,8 +61,8 @@ export default function SignInForm() {
       toast.error('Invalid credentials');
     } else if (result?.ok) {
       toast.success('Sign in successful');
+      const session = await getSession();
 
-      console.log('session', session);
       // Check if user is admin and redirect accordingly
       if (session?.user?.role === 'admin') {
         router.push('/admin/home');
