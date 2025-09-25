@@ -1,6 +1,5 @@
 'use client';
 
-import { useCallback } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { trpcClient } from '@/utils/trpc';
 import {
@@ -95,11 +94,11 @@ export function ProgramListCard({
   const programs: Program[] =
     data?.pages.flatMap(page => page?.programs ?? []) ?? [];
 
-  const handleLoadMore = useCallback(() => {
+  const handleLoadMore = () => {
     if (hasNextPage && !isFetchingNextPage && programs.length > 0) {
       fetchNextPage();
     }
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage, programs.length]);
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {

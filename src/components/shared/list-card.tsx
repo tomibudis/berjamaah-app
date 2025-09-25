@@ -54,39 +54,18 @@ export type ListCardContentProps = {
 export function ListCardContent({ children, className }: ListCardContentProps) {
   const { onLoadMore } = React.useContext(ListCardContext);
   const sentinelRef = React.useRef<HTMLDivElement | null>(null);
-  const inFlightRef = React.useRef(false);
 
   React.useEffect(() => {
     if (!onLoadMore || !sentinelRef.current) return;
 
-    const el = sentinelRef.current;
-    const observer = new IntersectionObserver(
-      async entries => {
-        const [entry] = entries;
-        if (!entry.isIntersecting) return;
-        if (inFlightRef.current) return;
-        inFlightRef.current = true;
-        observer.unobserve(el);
-        try {
-          const maybePromise = onLoadMore();
-          if (
-            maybePromise &&
-            typeof (maybePromise as Promise<void>).then === 'function'
-          ) {
-            await (maybePromise as Promise<void>);
-          }
-        } finally {
-          inFlightRef.current = false;
-          // Re-observe after a tick to avoid immediate retrigger
-          setTimeout(() => {
-            if (el) observer.observe(el);
-          }, 150);
-        }
-      },
-      { root: null, rootMargin: '200px 0px 200px 0px', threshold: 0 }
-    );
+    const observer = new IntersectionObserver(entries => {
+      const [entry] = entries;
+      if (entry.isIntersecting) {
+        onLoadMore();
+      }
+    });
 
-    observer.observe(el);
+    observer.observe(sentinelRef.current);
     return () => observer.disconnect();
   }, [onLoadMore]);
 

@@ -62,11 +62,12 @@ export default function SignInForm() {
     } else if (result?.ok) {
       toast.success('Sign in successful');
 
+      console.log('session', session);
       // Check if user is admin and redirect accordingly
       if (session?.user?.role === 'admin') {
-        router.replace('/admin/home');
+        router.push('/admin/home');
       } else {
-        router.replace('/');
+        router.push('/');
       }
     }
   };
