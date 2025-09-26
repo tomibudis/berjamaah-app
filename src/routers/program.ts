@@ -165,8 +165,22 @@ export const programRouter = router({
           total,
           hasMore: input.offset + input.limit < total,
         };
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
+        console.error('Error in getAll programs:', error);
+
+        // Check if it's a database connection error
+        if (
+          error instanceof Error &&
+          error.message.includes("Can't reach database server")
+        ) {
+          // Return empty results when database is not available
+          return {
+            programs: [],
+            total: 0,
+            hasMore: false,
+          };
+        }
+
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: 'Failed to fetch programs',
@@ -1153,7 +1167,23 @@ export const programRouter = router({
         totalDonators,
         totalDonationAmount: Number(totalDonationAmount._sum.amount || 0),
       };
-    } catch {
+    } catch (error) {
+      console.error('Error in getProgramStats:', error);
+
+      // Check if it's a database connection error
+      if (
+        error instanceof Error &&
+        error.message.includes("Can't reach database server")
+      ) {
+        // Return default values when database is not available
+        return {
+          totalActivePrograms: 0,
+          totalEndedPrograms: 0,
+          totalDonators: 0,
+          totalDonationAmount: 0,
+        };
+      }
+
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
         message: 'Failed to fetch program statistics',
